@@ -8,77 +8,61 @@ const baseClass = 'before-dashboard'
 
 export const BeforeDashboard: React.FC = () => {
   return (
-    <div className={baseClass}>
+    <section className={baseClass}>
       <Banner className={`${baseClass}__banner`} type="success">
-        <h4>Welcome to your dashboard!</h4>
+        <h4>Welcome to your store dashboard</h4>
       </Banner>
-      Here&apos;s what to do next:
-      <ul className={`${baseClass}__instructions`}>
-        <li>
-          <SeedButton />
-          {' with a few products and pages to jump-start your new project, then '}
+
+      <p className={`${baseClass}__intro`}>
+        This screen is meant to be a simple home base. Start by adding products and pages, then
+        check the live site to see your changes.
+      </p>
+
+      <div className={`${baseClass}__grid`}>
+        <div className={`${baseClass}__card`}>
+          <h3 className={`${baseClass}__cardTitle`}>Add demo data</h3>
+          <p className={`${baseClass}__cardBody`}>
+            Quickly seed your database with example products and pages so you can explore the store
+            without creating everything from scratch.
+          </p>
+          <div className={`${baseClass}__actions`}>
+            <SeedButton />
+          </div>
+        </div>
+
+        <div className={`${baseClass}__card`}>
+          <h3 className={`${baseClass}__cardTitle`}>Manage products</h3>
+          <p className={`${baseClass}__cardBody`}>
+            Create, update, and organize the products that appear in your storefront.
+          </p>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/">visit your website</a>
-          {' to see the results.'}
-        </li>
-        <li>
-          {'Head over to '}
-          <a
-            href="https://dashboard.stripe.com/test/apikeys"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Stripe to obtain your API Keys
+          <a href="/admin/collections/products" className={`${baseClass}__link`}>
+            Go to products
           </a>
-          {
-            '. Create a new account if needed, then copy them into your environment variables and restart your server. See the '
-          }
-          <a
-            href="https://github.com/payloadcms/payload/blob/main/templates/ecommerce/README.md#stripe"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            README
+        </div>
+
+        <div className={`${baseClass}__card`}>
+          <h3 className={`${baseClass}__cardTitle`}>Edit site pages</h3>
+          <p className={`${baseClass}__cardBody`}>
+            Update content pages like the homepage, about, or FAQs without touching any code.
+          </p>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/admin/collections/pages" className={`${baseClass}__link`}>
+            Go to pages
           </a>
-          {' for more details.'}
-        </li>
-        <li>
-          {'Modify your '}
-          <a
-            href="https://payloadcms.com/docs/configuration/collections"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            collections
+        </div>
+
+        <div className={`${baseClass}__card`}>
+          <h3 className={`${baseClass}__cardTitle`}>View your store</h3>
+          <p className={`${baseClass}__cardBody`}>
+            Open the public storefront in a new tab so you can see what customers see.
+          </p>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/" className={`${baseClass}__link`} target="_blank" rel="noreferrer">
+            Open storefront
           </a>
-          {' and add more '}
-          <a
-            href="https://payloadcms.com/docs/fields/overview"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            fields
-          </a>
-          {' as needed. If you are new to Payload, we also recommend you check out the '}
-          <a
-            href="https://payloadcms.com/docs/getting-started/what-is-payload"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Getting Started
-          </a>
-          {' docs.'}
-        </li>
-      </ul>
-      {'Pro Tip: This block is a '}
-      <a
-        href="https://payloadcms.com/docs/admin/components#base-component-overrides"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        custom component
-      </a>
-      , you can remove it at any time by updating your <strong>payload.config</strong>.
-    </div>
+        </div>
+      </div>
+    </section>
   )
 }

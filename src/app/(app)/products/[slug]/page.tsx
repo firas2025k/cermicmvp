@@ -4,15 +4,15 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { GridTileImage } from '@/components/Grid/tile'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
+import { Button } from '@/components/ui/button'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { ChevronLeftIcon } from 'lucide-react'
+import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
 import React, { Suspense } from 'react'
-import { Button } from '@/components/ui/button'
-import { ChevronLeftIcon } from 'lucide-react'
-import { Metadata } from 'next'
 
 type Args = {
   params: Promise<{
@@ -81,12 +81,12 @@ export default async function ProductPage({ params }: Args) {
       })
     : product.inventory! > 0
 
-  let price = product.priceInUSD
+  let price = product.priceInEUR
 
   if (product.enableVariants && product?.variants?.docs?.length) {
     price = product?.variants?.docs?.reduce((acc, variant) => {
-      if (typeof variant === 'object' && variant?.priceInUSD && acc && variant?.priceInUSD > acc) {
-        return variant.priceInUSD
+      if (typeof variant === 'object' && variant?.priceInEUR && acc && variant?.priceInEUR > acc) {
+        return variant.priceInEUR
       }
       return acc
     }, price)
@@ -102,7 +102,7 @@ export default async function ProductPage({ params }: Args) {
       '@type': 'AggregateOffer',
       availability: hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       price: price,
-      priceCurrency: 'usd',
+      priceCurrency: 'eur',
     },
   }
 
@@ -117,39 +117,46 @@ export default async function ProductPage({ params }: Args) {
         }}
         type="application/ld+json"
       />
-      <div className="container pt-8 pb-8">
-        <Button asChild variant="ghost" className="mb-4">
-          <Link href="/shop">
-            <ChevronLeftIcon />
-            All products
-          </Link>
-        </Button>
-        <div className="flex flex-col gap-12 rounded-lg border p-8 md:py-12 lg:flex-row lg:gap-8 bg-primary-foreground">
-          <div className="h-full w-full basis-full lg:basis-1/2">
-            <Suspense
-              fallback={
-                <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
-              }
-            >
-              {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
-            </Suspense>
-          </div>
+      <section className="bg-neutral-50 dark:bg-neutral-950/40">
+        <div className="container pt-10 pb-16">
+          <Button
+            asChild
+            variant="outline"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border-neutral-200 bg-white px-4 py-1.5 text-xs font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900"
+          >
+            <Link href="/shop">
+              <ChevronLeftIcon className="h-3.5 w-3.5" />
+              Back to shop
+            </Link>
+          </Button>
 
-          <div className="basis-full lg:basis-1/2">
-            <ProductDescription product={product} />
+          <div className="flex flex-col gap-10 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 lg:flex-row lg:gap-10 dark:border-neutral-800 dark:bg-neutral-950">
+            <div className="h-full w-full basis-full lg:basis-1/2">
+              <Suspense
+                fallback={
+                  <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden rounded-2xl bg-neutral-200/60 dark:bg-neutral-800/60" />
+                }
+              >
+                {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
+              </Suspense>
+            </div>
+
+            <div className="basis-full lg:basis-1/2">
+              <ProductDescription product={product} />
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : <></>}
+      {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
 
       {relatedProducts.length ? (
-        <div className="container">
-          <RelatedProducts products={relatedProducts as Product[]} />
-        </div>
-      ) : (
-        <></>
-      )}
+        <section className="bg-neutral-50 dark:bg-neutral-950/40">
+          <div className="container">
+            <RelatedProducts products={relatedProducts as Product[]} />
+          </div>
+        </section>
+      ) : null}
     </React.Fragment>
   )
 }
@@ -158,8 +165,15 @@ function RelatedProducts({ products }: { products: Product[] }) {
   if (!products.length) return null
 
   return (
-    <div className="py-8">
-      <h2 className="mb-4 text-2xl font-bold">Related Products</h2>
+    <div className="py-10">
+      <div className="mb-4 flex items-baseline justify-between gap-4">
+        <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          Related tiles
+        </h2>
+        <p className="text-xs text-neutral-600 dark:text-neutral-300">
+          More Tunisian ceramic tiles in a similar mood.
+        </p>
+      </div>
       <ul className="flex w-full gap-4 overflow-x-auto pt-1">
         {products.map((product) => (
           <li
@@ -169,7 +183,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
             <Link className="relative h-full w-full" href={`/products/${product.slug}`}>
               <GridTileImage
                 label={{
-                  amount: product.priceInUSD!,
+                  amount: product.priceInEUR!,
                   title: product.title,
                 }}
                 media={product.meta?.image as Media}
@@ -194,6 +208,21 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
     limit: 1,
     overrideAccess: draft,
     pagination: false,
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      slug: true,
+      gallery: true,
+      inventory: true,
+      enableVariants: true,
+      priceInEUR: true,
+      priceInEUREnabled: true,
+      meta: true,
+      layout: true,
+      relatedProducts: true,
+      categories: true,
+    },
     where: {
       and: [
         {
@@ -207,7 +236,8 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
     populate: {
       variants: {
         title: true,
-        priceInUSD: true,
+        priceInEUR: true,
+        priceInEUREnabled: true,
         inventory: true,
         options: true,
       },

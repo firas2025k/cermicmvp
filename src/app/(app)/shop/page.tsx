@@ -2,11 +2,10 @@ import { Grid } from '@/components/Grid'
 import { ProductGridItem } from '@/components/ProductGridItem'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import React from 'react'
 
 export const metadata = {
-  description: 'Search for products in the store.',
-  title: 'Shop',
+  title: 'Shop tiles',
+  description: 'Browse Tunisian ceramic tile collections for kitchens, bathrooms, floors, and more.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -28,7 +27,7 @@ export default async function ShopPage({ searchParams }: Props) {
       slug: true,
       gallery: true,
       categories: true,
-      priceInUSD: true,
+      priceInEUR: true,
     },
     ...(sort ? { sort } : { sort: 'title' }),
     ...(searchValue || category
@@ -76,27 +75,56 @@ export default async function ShopPage({ searchParams }: Props) {
   const resultsText = products.docs.length > 1 ? 'results' : 'result'
 
   return (
-    <div>
-      {searchValue ? (
-        <p className="mb-4">
-          {products.docs?.length === 0
-            ? 'There are no products that match '
-            : `Showing ${products.docs.length} ${resultsText} for `}
-          <span className="font-bold">&quot;{searchValue}&quot;</span>
-        </p>
-      ) : null}
+    <div className="pt-10 pb-20">
+      <section className="border-b border-amber-100/80 bg-gradient-to-b from-amber-50/70 via-neutral-50 to-stone-50 dark:border-amber-900/40 dark:bg-gradient-to-b dark:from-neutral-950 dark:via-neutral-950 dark:to-stone-900/40">
+        <div className="container space-y-4 py-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-800 dark:text-amber-200">
+            Shop
+          </p>
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-3xl">
+                Tunisian ceramic tiles for every room.
+              </h1>
+              <p className="max-w-xl text-sm text-neutral-600 dark:text-neutral-300">
+                Browse collections suitable for kitchens, bathrooms, floors, and more. Use search or
+                filters to narrow down to the tiles that fit your project.
+              </p>
+            </div>
 
-      {!searchValue && products.docs?.length === 0 && (
-        <p className="mb-4">No products found. Please try different filters.</p>
-      )}
+            <div className="text-xs text-neutral-600 dark:text-neutral-300">
+              {searchValue ? (
+                <p>
+                  {products.docs?.length === 0
+                    ? 'No tiles match '
+                    : `Showing ${products.docs.length} ${resultsText} for `}
+                  <span className="font-semibold">&quot;{searchValue}&quot;</span>
+                </p>
+              ) : (
+                <p>{products.docs?.length || 0} tiles available</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {products?.docs.length > 0 ? (
-        <Grid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.docs.map((product) => {
-            return <ProductGridItem key={product.id} product={product} />
-          })}
-        </Grid>
-      ) : null}
+      <section className="bg-neutral-50 dark:bg-neutral-950/40">
+        <div className="container py-10">
+          {!searchValue && products.docs?.length === 0 && (
+            <p className="rounded-xl border border-dashed border-amber-100 bg-white p-4 text-sm text-neutral-600 shadow-sm dark:border-amber-900/40 dark:bg-neutral-900 dark:text-neutral-300">
+              No tiles found yet. Try adjusting your search or check back soon for new collections.
+            </p>
+          )}
+
+          {products?.docs.length > 0 ? (
+            <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.docs.map((product) => {
+                return <ProductGridItem key={product.id} product={product} />
+              })}
+            </Grid>
+          ) : null}
+        </div>
+      </section>
     </div>
   )
 }

@@ -44,9 +44,14 @@ export function AddToCart({ product }: Props) {
       addItem({
         product: product.id,
         variant: selectedVariant?.id ?? undefined,
-      }).then(() => {
-        toast.success('Item added to cart.')
       })
+        .then(() => {
+          toast.success('Item added to cart.')
+        })
+        .catch((error) => {
+          console.error('Error adding to cart:', error)
+          toast.error('Failed to add item to cart. Please try again.')
+        })
     },
     [addItem, product, selectedVariant],
   )
@@ -97,10 +102,13 @@ export function AddToCart({ product }: Props) {
   return (
     <Button
       aria-label="Add to cart"
-      variant={'outline'}
-      className={clsx({
-        'hover:opacity-90': true,
-      })}
+      variant="default"
+      className={clsx(
+        'w-full rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white',
+        {
+          'opacity-60 cursor-not-allowed': disabled,
+        },
+      )}
       disabled={disabled}
       onClick={addToCart}
       type="submit"

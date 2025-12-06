@@ -1,5 +1,5 @@
 'use client'
-import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
+import { useCurrency, EUR } from '@payloadcms/plugin-ecommerce/client/react'
 import React, { useMemo } from 'react'
 
 type BaseProps = {
@@ -38,7 +38,12 @@ export const Price = ({
 
   const currencyToUse = useMemo(() => {
     if (currencyCodeFromProps) {
-      return supportedCurrencies.find((currency) => currency.code === currencyCodeFromProps)
+      // If EUR is explicitly requested, use it directly
+      if (currencyCodeFromProps === 'EUR') {
+        return EUR
+      }
+      // Otherwise, try to find it in supported currencies
+      return supportedCurrencies.find((currency) => currency.code === currencyCodeFromProps) || EUR
     }
     return undefined
   }, [currencyCodeFromProps, supportedCurrencies])
