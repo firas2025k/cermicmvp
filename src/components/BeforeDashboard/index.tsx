@@ -1,68 +1,158 @@
+'use client'
+
 import { Banner } from '@payloadcms/ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { ShoppingBag, Euro, Package, TrendingUp } from 'lucide-react'
 
 import { SeedButton } from './SeedButton'
+import { MetricCard } from './MetricCard'
+import { RevenueChart } from './RevenueChart'
+import { OrdersTable } from './OrdersTable'
+import { TopProductsTable } from './TopProductsTable'
+import type { AnalyticsData } from './getAnalytics'
 import './index.scss'
 
 const baseClass = 'before-dashboard'
 
 export const BeforeDashboard: React.FC = () => {
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const response = await fetch('/api/analytics')
+        if (response.ok) {
+          const data = await response.json()
+          setAnalytics(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAnalytics()
+  }, [])
+
+  // Calculate percentage changes (mock data for now)
+  const revenueChange = 1.56
+  const ordersChange = 0.0
+  const productsChange = 2.5
+  const salesChange = 1.56
+
   return (
     <section className={baseClass}>
       <Banner className={`${baseClass}__banner`} type="success">
         <h4>Welcome to your store dashboard</h4>
       </Banner>
 
-      <p className={`${baseClass}__intro`}>
-        This screen is meant to be a simple home base. Start by adding products and pages, then
-        check the live site to see your changes.
-      </p>
-
-      <div className={`${baseClass}__grid`}>
-        <div className={`${baseClass}__card`}>
-          <h3 className={`${baseClass}__cardTitle`}>Add demo data</h3>
-          <p className={`${baseClass}__cardBody`}>
-            Quickly seed your database with example products and pages so you can explore the store
-            without creating everything from scratch.
-          </p>
-          <div className={`${baseClass}__actions`}>
-            <SeedButton />
+      {loading ? (
+        <div className={`${baseClass}__loading`}>Loading analytics...</div>
+      ) : (
+        <>
+          {/* Metrics Cards */}
+          <div className={`${baseClass}__metrics`}>
+            <MetricCard
+              title="Total Sales"
+              value={analytics?.totalSales || 0}
+              change={salesChange}
+              changeLabel="since last month"
+              icon={ShoppingBag}
+              iconColor="#10b981"
+              trend="up"
+            />
+            <MetricCard
+              title="Total Revenue"
+              value={analytics?.totalRevenue || 0}
+              change={revenueChange}
+              changeLabel="since last month"
+              icon={Euro}
+              iconColor="#ef4444"
+              trend="down"
+            />
+            <MetricCard
+              title="Total Orders"
+              value={analytics?.totalOrders || 0}
+              change={ordersChange}
+              changeLabel="since last month"
+              icon={Package}
+              iconColor="#6b7280"
+              trend="neutral"
+            />
+            <MetricCard
+              title="Total Products"
+              value={analytics?.totalProducts || 0}
+              change={productsChange}
+              changeLabel="since last month"
+              icon={TrendingUp}
+              iconColor="#3b82f6"
+              trend="up"
+            />
           </div>
-        </div>
 
-        <div className={`${baseClass}__card`}>
-          <h3 className={`${baseClass}__cardTitle`}>Manage products</h3>
-          <p className={`${baseClass}__cardBody`}>
-            Create, update, and organize the products that appear in your storefront.
-          </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/admin/collections/products" className={`${baseClass}__link`}>
-            Go to products
-          </a>
-        </div>
+          {/* Charts and Tables Grid */}
+          <div className={`${baseClass}__content`}>
+            {/* Revenue Chart */}
+            <div className={`${baseClass}__chart-section`}>
+              <RevenueChart
+                data={analytics?.revenueData || []}
+                title="Revenue Overview"
+              />
+            </div>
 
-        <div className={`${baseClass}__card`}>
-          <h3 className={`${baseClass}__cardTitle`}>Edit site pages</h3>
-          <p className={`${baseClass}__cardBody`}>
-            Update content pages like the homepage, about, or FAQs without touching any code.
-          </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/admin/collections/pages" className={`${baseClass}__link`}>
-            Go to pages
-          </a>
-        </div>
+            {/* Tables Grid */}
+            <div className={`${baseClass}__tables-grid`}>
+              <TopProductsTable
+                products={analytics?.topProducts || []}
+                title="Top Selling Products"
+                limit={5}
+              />
+              <OrdersTable
+                orders={analytics?.recentOrders || []}
+                title="Recent Orders"
+                limit={5}
+              />
+            </div>
+          </div>
 
-        <div className={`${baseClass}__card`}>
-          <h3 className={`${baseClass}__cardTitle`}>View your store</h3>
-          <p className={`${baseClass}__cardBody`}>
-            Open the public storefront in a new tab so you can see what customers see.
-          </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/" className={`${baseClass}__link`} target="_blank" rel="noreferrer">
-            Open storefront
-          </a>
-        </div>
-      </div>
+          {/* Quick Actions */}
+          <div className={`${baseClass}__quick-actions`}>
+            <div className={`${baseClass}__card`}>
+              <h3 className={`${baseClass}__cardTitle`}>Add demo data</h3>
+              <p className={`${baseClass}__cardBody`}>
+                Quickly seed your database with example products and pages.
+              </p>
+              <div className={`${baseClass}__actions`}>
+                <SeedButton />
+              </div>
+            </div>
+
+            <div className={`${baseClass}__card`}>
+              <h3 className={`${baseClass}__cardTitle`}>Manage products</h3>
+              <p className={`${baseClass}__cardBody`}>
+                Create, update, and organize the products in your storefront.
+              </p>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href="/admin/collections/products" className={`${baseClass}__link`}>
+                Go to products
+              </a>
+            </div>
+
+            <div className={`${baseClass}__card`}>
+              <h3 className={`${baseClass}__cardTitle`}>View your store</h3>
+              <p className={`${baseClass}__cardBody`}>
+                Open the public storefront to see what customers see.
+              </p>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href="/" className={`${baseClass}__link`} target="_blank" rel="noreferrer">
+                Open storefront
+              </a>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   )
 }
