@@ -1,12 +1,12 @@
-import Link from 'next/link'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import type { Product } from '@/payload-types'
-import { ProductCarousel } from '@/components/ProductCarousel'
+import { RenderHomepageBlocks } from '@/blocks/RenderHomepageBlocks'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { Media } from '@/components/Media'
-import { Star, Search, User } from 'lucide-react'
-import type { Media as MediaType } from '@/payload-types'
+import { ProductCarousel } from '@/components/ProductCarousel'
+import type { Product } from '@/payload-types'
+import configPromise from '@payload-config'
+import { Star } from 'lucide-react'
+import Link from 'next/link'
+import { getPayload } from 'payload'
 
 // Reuse the dynamic metadata generation so the home page can still
 // pick up title / SEO settings from the "home" document in Payload.
@@ -15,6 +15,35 @@ export { generateMetadata } from './[slug]/page'
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise })
 
+  // Try to fetch homepage from Global
+  // Note: Types will be generated when Payload starts - run `pnpm payload generate:types` if needed
+  let homepage: any = null
+  try {
+    homepage = await payload.findGlobal({
+      slug: 'homepage' as any,
+      depth: 2,
+    } as any)
+  } catch (error) {
+    // Global might not exist yet, fall back to hardcoded content
+    console.log('Homepage Global not found, using hardcoded content')
+  }
+
+  // If homepage Global exists and has layout blocks, use them
+  if (
+    homepage &&
+    homepage.layout &&
+    Array.isArray(homepage.layout) &&
+    homepage.layout.length > 0 &&
+    homepage._status === 'published'
+  ) {
+    return (
+      <div className="pt-0">
+        <RenderHomepageBlocks blocks={homepage.layout} />
+      </div>
+    )
+  }
+
+  // Fallback to hardcoded content (for backward compatibility)
   // Fetch featured products for different sections
   const [newArrivalsResult, bestsellersResult, topProductsResult] = await Promise.all([
     // New Arrivals - most recently created
