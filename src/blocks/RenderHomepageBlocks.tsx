@@ -2,6 +2,12 @@ import { HeroCarouselBlockComponent } from '@/blocks/HeroCarousel/Component'
 import { ProductCarouselBlockComponent } from '@/blocks/ProductCarousel/Component'
 import { CategoryBannerBlockComponent } from '@/blocks/CategoryBanner/Component'
 import { BrandStoryBlockComponent } from '@/blocks/BrandStory/Component'
+import { FeatureCirclesBlockComponent } from '@/blocks/FeatureCircles/Component'
+import { MediaMentionsBlockComponent } from '@/blocks/MediaMentions/Component'
+import { PartnerLogosBlockComponent } from '@/blocks/PartnerLogos/Component'
+import { CustomerReviewsBlockComponent } from '@/blocks/CustomerReviews/Component'
+import { ProductUsageBlockComponent } from '@/blocks/ProductUsage/Component'
+import { AboutUsBlockComponent } from '@/blocks/AboutUs/Component'
 import { toKebabCase } from '@/utilities/toKebabCase'
 import React, { Fragment } from 'react'
 
@@ -12,6 +18,12 @@ const blockComponents = {
   productCarousel: ProductCarouselBlockComponent,
   categoryBanner: CategoryBannerBlockComponent,
   brandStory: BrandStoryBlockComponent,
+  featureCircles: FeatureCirclesBlockComponent,
+  mediaMentions: MediaMentionsBlockComponent,
+  partnerLogos: PartnerLogosBlockComponent,
+  customerReviews: CustomerReviewsBlockComponent,
+  productUsage: ProductUsageBlockComponent,
+  aboutUs: AboutUsBlockComponent,
 }
 
 export const RenderHomepageBlocks: React.FC<{

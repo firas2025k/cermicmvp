@@ -1836,7 +1836,18 @@ export interface Footer {
  */
 export interface Homepage {
   id: number;
-  layout: (HeroCarouselBlock | ProductCarouselBlock | CategoryBannerBlock | BrandStoryBlock)[];
+  layout: (
+    | HeroCarouselBlock
+    | ProductCarouselBlock
+    | CategoryBannerBlock
+    | BrandStoryBlock
+    | FeatureCirclesBlock
+    | MediaMentionsBlock
+    | PartnerLogosBlock
+    | CustomerReviewsBlock
+    | ProductUsageBlock
+    | AboutUsBlock
+  )[];
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1952,6 +1963,121 @@ export interface BrandStoryBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureCirclesBlock".
+ */
+export interface FeatureCirclesBlock {
+  features?:
+    | {
+        image: number | Media;
+        label: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: ('red' | 'amber' | 'neutral') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureCircles';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaMentionsBlock".
+ */
+export interface MediaMentionsBlock {
+  outlets?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaMentions';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PartnerLogosBlock".
+ */
+export interface PartnerLogosBlock {
+  partners?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  showRating?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'partnerLogos';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CustomerReviewsBlock".
+ */
+export interface CustomerReviewsBlock {
+  title?: string | null;
+  showViewAll?: boolean | null;
+  viewAllLink?: string | null;
+  reviews?:
+    | {
+        image: number | Media;
+        title: string;
+        rating?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'customerReviews';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductUsageBlock".
+ */
+export interface ProductUsageBlock {
+  items?:
+    | {
+        image: number | Media;
+        title: string;
+        description?: string | null;
+        link?: string | null;
+        linkText?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productUsage';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsBlock".
+ */
+export interface AboutUsBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  imageCaption?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutUs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2008,6 +2134,12 @@ export interface HomepageSelect<T extends boolean = true> {
         productCarousel?: T | ProductCarouselBlockSelect<T>;
         categoryBanner?: T | CategoryBannerBlockSelect<T>;
         brandStory?: T | BrandStoryBlockSelect<T>;
+        featureCircles?: T | FeatureCirclesBlockSelect<T>;
+        mediaMentions?: T | MediaMentionsBlockSelect<T>;
+        partnerLogos?: T | PartnerLogosBlockSelect<T>;
+        customerReviews?: T | CustomerReviewsBlockSelect<T>;
+        productUsage?: T | ProductUsageBlockSelect<T>;
+        aboutUs?: T | AboutUsBlockSelect<T>;
       };
   _status?: T;
   updatedAt?: T;
@@ -2088,6 +2220,101 @@ export interface BrandStoryBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureCirclesBlock_select".
+ */
+export interface FeatureCirclesBlockSelect<T extends boolean = true> {
+  features?:
+    | T
+    | {
+        image?: T;
+        label?: T;
+        description?: T;
+        id?: T;
+      };
+  backgroundColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaMentionsBlock_select".
+ */
+export interface MediaMentionsBlockSelect<T extends boolean = true> {
+  outlets?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PartnerLogosBlock_select".
+ */
+export interface PartnerLogosBlockSelect<T extends boolean = true> {
+  partners?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  showRating?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CustomerReviewsBlock_select".
+ */
+export interface CustomerReviewsBlockSelect<T extends boolean = true> {
+  title?: T;
+  showViewAll?: T;
+  viewAllLink?: T;
+  reviews?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        rating?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductUsageBlock_select".
+ */
+export interface ProductUsageBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        description?: T;
+        link?: T;
+        linkText?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsBlock_select".
+ */
+export interface AboutUsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  imageCaption?: T;
+  content?: T;
   id?: T;
   blockName?: T;
 }
