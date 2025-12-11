@@ -5,8 +5,9 @@ import { OpenCartButton } from '@/components/Cart/OpenCart'
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 
-import { MobileMenu } from './MobileMenu'
+import { ExpandableMenu } from './ExpandableMenu'
 import type { Header } from 'src/payload-types'
+import type { Category } from '@/payload-types'
 
 import { LogoIcon } from '@/components/icons/logo'
 import { usePathname } from 'next/navigation'
@@ -14,64 +15,141 @@ import { cn } from '@/utilities/cn'
 
 type Props = {
   header: Header
+  categories?: Category[]
 }
 
-export function HeaderClient({ header }: Props) {
-  const menu = header.navItems || []
+export function HeaderClient({ header, categories = [] }: Props) {
+  const menu = header?.navItems || []
   const pathname = usePathname()
 
+  // Debug: Log menu items to console
+  if (typeof window !== 'undefined') {
+    console.log('Header object:', header)
+    console.log('Menu items:', menu)
+    console.log('Menu length:', menu.length)
+  }
+
   return (
-    <div className="sticky top-0 z-30 border-b border-amber-100/80 bg-gradient-to-b from-amber-50/80 via-neutral-50/90 to-stone-50/90 backdrop-blur-md dark:border-amber-900/40 dark:bg-gradient-to-b dark:from-neutral-950/90 dark:via-neutral-950/80 dark:to-neutral-900/90">
-      <nav className="container flex items-center justify-between py-3 md:py-4">
-        <div className="flex w-full items-center justify-between gap-4">
-          <div className="flex items-center gap-3 md:w-1/3">
-            <div className="block flex-none md:hidden">
+    <>
+      {/* Top promotional bar */}
+      <div className="bg-red-900 text-white text-xs py-1.5 text-center">
+        <p>Kostenloser Versand ab 50€ Bestellwert</p>
+      </div>
+
+      {/* Main Header */}
+      <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="container">
+          {/* Top Row: Logo and Icons */}
+          <nav className="flex items-center justify-between py-4">
+            {/* Left: Hamburger Menu (Mobile) */}
+            <div className="flex items-center md:hidden">
               <Suspense fallback={null}>
-                <MobileMenu menu={menu} />
+                <ExpandableMenu menu={menu} categories={categories} />
               </Suspense>
             </div>
-            <Link className="flex items-center py-1" href="/">
-              <span className="flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-neutral-800 shadow-sm ring-1 ring-amber-100/80 dark:bg-neutral-950/80 dark:text-neutral-50 dark:ring-amber-900/50">
-                <LogoIcon className="h-5 w-5" />
-                <span className="hidden text-[0.7rem] tracking-[0.12em] sm:inline">
-                  TUNISIAN TILE STUDIO
+
+            {/* Center: Logo */}
+            <div className="flex-1 flex justify-center">
+              <Link className="flex items-center py-1" href="/">
+                <span className="flex items-center gap-2">
+                  <LogoIcon className="h-8 w-8" />
+                  <span className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
+                    TUNISIAN TILE STUDIO
+                  </span>
                 </span>
-              </span>
-            </Link>
-          </div>
-
-          {menu.length ? (
-            <div className="hidden justify-center md:flex md:w-1/3">
-              <ul className="flex gap-6 text-xs md:items-center">
-                {menu.map((item) => (
-                  <li key={item.id}>
-                    <CMSLink
-                      {...item.link}
-                      size={'clear'}
-                      className={cn(
-                        'relative navLink px-1 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-neutral-700 transition-colors hover:text-neutral-900 dark:text-neutral-200 dark:hover:text-white',
-                        {
-                          active:
-                            item.link.url && item.link.url !== '/'
-                              ? pathname.includes(item.link.url)
-                              : false,
-                        },
-                      )}
-                      appearance="nav"
-                    />
-                  </li>
-                ))}
-              </ul>
+              </Link>
             </div>
-          ) : null}
 
-          <div className="flex justify-end gap-3 md:w-1/3">
-            <Suspense fallback={<OpenCartButton />}>
-              <Cart />
-            </Suspense>
-          </div>
+            {/* Right: Search, User, Cart Icons */}
+            <div className="flex items-center justify-end gap-4">
+              <button
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                aria-label="Search"
+              >
+                <svg
+                  className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+              <Link
+                href="/account"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                aria-label="Account"
+              >
+                <svg
+                  className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </Link>
+              <Suspense fallback={<OpenCartButton />}>
+                <Cart />
+              </Suspense>
+            </div>
+          </nav>
+
+          {/* Bottom Row: Navigation Links - Centered under logo */}
+          {menu && Array.isArray(menu) && menu.length > 0 && (
+            <div className="hidden md:block border-t border-neutral-200 dark:border-neutral-800">
+              <nav className="flex items-center justify-center py-3">
+                <ul className="flex items-center gap-8">
+                  {menu.map((item, index) => {
+                    if (!item || !item.link) {
+                      console.warn('Invalid menu item at index', index, item)
+                      return null
+                    }
+                    
+                    // Get the URL - handle both custom URL and reference types
+                    const url = item.link.type === 'custom' 
+                      ? item.link.url 
+                      : item.link.reference?.value && typeof item.link.reference.value === 'object'
+                        ? `/${item.link.reference.relationTo}/${item.link.reference.value.slug}`
+                        : item.link.url
+                    
+                    const label = item.link.label || 'Link'
+                    
+                    return (
+                      <li key={item.id || `nav-item-${index}`}>
+                        <Link
+                          href={url || '#'}
+                          target={item.link.newTab ? '_blank' : undefined}
+                          rel={item.link.newTab ? 'noopener noreferrer' : undefined}
+                          className={cn(
+                            'text-sm font-medium text-neutral-700 transition-colors hover:text-neutral-900 dark:text-neutral-200 dark:hover:text-white',
+                            {
+                              'text-neutral-900 dark:text-white font-semibold':
+                                url && url !== '/' && pathname.includes(url),
+                            },
+                          )}
+                        >
+                          {label}
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </nav>
+            </div>
+          )}
         </div>
-      </nav>
-    </div>
+      </div>
+    </>
   )
 }

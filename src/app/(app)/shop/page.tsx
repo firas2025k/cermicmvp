@@ -1,5 +1,6 @@
 import { Grid } from '@/components/Grid'
 import { ProductGridItem } from '@/components/ProductGridItem'
+import { ShopFilters } from '@/components/ShopFilters'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -18,6 +19,24 @@ export default async function ShopPage({ searchParams }: Props) {
   const { q: searchValue, sort, category } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
+  // Fetch categories for filters
+  const categoriesResult = await payload.find({
+    collection: 'categories',
+    limit: 100,
+    sort: 'title',
+  })
+  const categories = categoriesResult.docs || []
+
+  // Find category by slug if category filter is provided
+  let categoryId: number | undefined
+  if (category) {
+    const categorySlug = typeof category === 'string' ? category : category[0]
+    const foundCategory = categories.find((cat) => cat.slug === categorySlug)
+    if (foundCategory && typeof foundCategory.id === 'number') {
+      categoryId = foundCategory.id
+    }
+  }
+
   const products = await payload.find({
     collection: 'products',
     draft: false,
@@ -30,7 +49,7 @@ export default async function ShopPage({ searchParams }: Props) {
       priceInEUR: true,
     },
     ...(sort ? { sort } : { sort: 'title' }),
-    ...(searchValue || category
+    ...(searchValue || categoryId
       ? {
           where: {
             and: [
@@ -57,11 +76,11 @@ export default async function ShopPage({ searchParams }: Props) {
                     },
                   ]
                 : []),
-              ...(category
+              ...(categoryId
                 ? [
                     {
                       categories: {
-                        contains: category,
+                        contains: categoryId,
                       },
                     },
                   ]
@@ -110,19 +129,29 @@ export default async function ShopPage({ searchParams }: Props) {
 
       <section className="bg-neutral-50 dark:bg-neutral-950/40">
         <div className="container py-10">
-          {!searchValue && products.docs?.length === 0 && (
-            <p className="rounded-xl border border-dashed border-amber-100 bg-white p-4 text-sm text-neutral-600 shadow-sm dark:border-amber-900/40 dark:bg-neutral-900 dark:text-neutral-300">
-              No tiles found yet. Try adjusting your search or check back soon for new collections.
-            </p>
-          )}
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+            {/* Filters Sidebar */}
+            <aside className="lg:sticky lg:top-24 lg:h-fit">
+              <ShopFilters categories={categories} />
+            </aside>
 
-          {products?.docs.length > 0 ? (
-            <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.docs.map((product) => {
-                return <ProductGridItem key={product.id} product={product} />
-              })}
-            </Grid>
-          ) : null}
+            {/* Products Grid */}
+            <div>
+              {!searchValue && products.docs?.length === 0 && (
+                <p className="rounded-xl border border-dashed border-amber-100 bg-white p-4 text-sm text-neutral-600 shadow-sm dark:border-amber-900/40 dark:bg-neutral-900 dark:text-neutral-300">
+                  No tiles found yet. Try adjusting your search or check back soon for new collections.
+                </p>
+              )}
+
+              {products?.docs.length > 0 ? (
+                <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {products.docs.map((product) => {
+                    return <ProductGridItem key={product.id} product={product} />
+                  })}
+                </Grid>
+              ) : null}
+            </div>
+          </div>
         </div>
       </section>
     </div>

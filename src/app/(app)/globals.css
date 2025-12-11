@@ -70,6 +70,16 @@
   --error: hsl(10, 93%, 70%);
 }
 
+/* Hide scrollbar for carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 [data-theme='dark'] {
   --background: hsla(0, 0%, 4%);
   --foreground: hsl(210 40% 98%);

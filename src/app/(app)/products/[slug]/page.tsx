@@ -124,37 +124,37 @@ export default async function ProductPage({ params }: Args) {
             variant="outline"
             className="mb-6 inline-flex items-center gap-2 rounded-full border-neutral-200 bg-white px-4 py-1.5 text-xs font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900"
           >
-            <Link href="/shop">
+          <Link href="/shop">
               <ChevronLeftIcon className="h-3.5 w-3.5" />
               Back to shop
-            </Link>
-          </Button>
+          </Link>
+        </Button>
 
           <div className="flex flex-col gap-10 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 lg:flex-row lg:gap-10 dark:border-neutral-800 dark:bg-neutral-950">
-            <div className="h-full w-full basis-full lg:basis-1/2">
-              <Suspense
-                fallback={
+          <div className="h-full w-full basis-full lg:basis-1/2">
+            <Suspense
+              fallback={
                   <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden rounded-2xl bg-neutral-200/60 dark:bg-neutral-800/60" />
-                }
-              >
-                {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
-              </Suspense>
-            </div>
+              }
+            >
+              {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
+            </Suspense>
+          </div>
 
-            <div className="basis-full lg:basis-1/2">
-              <ProductDescription product={product} />
-            </div>
+          <div className="basis-full lg:basis-1/2">
+            <ProductDescription product={product} />
           </div>
         </div>
+      </div>
       </section>
 
       {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
 
       {relatedProducts.length ? (
         <section className="bg-neutral-50 dark:bg-neutral-950/40">
-          <div className="container">
-            <RelatedProducts products={relatedProducts as Product[]} />
-          </div>
+        <div className="container">
+          <RelatedProducts products={relatedProducts as Product[]} />
+        </div>
         </section>
       ) : null}
     </React.Fragment>
