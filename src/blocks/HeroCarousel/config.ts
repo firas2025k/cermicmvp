@@ -1,8 +1,15 @@
 import type { Block } from 'payload'
+import { HeroCarouselAdminPreview } from './AdminPreview'
 
 export const HeroCarouselBlock: Block = {
   slug: 'heroCarousel',
   interfaceName: 'HeroCarouselBlock',
+  admin: {
+    components: {
+      BeforeInput: [HeroCarouselAdminPreview],
+    },
+    description: 'Full-width hero carousel with multiple slides, images, titles, and call-to-action buttons',
+  },
   fields: [
     {
       name: 'slides',
@@ -58,7 +65,7 @@ export const HeroCarouselBlock: Block = {
   ],
   labels: {
     plural: 'Hero Carousels',
-    singular: 'Hero Carousel',
+    singular: '🖼️ Hero Carousel',
   },
 }
 

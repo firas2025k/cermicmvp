@@ -1,0 +1,24 @@
+<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aboutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="120" fill="url(#aboutGrad)" rx="4"/>
+  <!-- Image (left side) -->
+  <rect x="20" y="25" width="70" height="70" fill="white" fill-opacity="0.3" rx="4"/>
+  <rect x="25" y="30" width="60" height="55" fill="white" fill-opacity="0.5" rx="2"/>
+  <rect x="25" y="90" width="40" height="3" fill="white" fill-opacity="0.7" rx="1.5"/>
+  <!-- Content (right side) -->
+  <rect x="100" y="30" width="75" height="5" fill="white" fill-opacity="0.9" rx="2"/>
+  <rect x="100" y="42" width="70" height="3" fill="white" fill-opacity="0.7" rx="1.5"/>
+  <rect x="100" y="50" width="65" height="3" fill="white" fill-opacity="0.7" rx="1.5"/>
+  <rect x="100" y="58" width="60" height="3" fill="white" fill-opacity="0.7" rx="1.5"/>
+  <!-- Users icon -->
+  <circle cx="170" cy="85" r="8" fill="white" fill-opacity="0.4"/>
+  <circle cx="165" cy="80" r="4" fill="white" fill-opacity="0.6"/>
+  <circle cx="175" cy="80" r="4" fill="white" fill-opacity="0.6"/>
+</svg>
+

@@ -1,8 +1,15 @@
 import type { Block } from 'payload'
+import { ProductCarouselAdminPreview } from './AdminPreview'
 
 export const ProductCarouselBlock: Block = {
   slug: 'productCarousel',
   interfaceName: 'ProductCarouselBlock',
+  admin: {
+    components: {
+      BeforeInput: [ProductCarouselAdminPreview],
+    },
+    description: 'Display products in a carousel format. Choose products by collection or manually select them.',
+  },
   fields: [
     {
       name: 'title',
@@ -84,7 +91,7 @@ export const ProductCarouselBlock: Block = {
   ],
   labels: {
     plural: 'Product Carousels',
-    singular: 'Product Carousel',
+    singular: '📦 Product Carousel',
   },
 }
 

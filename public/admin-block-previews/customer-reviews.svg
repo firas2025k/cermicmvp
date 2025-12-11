@@ -1,0 +1,30 @@
+<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="reviewGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eab308;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="120" fill="url(#reviewGrad)" rx="4"/>
+  <!-- Review cards grid -->
+  <g opacity="0.9">
+    <rect x="20" y="25" width="35" height="35" fill="white" fill-opacity="0.3" rx="3"/>
+    <rect x="60" y="25" width="35" height="35" fill="white" fill-opacity="0.3" rx="3"/>
+    <rect x="100" y="25" width="35" height="35" fill="white" fill-opacity="0.3" rx="3"/>
+    <rect x="140" y="25" width="35" height="35" fill="white" fill-opacity="0.3" rx="3"/>
+  </g>
+  <!-- Star ratings on cards -->
+  <g fill="white" fill-opacity="0.9">
+    <path d="M30 65 L31.5 69 L36 69 L32.5 71.5 L34 76 L30 73.5 L26 76 L27.5 71.5 L24 69 L28.5 69 Z" />
+    <path d="M70 65 L71.5 69 L76 69 L72.5 71.5 L74 76 L70 73.5 L66 76 L67.5 71.5 L64 69 L68.5 69 Z" />
+    <path d="M110 65 L111.5 69 L116 69 L112.5 71.5 L114 76 L110 73.5 L106 76 L107.5 71.5 L104 69 L108.5 69 Z" />
+    <path d="M150 65 L151.5 69 L156 69 L152.5 71.5 L154 76 L150 73.5 L146 76 L147.5 71.5 L144 69 L148.5 69 Z" />
+  </g>
+  <!-- Review titles -->
+  <rect x="25" y="80" width="25" height="2" fill="white" fill-opacity="0.8" rx="1"/>
+  <rect x="65" y="80" width="25" height="2" fill="white" fill-opacity="0.8" rx="1"/>
+  <rect x="105" y="80" width="25" height="2" fill="white" fill-opacity="0.8" rx="1"/>
+  <rect x="145" y="80" width="25" height="2" fill="white" fill-opacity="0.8" rx="1"/>
+</svg>
+

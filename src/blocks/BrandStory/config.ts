@@ -6,10 +6,17 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { linkGroup } from '@/fields/linkGroup'
+import { BrandStoryAdminPreview } from './AdminPreview'
 
 export const BrandStoryBlock: Block = {
   slug: 'brandStory',
   interfaceName: 'BrandStoryBlock',
+  admin: {
+    components: {
+      BeforeInput: [BrandStoryAdminPreview],
+    },
+    description: 'Tell your brand story with rich text content, background image, and call-to-action links.',
+  },
   fields: [
     {
       name: 'title',
@@ -48,7 +55,7 @@ export const BrandStoryBlock: Block = {
   ],
   labels: {
     plural: 'Brand Stories',
-    singular: 'Brand Story',
+    singular: '📄 Brand Story',
   },
 }
 

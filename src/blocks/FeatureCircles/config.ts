@@ -1,8 +1,15 @@
 import type { Block } from 'payload'
+import { FeatureCirclesAdminPreview } from './AdminPreview'
 
 export const FeatureCirclesBlock: Block = {
   slug: 'featureCircles',
   interfaceName: 'FeatureCirclesBlock',
+  admin: {
+    components: {
+      BeforeInput: [FeatureCirclesAdminPreview],
+    },
+    description: 'Showcase key features with circular images, labels, and descriptions. Great for highlighting benefits.',
+  },
   fields: [
     {
       name: 'features',
@@ -53,7 +60,7 @@ export const FeatureCirclesBlock: Block = {
   ],
   labels: {
     plural: 'Feature Circles',
-    singular: 'Feature Circles',
+    singular: '⭕ Feature Circles',
   },
 }
 

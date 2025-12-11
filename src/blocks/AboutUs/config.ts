@@ -5,10 +5,17 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { AboutUsAdminPreview } from './AdminPreview'
 
 export const AboutUsBlock: Block = {
   slug: 'aboutUs',
   interfaceName: 'AboutUsBlock',
+  admin: {
+    components: {
+      BeforeInput: [AboutUsAdminPreview],
+    },
+    description: 'About us section with image, rich text content, and team information.',
+  },
   fields: [
     {
       name: 'title',
@@ -47,7 +54,7 @@ export const AboutUsBlock: Block = {
   ],
   labels: {
     plural: 'About Us',
-    singular: 'About Us',
+    singular: '👥 About Us',
   },
 }
 

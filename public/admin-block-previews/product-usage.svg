@@ -1,0 +1,27 @@
+<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="usageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="120" fill="url(#usageGrad)" rx="4"/>
+  <!-- Three lifestyle images -->
+  <g opacity="0.9">
+    <rect x="15" y="25" width="50" height="70" fill="white" fill-opacity="0.3" rx="4"/>
+    <rect x="20" y="30" width="40" height="50" fill="white" fill-opacity="0.5" rx="2"/>
+    <rect x="25" y="85" width="30" height="3" fill="white" fill-opacity="0.9" rx="1.5"/>
+    
+    <rect x="75" y="25" width="50" height="70" fill="white" fill-opacity="0.3" rx="4"/>
+    <rect x="80" y="30" width="40" height="50" fill="white" fill-opacity="0.5" rx="2"/>
+    <rect x="85" y="85" width="30" height="3" fill="white" fill-opacity="0.9" rx="1.5"/>
+    
+    <rect x="135" y="25" width="50" height="70" fill="white" fill-opacity="0.3" rx="4"/>
+    <rect x="140" y="30" width="40" height="50" fill="white" fill-opacity="0.5" rx="2"/>
+    <rect x="145" y="85" width="30" height="3" fill="white" fill-opacity="0.9" rx="1.5"/>
+  </g>
+  <!-- Heart icon overlay -->
+  <path d="M100 50 L102 52 L104 50 Q104 48 102 48 Q100 48 100 50 Z" fill="white" fill-opacity="0.6" transform="translate(-2, -2)"/>
+</svg>
+

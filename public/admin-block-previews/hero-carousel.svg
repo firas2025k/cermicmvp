@@ -1,0 +1,31 @@
+<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="120" fill="url(#heroGrad)" rx="4"/>
+  <!-- Slide indicators -->
+  <g fill="white" opacity="0.9">
+    <circle cx="70" cy="100" r="4" fill="white"/>
+    <circle cx="100" cy="100" r="3" fill="white" opacity="0.5"/>
+    <circle cx="130" cy="100" r="3" fill="white" opacity="0.5"/>
+  </g>
+  <!-- Navigation arrows -->
+  <g stroke="white" stroke-width="2" fill="none" opacity="0.9">
+    <path d="M30 60 L20 50 L30 40" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M170 60 L180 50 L170 40" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Image icon -->
+  <rect x="60" y="30" width="80" height="50" fill="white" fill-opacity="0.2" rx="2"/>
+  <path d="M75 45 L90 55 L75 65 Z" fill="white" opacity="0.8"/>
+  <circle cx="125" cy="55" r="8" fill="white" fill-opacity="0.3"/>
+  <!-- Text lines -->
+  <rect x="60" y="70" width="60" height="4" fill="white" fill-opacity="0.8" rx="2"/>
+  <rect x="60" y="78" width="40" height="3" fill="white" fill-opacity="0.6" rx="1.5"/>
+  <!-- CTA button -->
+  <rect x="60" y="85" width="50" height="8" fill="white" fill-opacity="0.9" rx="4"/>
+</svg>
+
