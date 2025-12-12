@@ -1,22 +1,15 @@
-import type { Block } from 'payload'
+import { linkGroup } from '@/fields/linkGroup'
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { linkGroup } from '@/fields/linkGroup'
-import { BrandStoryAdminPreview } from './AdminPreview'
+import type { Block } from 'payload'
 
 export const BrandStoryBlock: Block = {
   slug: 'brandStory',
   interfaceName: 'BrandStoryBlock',
-  admin: {
-    components: {
-      BeforeInput: [BrandStoryAdminPreview],
-    },
-    description: 'Tell your brand story with rich text content, background image, and call-to-action links.',
-  },
   fields: [
     {
       name: 'title',

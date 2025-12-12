@@ -1,15 +1,8 @@
 import type { Block } from 'payload'
-import { CustomerReviewsAdminPreview } from './AdminPreview'
 
 export const CustomerReviewsBlock: Block = {
   slug: 'customerReviews',
   interfaceName: 'CustomerReviewsBlock',
-  admin: {
-    components: {
-      BeforeInput: [CustomerReviewsAdminPreview],
-    },
-    description: 'Display customer reviews with images, ratings, and titles. Perfect for building trust.',
-  },
   fields: [
     {
       name: 'title',

@@ -1,21 +1,14 @@
-import type { Block } from 'payload'
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { AboutUsAdminPreview } from './AdminPreview'
+import type { Block } from 'payload'
 
 export const AboutUsBlock: Block = {
   slug: 'aboutUs',
   interfaceName: 'AboutUsBlock',
-  admin: {
-    components: {
-      BeforeInput: [AboutUsAdminPreview],
-    },
-    description: 'About us section with image, rich text content, and team information.',
-  },
   fields: [
     {
       name: 'title',

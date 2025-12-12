@@ -1,15 +1,8 @@
 import type { Block } from 'payload'
-import { CategoryBannerAdminPreview } from './AdminPreview'
 
 export const CategoryBannerBlock: Block = {
   slug: 'categoryBanner',
   interfaceName: 'CategoryBannerBlock',
-  admin: {
-    components: {
-      BeforeInput: [CategoryBannerAdminPreview],
-    },
-    description: 'Category showcase with product grid and call-to-action. Perfect for highlighting product categories.',
-  },
   fields: [
     {
       name: 'title',
