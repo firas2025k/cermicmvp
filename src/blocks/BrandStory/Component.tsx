@@ -44,7 +44,7 @@ export const BrandStoryBlockComponent: React.FC<BrandStoryBlockProps> = ({
               {links.map((linkItem, index) => {
                 if (!linkItem.link) return null
                 const link = linkItem.link
-                const url = link.type === 'reference' && typeof link.reference === 'object' 
+                const url = link.type === 'reference' && link.reference && typeof link.reference === 'object' 
                   ? `/${link.reference.slug}` 
                   : link.url || '/shop'
                 const label = link.label || 'Mehr erfahren'
