@@ -1,227 +1,375 @@
-# console error
-main-app.js?v=1764870647559:1137 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-AddToCart.tsx:44  POST http://localhost:3000/api/carts?depth=2&populate%5Bproducts%5D%5BpriceInUSD%5D=true&populate%5Bproducts%5D%5Bslug%5D=true&populate%5Bproducts%5D%5Btitle%5D=true&populate%5Bproducts%5D%5Bgallery%5D=true&populate%5Bproducts%5D%5Binventory%5D=true&populate%5Bproducts%5D%5BpriceInEUR%5D=true&populate%5Bvariants%5D%5Boptions%5D=true&populate%5Bvariants%5D%5BpriceInUSD%5D=true&populate%5Bvariants%5D%5Btitle%5D=true&populate%5Bvariants%5D%5Binventory%5D=true&populate%5Bvariants%5D%5BpriceInEUR%5D=true&select%5Bitems%5D=true&select%5Bsubtotal%5D=true 400 (Bad Request)
-EcommerceProvider.useCallback[createCart] @ index.js:115
-EcommerceProvider.useCallback[addItem] @ index.js:273
-AddToCart.useCallback[addToCart] @ AddToCart.tsx:44
-executeDispatch @ react-dom-client.development.js:16922
-runWithFiberInDEV @ react-dom-client.development.js:873
-processDispatchQueue @ react-dom-client.development.js:16972
-eval @ react-dom-client.development.js:17573
-batchedUpdates$1 @ react-dom-client.development.js:3313
-dispatchEventForPluginEventSystem @ react-dom-client.development.js:17126
-dispatchEvent @ react-dom-client.development.js:21309
-dispatchDiscreteEvent @ react-dom-client.development.js:21277
-<button>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-Button @ button.tsx:47
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10680
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopSync @ react-dom-client.development.js:15498
-renderRootSync @ react-dom-client.development.js:15478
-performWorkOnRoot @ react-dom-client.development.js:14942
-performSyncWorkOnRoot @ react-dom-client.development.js:16782
-flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16628
-processRootScheduleInMicrotask @ react-dom-client.development.js:16666
-eval @ react-dom-client.development.js:16801
-<Button>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-AddToCart @ AddToCart.tsx:103
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10680
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopSync @ react-dom-client.development.js:15498
-renderRootSync @ react-dom-client.development.js:15478
-performWorkOnRoot @ react-dom-client.development.js:14942
-performSyncWorkOnRoot @ react-dom-client.development.js:16782
-flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16628
-processRootScheduleInMicrotask @ react-dom-client.development.js:16666
-eval @ react-dom-client.development.js:16801
-<AddToCart>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-ProductDescription @ ProductDescription.tsx:118
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10629
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopConcurrentByScheduler @ react-dom-client.development.js:15672
-renderRootConcurrent @ react-dom-client.development.js:15647
-performWorkOnRoot @ react-dom-client.development.js:14941
-performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16767
-performWorkUntilDeadline @ scheduler.development.js:45
-"use client"
-ProductPage @ page.tsx:145
-initializeElement @ react-server-dom-webpack-client.browser.development.js:1205
-eval @ react-server-dom-webpack-client.browser.development.js:2828
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-getOutlinedModel @ react-server-dom-webpack-client.browser.development.js:1483
-parseModelString @ react-server-dom-webpack-client.browser.development.js:1820
-eval @ react-server-dom-webpack-client.browser.development.js:2758
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-getOutlinedModel @ react-server-dom-webpack-client.browser.development.js:1483
-parseModelString @ react-server-dom-webpack-client.browser.development.js:1820
-eval @ react-server-dom-webpack-client.browser.development.js:2758
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-processFullStringRow @ react-server-dom-webpack-client.browser.development.js:2630
-processFullBinaryRow @ react-server-dom-webpack-client.browser.development.js:2604
-processBinaryChunk @ react-server-dom-webpack-client.browser.development.js:2731
-progress @ react-server-dom-webpack-client.browser.development.js:2995
-<ProductPage>
-initializeFakeTask @ react-server-dom-webpack-client.browser.development.js:2406
-resolveDebugInfo @ react-server-dom-webpack-client.browser.development.js:2431
-processFullStringRow @ react-server-dom-webpack-client.browser.development.js:2632
-processFullBinaryRow @ react-server-dom-webpack-client.browser.development.js:2604
-processBinaryChunk @ react-server-dom-webpack-client.browser.development.js:2731
-progress @ react-server-dom-webpack-client.browser.development.js:2995
-"use server"
-ResponseInstance @ react-server-dom-webpack-client.browser.development.js:1868
-createResponseFromOptions @ react-server-dom-webpack-client.browser.development.js:2856
-exports.createFromReadableStream @ react-server-dom-webpack-client.browser.development.js:3227
-eval @ app-index.js:131
-(app-pages-browser)/./node_modules/.pnpm/next@15.4.8_@babel+core@7.28.5_@playwright+test@1.56.1_react-dom@19.2.1_react@19.2.1__react@19.2.1_sass@1.77.4/node_modules/next/dist/client/app-index.js @ main-app.js?v=1764870647559:160
-options.factory @ webpack.js:1
-__webpack_require__ @ webpack.js:1
-fn @ webpack.js:1
-eval @ app-next-dev.js:14
-eval @ app-bootstrap.js:62
-eval @ app-bootstrap.js:52
-Promise.then
-loadScriptsInSequence @ app-bootstrap.js:51
-appBootstrap @ app-bootstrap.js:56
-eval @ app-next-dev.js:13
-(app-pages-browser)/./node_modules/.pnpm/next@15.4.8_@babel+core@7.28.5_@playwright+test@1.56.1_react-dom@19.2.1_react@19.2.1__react@19.2.1_sass@1.77.4/node_modules/next/dist/client/app-next-dev.js @ main-app.js?v=1764870647559:182
-options.factory @ webpack.js:1
-__webpack_require__ @ webpack.js:1
-__webpack_exec__ @ main-app.js?v=1764870647559:1801
-(anonymous) @ main-app.js?v=1764870647559:1802
-webpackJsonpCallback @ webpack.js:1
-(anonymous) @ main-app.js?v=1764870647559:9
-AddToCart.tsx:52 Error adding to cart: Error: Failed to create cart: {"errors":[{"name":"ValidationError","data":{"collection":"carts","errors":[{"label":"Currency","message":"This field has an invalid selection.","path":"currency"}]},"message":"The following field is invalid: Currency"}]}
-    at EcommerceProvider.useCallback[createCart] (index.js:129:23)
-    at async EcommerceProvider.useCallback[addItem] (index.js:273:33)
-error @ intercept-console-error.js:57
-AddToCart.useCallback[addToCart] @ AddToCart.tsx:52
-Promise.catch
-AddToCart.useCallback[addToCart] @ AddToCart.tsx:51
-executeDispatch @ react-dom-client.development.js:16922
-runWithFiberInDEV @ react-dom-client.development.js:873
-processDispatchQueue @ react-dom-client.development.js:16972
-eval @ react-dom-client.development.js:17573
-batchedUpdates$1 @ react-dom-client.development.js:3313
-dispatchEventForPluginEventSystem @ react-dom-client.development.js:17126
-dispatchEvent @ react-dom-client.development.js:21309
-dispatchDiscreteEvent @ react-dom-client.development.js:21277
-<button>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-Button @ button.tsx:47
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10680
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopSync @ react-dom-client.development.js:15498
-renderRootSync @ react-dom-client.development.js:15478
-performWorkOnRoot @ react-dom-client.development.js:14942
-performSyncWorkOnRoot @ react-dom-client.development.js:16782
-flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16628
-processRootScheduleInMicrotask @ react-dom-client.development.js:16666
-eval @ react-dom-client.development.js:16801
-<Button>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-AddToCart @ AddToCart.tsx:103
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10680
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopSync @ react-dom-client.development.js:15498
-renderRootSync @ react-dom-client.development.js:15478
-performWorkOnRoot @ react-dom-client.development.js:14942
-performSyncWorkOnRoot @ react-dom-client.development.js:16782
-flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16628
-processRootScheduleInMicrotask @ react-dom-client.development.js:16666
-eval @ react-dom-client.development.js:16801
-<AddToCart>
-exports.jsxDEV @ react-jsx-dev-runtime.development.js:345
-ProductDescription @ ProductDescription.tsx:118
-react_stack_bottom_frame @ react-dom-client.development.js:23553
-renderWithHooksAgain @ react-dom-client.development.js:6864
-renderWithHooks @ react-dom-client.development.js:6776
-updateFunctionComponent @ react-dom-client.development.js:9070
-beginWork @ react-dom-client.development.js:10629
-runWithFiberInDEV @ react-dom-client.development.js:873
-performUnitOfWork @ react-dom-client.development.js:15678
-workLoopConcurrentByScheduler @ react-dom-client.development.js:15672
-renderRootConcurrent @ react-dom-client.development.js:15647
-performWorkOnRoot @ react-dom-client.development.js:14941
-performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:16767
-performWorkUntilDeadline @ scheduler.development.js:45
-"use client"
-ProductPage @ page.tsx:145
-initializeElement @ react-server-dom-webpack-client.browser.development.js:1205
-eval @ react-server-dom-webpack-client.browser.development.js:2828
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-getOutlinedModel @ react-server-dom-webpack-client.browser.development.js:1483
-parseModelString @ react-server-dom-webpack-client.browser.development.js:1820
-eval @ react-server-dom-webpack-client.browser.development.js:2758
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-getOutlinedModel @ react-server-dom-webpack-client.browser.development.js:1483
-parseModelString @ react-server-dom-webpack-client.browser.development.js:1820
-eval @ react-server-dom-webpack-client.browser.development.js:2758
-initializeModelChunk @ react-server-dom-webpack-client.browser.development.js:1107
-processFullStringRow @ react-server-dom-webpack-client.browser.development.js:2630
-processFullBinaryRow @ react-server-dom-webpack-client.browser.development.js:2604
-processBinaryChunk @ react-server-dom-webpack-client.browser.development.js:2731
-progress @ react-server-dom-webpack-client.browser.development.js:2995
-<ProductPage>
-initializeFakeTask @ react-server-dom-webpack-client.browser.development.js:2406
-resolveDebugInfo @ react-server-dom-webpack-client.browser.development.js:2431
-processFullStringRow @ react-server-dom-webpack-client.browser.development.js:2632
-processFullBinaryRow @ react-server-dom-webpack-client.browser.development.js:2604
-processBinaryChunk @ react-server-dom-webpack-client.browser.development.js:2731
-progress @ react-server-dom-webpack-client.browser.development.js:2995
-"use server"
-ResponseInstance @ react-server-dom-webpack-client.browser.development.js:1868
-createResponseFromOptions @ react-server-dom-webpack-client.browser.development.js:2856
-exports.createFromReadableStream @ react-server-dom-webpack-client.browser.development.js:3227
-eval @ app-index.js:131
-(app-pages-browser)/./node_modules/.pnpm/next@15.4.8_@babel+core@7.28.5_@playwright+test@1.56.1_react-dom@19.2.1_react@19.2.1__react@19.2.1_sass@1.77.4/node_modules/next/dist/client/app-index.js @ main-app.js?v=1764870647559:160
-options.factory @ webpack.js:1
-__webpack_require__ @ webpack.js:1
-fn @ webpack.js:1
-eval @ app-next-dev.js:14
-eval @ app-bootstrap.js:62
-eval @ app-bootstrap.js:52
-Promise.then
-loadScriptsInSequence @ app-bootstrap.js:51
-appBootstrap @ app-bootstrap.js:56
-eval @ app-next-dev.js:13
-(app-pages-browser)/./node_modules/.pnpm/next@15.4.8_@babel+core@7.28.5_@playwright+test@1.56.1_react-dom@19.2.1_react@19.2.1__react@19.2.1_sass@1.77.4/node_modules/next/dist/client/app-next-dev.js @ main-app.js?v=1764870647559:182
-options.factory @ webpack.js:1
-__webpack_require__ @ webpack.js:1
-__webpack_exec__ @ main-app.js?v=1764870647559:1801
-(anonymous) @ main-app.js?v=1764870647559:1802
-webpackJsonpCallback @ webpack.js:1
-(anonymous) @ main-app.js?v=1764870647559:9
-
-# terminal error 
-GET /products/cartago-cermic 200 in 1142ms
-[18:51:02] INFO: The following field is invalid: Currency
- POST /api/carts?depth=2&populate%5Bproducts%5D%5BpriceInUSD%5D=true&populate%5Bproducts%5D%5Bslug%5D=true&populate%5Bproducts%5D%5Btitle%5D=true&populate%5Bproducts%5D%5Bgallery%5D=true&populate%5Bproducts%5D%5Binventory%5D=true&populate%5Bproducts%5D%5BpriceInEUR%5D=true&populate%5Bvariants%5D%5Boptions%5D=true&populate%5Bvariants%5D%5BpriceInUSD%5D=true&populate%5Bvariants%5D%5Btitle%5D=true&populate%5Bvariants%5D%5Binventory%5D=true&populate%5Bvariants%5D%5BpriceInEUR%5D=true&select%5Bitems%5D=true&select%5Bsubtotal%5D=true 400 in 790ms
- ✓ Compiled in 8.5s (1618 modules)
+# vercel build error
+09:02:50.473 Running build in Portland, USA (West) – pdx1
+09:02:50.474 Build machine configuration: 2 cores, 8 GB
+09:02:50.621 Cloning github.com/firas2025k/cermicmvp (Branch: main, Commit: 9626a9d)
+09:02:50.623 Previous build caches not available.
+09:02:51.227 Cloning completed: 606.000ms
+09:02:51.881 Warning: Detected "engines": { "node": "^18.20.2 || >=20.9.0" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: http://vercel.link/node-version
+09:02:51.887 Running "vercel build"
+09:02:52.295 Vercel CLI 50.0.0
+09:02:52.716 Warning: Detected "engines": { "node": "^18.20.2 || >=20.9.0" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: http://vercel.link/node-version
+09:02:52.755 Detected `pnpm-lock.yaml` 9 which may be generated by pnpm@9.x or pnpm@10.x
+09:02:52.756 Using pnpm@10.x based on project creation date
+09:02:52.756 To use pnpm@9.x, manually opt in using corepack (https://vercel.com/docs/deployments/configure-a-build#corepack)
+09:02:52.760 Running "install" command: `pnpm install`...
+09:02:53.678 Lockfile is up to date, resolution step is skipped
+09:02:53.793 Progress: resolved 1, reused 0, downloaded 0, added 0
+09:02:53.872 Packages: +924
+09:02:53.873 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+09:02:54.794 Progress: resolved 924, reused 0, downloaded 14, added 0
+09:02:55.795 Progress: resolved 924, reused 0, downloaded 44, added 12
+09:02:56.802 Progress: resolved 924, reused 0, downloaded 96, added 30
+09:02:57.803 Progress: resolved 924, reused 0, downloaded 130, added 42
+09:02:58.804 Progress: resolved 924, reused 0, downloaded 156, added 48
+09:02:59.804 Progress: resolved 924, reused 0, downloaded 188, added 60
+09:03:00.892 Progress: resolved 924, reused 0, downloaded 189, added 60
+09:03:01.903 Progress: resolved 924, reused 0, downloaded 228, added 72
+09:03:02.906 Progress: resolved 924, reused 0, downloaded 229, added 72
+09:03:03.906 Progress: resolved 924, reused 0, downloaded 242, added 76
+09:03:04.908 Progress: resolved 924, reused 0, downloaded 311, added 105
+09:03:05.909 Progress: resolved 924, reused 0, downloaded 434, added 148
+09:03:06.911 Progress: resolved 924, reused 0, downloaded 460, added 156
+09:03:07.911 Progress: resolved 924, reused 0, downloaded 525, added 176
+09:03:08.912 Progress: resolved 924, reused 0, downloaded 555, added 188
+09:03:09.913 Progress: resolved 924, reused 0, downloaded 643, added 220
+09:03:10.914 Progress: resolved 924, reused 0, downloaded 680, added 229
+09:03:11.918 Progress: resolved 924, reused 0, downloaded 758, added 255
+09:03:12.915 Progress: resolved 924, reused 0, downloaded 885, added 308
+09:03:13.915 Progress: resolved 924, reused 0, downloaded 924, added 452
+09:03:14.915 Progress: resolved 924, reused 0, downloaded 924, added 636
+09:03:15.915 Progress: resolved 924, reused 0, downloaded 924, added 834
+09:03:16.641 Progress: resolved 924, reused 0, downloaded 924, added 924, done
+09:03:17.099 .../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build
+09:03:17.102 .../sharp@0.34.2/node_modules/sharp install$ node install/check
+09:03:17.251 .../sharp@0.34.5/node_modules/sharp install: Done
+09:03:17.255 .../sharp@0.34.2/node_modules/sharp install: Done
+09:03:17.445 
+09:03:17.445 dependencies:
+09:03:17.446 + @payloadcms/admin-bar 3.66.0
+09:03:17.446 + @payloadcms/db-postgres 3.66.0
+09:03:17.446 + @payloadcms/email-nodemailer 3.66.0
+09:03:17.446 + @payloadcms/live-preview-react 3.66.0
+09:03:17.446 + @payloadcms/next 3.66.0
+09:03:17.447 + @payloadcms/plugin-ecommerce 3.66.0
+09:03:17.447 + @payloadcms/plugin-form-builder 3.66.0
+09:03:17.447 + @payloadcms/plugin-seo 3.66.0
+09:03:17.448 + @payloadcms/richtext-lexical 3.66.0
+09:03:17.448 + @payloadcms/translations 3.66.0
+09:03:17.450 + @payloadcms/ui 3.66.0
+09:03:17.450 + @radix-ui/react-accordion 1.2.11
+09:03:17.450 + @radix-ui/react-checkbox 1.3.3
+09:03:17.454 + @radix-ui/react-dialog 1.1.15
+09:03:17.454 + @radix-ui/react-label 2.1.8
+09:03:17.454 + @radix-ui/react-select 2.2.6
+09:03:17.455 + @radix-ui/react-slot 1.2.4
+09:03:17.455 + @stripe/react-stripe-js 3.10.0
+09:03:17.455 + @stripe/stripe-js 4.10.0
+09:03:17.455 + class-variance-authority 0.7.1
+09:03:17.455 + clsx 2.1.1
+09:03:17.455 + cross-env 7.0.3
+09:03:17.456 + date-fns 4.1.0
+09:03:17.456 + dotenv 8.6.0
+09:03:17.456 + embla-carousel-auto-scroll 8.6.0
+09:03:17.456 + embla-carousel-react 8.6.0
+09:03:17.456 + geist 1.5.1
+09:03:17.456 + graphql 16.12.0
+09:03:17.456 + jsonwebtoken 9.0.1
+09:03:17.457 + lucide-react 0.477.0
+09:03:17.457 + next 15.4.8
+09:03:17.457 + next-themes 0.4.6
+09:03:17.467 + payload 3.66.0
+09:03:17.467 + prism-react-renderer 2.4.1
+09:03:17.467 + qs-esm 7.0.2
+09:03:17.468 + react 19.2.1
+09:03:17.468 + react-dom 19.2.1
+09:03:17.468 + react-hook-form 7.54.1
+09:03:17.468 + recharts 3.5.1
+09:03:17.468 + sharp 0.34.2
+09:03:17.469 + sonner 1.7.4
+09:03:17.469 + stripe 18.5.0
+09:03:17.469 + tailwind-merge 2.6.0
+09:03:17.469 + tailwindcss-animate 1.0.7
+09:03:17.469 
+09:03:17.470 devDependencies:
+09:03:17.470 + @eslint/eslintrc 3.3.3
+09:03:17.470 + @next/eslint-plugin-next 15.5.7
+09:03:17.471 + @playwright/test 1.56.1
+09:03:17.471 + @tailwindcss/container-queries 0.1.1
+09:03:17.471 + @tailwindcss/postcss 4.0.12
+09:03:17.471 + @tailwindcss/typography 0.5.19
+09:03:17.472 + @testing-library/react 16.3.0
+09:03:17.472 + @types/jsonwebtoken 9.0.10
+09:03:17.472 + @types/node 22.5.4
+09:03:17.472 + @types/react 19.0.1
+09:03:17.473 + @types/react-dom 19.0.1
+09:03:17.473 + @vercel/git-hooks 1.0.0
+09:03:17.474 + @vitejs/plugin-react 4.5.2
+09:03:17.474 + eslint 9.39.1
+09:03:17.476 + eslint-config-next 15.1.0
+09:03:17.477 + eslint-plugin-jsx-a11y 6.10.2
+09:03:17.490 + eslint-plugin-react 7.37.5
+09:03:17.491 + eslint-plugin-react-hooks 5.2.0
+09:03:17.491 + jsdom 26.1.0
+09:03:17.491 + lint-staged 15.5.2
+09:03:17.491 + playwright 1.56.1
+09:03:17.492 + playwright-core 1.56.1
+09:03:17.492 + postcss 8.5.6
+09:03:17.492 + prettier 3.7.4
+09:03:17.492 + prettier-plugin-tailwindcss 0.6.14
+09:03:17.492 + tailwindcss 4.1.17
+09:03:17.493 + typescript 5.7.2
+09:03:17.493 + vite-tsconfig-paths 5.1.4
+09:03:17.493 + vitest 3.2.3
+09:03:17.493 
+09:03:17.514 ╭ Warning ─────────────────────────────────────────────────────────────────────╮
+09:03:17.514 │                                                                              │
+09:03:17.514 │   Ignored build scripts: @vercel/git-hooks@1.0.0, esbuild@0.18.20,           │
+09:03:17.514 │   esbuild@0.25.12, unrs-resolver@1.11.1.                                     │
+09:03:17.514 │   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+09:03:17.514 │   to run scripts.                                                            │
+09:03:17.514 │                                                                              │
+09:03:17.514 ╰──────────────────────────────────────────────────────────────────────────────╯
+09:03:17.520 Done in 24.4s using pnpm v10.25.0
+09:03:17.556 Detected Next.js version: 15.4.8
+09:03:17.557 Running "pnpm build"
+09:03:17.847 
+09:03:17.847 > ceramic@1.0.0 build /vercel/path0
+09:03:17.848 > cross-env NODE_OPTIONS="--no-deprecation --max-old-space-size=8000" next build
+09:03:17.848 
+09:03:18.532 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+09:03:18.533 This information is used to shape Next.js' roadmap and prioritize features.
+09:03:18.533 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+09:03:18.534 https://nextjs.org/telemetry
+09:03:18.534 
+09:03:18.594    ▲ Next.js 15.4.8
+09:03:18.594 
+09:03:18.617    Creating an optimized production build ...
+09:04:39.921  ✓ Compiled successfully in 80s
+09:04:39.926    Linting and checking validity of types ...
+09:04:50.750 
+09:04:50.767 Failed to compile.
+09:04:50.769 
+09:04:50.769 ./src/app/(app)/(account)/account/addresses/page.tsx
+09:04:50.769 39:5  Warning: 'orders' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.769 40:12  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.770 
+09:04:50.770 ./src/app/(app)/(account)/account/page.tsx
+09:04:50.771 42:12  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.771 72:34  Warning: 'index' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.771 
+09:04:50.771 ./src/app/(app)/(account)/orders/page.tsx
+09:04:50.771 38:12  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.772 50:34  Warning: 'index' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.772 
+09:04:50.772 ./src/app/(app)/[slug]/page.tsx
+09:04:50.772 46:9  Warning: 'url' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.772 
+09:04:50.772 ./src/app/(app)/checkout/confirm-order/page.tsx
+09:04:50.772 4:17  Warning: 'Fragment' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.773 16:9  Warning: 'paymentIntent' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.773 
+09:04:50.773 ./src/app/(app)/layout.tsx
+09:04:50.773 7:10  Warning: 'ensureStartsWith' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.773 
+09:04:50.773 ./src/app/(app)/logout/LogoutPage/index.tsx
+09:04:50.774 7:38  Warning: 'props' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.774 
+09:04:50.774 ./src/app/(app)/page.tsx
+09:04:50.774 20:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.774 23:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.774 25:10  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.775 26:12  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.775 250:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.775 353:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.775 505:15  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.775 534:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.776 
+09:04:50.776 ./src/app/(app)/robots.ts
+09:04:50.776 1:1  Warning: Unused eslint-disable directive (no problems were reported from 'no-restricted-exports').
+09:04:50.776 
+09:04:50.776 ./src/blocks/BrandStory/Component.tsx
+09:04:50.776 5:10  Warning: 'Media' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.776 
+09:04:50.777 ./src/blocks/Carousel/Component.tsx
+09:04:50.777 14:11  Warning: 'id' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.777 
+09:04:50.777 ./src/blocks/Form/Checkbox/index.tsx
+09:04:50.778 10:10  Warning: 'Error' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.778 19:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.779 22:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.779 24:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.779 
+09:04:50.779 ./src/blocks/Form/Component.tsx
+09:04:50.779 146:43  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.779 
+09:04:50.779 ./src/blocks/Form/Country/index.tsx
+09:04:50.780 21:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.780 24:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.780 
+09:04:50.780 ./src/blocks/Form/Email/index.tsx
+09:04:50.780 17:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.780 
+09:04:50.780 ./src/blocks/Form/Number/index.tsx
+09:04:50.781 8:10  Warning: 'Error' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.781 17:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.781 
+09:04:50.781 ./src/blocks/Form/Select/index.tsx
+09:04:50.781 20:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.781 23:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.782 
+09:04:50.782 ./src/blocks/Form/State/index.tsx
+09:04:50.782 21:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.782 24:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.782 
+09:04:50.782 ./src/blocks/Form/Text/index.tsx
+09:04:50.783 17:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.783 
+09:04:50.783 ./src/blocks/Form/Textarea/index.tsx
+09:04:50.783 17:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.783 
+09:04:50.783 ./src/blocks/HeroCarousel/Component.tsx
+09:04:50.784 4:24  Warning: 'MediaType' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.784 
+09:04:50.786 ./src/collections/Carts/index.ts
+09:04:50.786 9:16  Warning: 'operation' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.787 12:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.787 
+09:04:50.787 ./src/collections/Pages/hooks/revalidatePage.ts
+09:04:50.787 3:26  Warning: 'revalidateTag' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.787 
+09:04:50.787 ./src/collections/Products/index.ts
+09:04:50.787 101:75  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.788 
+09:04:50.788 ./src/components/BeforeDashboard/OrdersTable.tsx
+09:04:50.788 94:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.788 
+09:04:50.788 ./src/components/BeforeDashboard/TopProductsTable.tsx
+09:04:50.788 57:9  Error: Do not use an `<a>` element to navigate to `/admin/collections/products/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+09:04:50.788 57:9  Error: Do not use an `<a>` element to navigate to `/admin/collections/products/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+09:04:50.789 86:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.789 
+09:04:50.789 ./src/components/BeforeDashboard/index.tsx
+09:04:50.789 148:16  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-html-link-for-pages').
+09:04:50.789 
+09:04:50.789 ./src/components/Cart/AddToCart.tsx
+09:04:50.789 19:9  Warning: The 'variants' logical expression could make the dependencies of useMemo Hook (at line 38) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'variants' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+09:04:50.790 
+09:04:50.790 ./src/components/Cart/OpenCart.tsx
+09:04:50.790 2:8  Warning: 'clsx' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.790 7:3  Warning: 'className' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.790 
+09:04:50.790 ./src/components/CategoryTabs/Item.tsx
+09:04:50.791 15:9  Warning: 'q' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.791 
+09:04:50.793 ./src/components/Footer/index.tsx
+09:04:50.793 4:10  Warning: 'ThemeSelector' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.794 
+09:04:50.794 ./src/components/Header/MobileMenu.tsx
+09:04:50.794 32:9  Warning: 'closeMobileMenu' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.794 
+09:04:50.794 ./src/components/Header/index.client.tsx
+09:04:50.794 2:10  Warning: 'CMSLink' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.794 
+09:04:50.795 ./src/components/HeroCarousel/index.tsx
+09:04:50.799 106:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+09:04:50.799 
+09:04:50.799 ./src/components/Media/Image/index.tsx
+09:04:50.800 30:10  Warning: 'isLoading' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.800 50:11  Warning: 'filename' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.800 
+09:04:50.800 ./src/components/Media/index.tsx
+09:04:50.800 12:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.800 22:41  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+09:04:50.801 
+09:04:50.801 ./src/components/ProductGridItem/index.tsx
+09:04:50.801 5:8  Warning: 'clsx' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.801 
+09:04:50.801 ./src/components/ProductItem/index.tsx
+09:04:50.801 19:3  Warning: 'style' is assigned a value but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.801 
+09:04:50.802 ./src/components/admin/CustomBlocksField.tsx
+09:04:50.802 7:7  Warning: 'blockPreviews' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.802 114:42  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.802 
+09:04:50.802 ./src/components/checkout/CheckoutPage.tsx
+09:04:50.802 67:6  Warning: React Hook useEffect has a missing dependency: 'shippingAddress'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+09:04:50.802 105:5  Warning: React Hook useCallback has missing dependencies: 'email' and 'initiatePayment'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+09:04:50.803 302:12  Warning: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+09:04:50.803 361:28  Warning: 'id' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.803 
+09:04:50.803 ./src/components/checkout/ConfirmOrder.tsx
+09:04:50.803 43:6  Warning: React Hook useEffect has missing dependencies: 'confirmOrder' and 'router'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+09:04:50.803 
+09:04:50.803 ./src/components/forms/AccountForm/index.tsx
+09:04:50.804 5:10  Warning: 'Message' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.804 
+09:04:50.804 ./src/components/layout/search/Categories.tsx
+09:04:50.804 6:10  Warning: 'FilterList' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.804 
+09:04:50.804 ./src/components/product/StockIndicator.tsx
+09:04:50.804 13:9  Warning: The 'variants' logical expression could make the dependencies of useMemo Hook (at line 31) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'variants' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+09:04:50.805 
+09:04:50.805 ./src/endpoints/seed/home.ts
+09:04:50.805 1:15  Warning: 'Category' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.805 613:7  Warning: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+09:04:50.805 
+09:04:50.805 ./src/endpoints/seed/index.ts
+09:04:50.805 149:5  Warning: 'accessoriesCategory' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 271:5  Warning: 'hoodieID' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 277:5  Warning: 'largeTshirtHoodieVariant' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 278:5  Warning: 'xlargeTshirtHoodieVariant' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 316:13  Warning: 'contactPage' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 336:9  Warning: 'customerUSAddress' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.806 345:9  Warning: 'customerUKAddress' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.814 356:9  Warning: 'pendingTransaction' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.814 389:5  Warning: 'succeededTransactionID' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 395:9  Warning: 'openCart' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 413:9  Warning: 'abandonedCart' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 453:5  Warning: 'completedCartID' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 458:9  Warning: 'orderInCompleted' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 482:9  Warning: 'orderInProcessing' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.815 
+09:04:50.816 ./src/endpoints/seed/product-hat.ts
+09:04:50.816 16:3  Warning: 'variantTypes' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.816 
+09:04:50.816 ./src/migrations/20251204_121656_add_eur_currency.ts
+09:04:50.816 3:32  Warning: 'payload' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.816 3:41  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.816 1494:34  Warning: 'payload' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.817 1494:43  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.817 
+09:04:50.817 ./src/providers/Auth/index.tsx
+09:04:50.817 7:1  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.817 14:66  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.817 16:101  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.817 18:75  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.818 28:40  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.818 64:14  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.818 92:14  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.818 113:14  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.818 136:16  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.818 165:14  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.818 193:14  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u.  @typescript-eslint/no-unused-vars
+09:04:50.819 216:14  Warning: 'T' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+09:04:50.819 216:44  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.819 
+09:04:50.820 ./src/providers/Theme/types.ts
+09:04:50.820 4:43  Warning: Unused eslint-disable directive (no problems were reported from 'no-unused-vars').
+09:04:50.820 
+09:04:50.820 ./src/utilities/deepMerge.ts
+09:04:50.821 1:1  Warning: Do not use "@ts-nocheck" because it alters compilation errors.  @typescript-eslint/ban-ts-comment
+09:04:50.821 
+09:04:50.821 ./src/utilities/useClickableCard.ts
+09:04:50.821 99:7  Warning: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+09:04:50.821 103:7  Warning: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+09:04:50.821 
+09:04:50.821 ./src/utilities/useIgnoredEffect.ts
+09:04:50.821 12:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.822 13:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+09:04:50.822 20:6  Warning: React Hook useEffect was passed a dependency list that is not an array literal. This means we can't statically verify whether you've passed the correct dependencies.  react-hooks/exhaustive-deps
+09:04:50.822 20:6  Warning: React Hook useEffect has a missing dependency: 'ignoredDeps'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+09:04:50.822 22:3  Warning: React Hook useEffect received a function whose dependencies are unknown. Pass an inline function instead.  react-hooks/exhaustive-deps
+09:04:50.822 
+09:04:50.822 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+09:04:50.910  ELIFECYCLE  Command failed with exit code 1.
+09:04:50.932 Error: Command "pnpm build" exited with 1

@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import type { Product } from '@/payload-types'
 import {
   Table,
@@ -54,9 +55,9 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
     <div className="top-products-table">
       <div className="top-products-table__header">
         <h3 className="top-products-table__title">{title}</h3>
-        <a href="/admin/collections/products" className="top-products-table__link">
+        <Link href="/admin/collections/products" className="top-products-table__link">
           View all
-        </a>
+        </Link>
       </div>
       <div className="top-products-table__container">
         <Table>

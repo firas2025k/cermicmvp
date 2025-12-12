@@ -35,7 +35,11 @@ export const Media: CollectionConfig = {
       }),
     },
   ],
-  upload: {
-    staticDir: path.resolve(dirname, '../../public/media'),
-  },
+  // Use local storage in development (when BLOB_READ_WRITE_TOKEN is not set)
+  // Use Vercel Blob Storage in production (when BLOB_READ_WRITE_TOKEN is set)
+  ...(!process.env.BLOB_READ_WRITE_TOKEN && {
+    upload: {
+      staticDir: path.resolve(dirname, '../../public/media'),
+    },
+  }),
 }

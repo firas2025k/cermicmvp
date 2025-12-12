@@ -1,4 +1,4 @@
-// storage-adapter-import-placeholder
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 
 import {
@@ -86,7 +86,18 @@ export default buildConfig({
   globals: [Header, Footer, Homepage],
   plugins: [
     ...plugins,
-    // storage-adapter-placeholder
+    // Only use Vercel Blob Storage if token is provided (production)
+    // Otherwise, local storage will be used (development)
+    ...(process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            collections: {
+              [Media.slug]: true,
+            },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
