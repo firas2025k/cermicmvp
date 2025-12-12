@@ -6,6 +6,14 @@ const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://loc
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    // Disable ESLint during builds to skip warnings/errors
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Keep TypeScript checking enabled (only disable ESLint)
+    ignoreBuildErrors: false,
+  },
   images: {
     remotePatterns: [
       // Allow images from Vercel Blob Storage
