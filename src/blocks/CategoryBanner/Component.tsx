@@ -113,7 +113,7 @@ export const CategoryBannerBlockComponent: React.FC<CategoryBannerBlockProps> = 
               <p className="text-center text-lg text-neutral-600 dark:text-neutral-300">{subtitle}</p>
             )}
             <Link
-              href={ctaLink}
+              href={ctaLink || '/shop'}
               className="rounded-full bg-amber-800 px-8 py-3 text-base font-medium text-white shadow-lg transition hover:bg-amber-900 dark:bg-amber-600 dark:hover:bg-amber-700"
             >
               {ctaText}
