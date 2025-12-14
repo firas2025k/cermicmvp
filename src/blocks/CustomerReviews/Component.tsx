@@ -21,7 +21,7 @@ export const CustomerReviewsBlockComponent: React.FC<CustomerReviewsBlockProps> 
           </h2>
           {showViewAll && (
             <Link
-              href={viewAllLink}
+              href={viewAllLink || '/reviews'}
               className="text-sm font-medium text-neutral-600 underline-offset-4 hover:underline dark:text-neutral-400"
             >
               Alle ansehen
