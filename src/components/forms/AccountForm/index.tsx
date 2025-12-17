@@ -21,7 +21,7 @@ type FormData = {
 }
 
 export const AccountForm: React.FC = () => {
-  const { setUser, user } = useAuth()
+  const { setUser, user, status } = useAuth()
   const [changePassword, setChangePassword] = useState(false)
 
   const {
@@ -70,12 +70,25 @@ export const AccountForm: React.FC = () => {
   )
 
   useEffect(() => {
-    if (user === null) {
-      router.push(
+    // Only redirect if:
+    // 1. User is explicitly null (not undefined, which means still loading)
+    // 2. Auth status is determined (not undefined)
+    // 3. We're not already on the login page (to avoid loops)
+    // The server-side check in account/page.tsx already handles authentication
+    // This client-side check is just a safety net
+    if (
+      user === null &&
+      status !== undefined &&
+      typeof window !== 'undefined' &&
+      !window.location.pathname.includes('/login')
+    ) {
+      // Use replace instead of push to avoid adding to history stack
+      router.replace(
         `/login?error=${encodeURIComponent(
           'You must be logged in to view this page.',
         )}&redirect=${encodeURIComponent('/account')}`,
       )
+      return
     }
 
     // Once user is loaded, reset form to have default values
@@ -87,7 +100,7 @@ export const AccountForm: React.FC = () => {
         passwordConfirm: '',
       })
     }
-  }, [user, router, reset, changePassword])
+  }, [user, status, router, reset, changePassword])
 
   return (
     <form className="max-w-xl" onSubmit={handleSubmit(onSubmit)}>

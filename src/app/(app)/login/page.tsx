@@ -10,13 +10,23 @@ import { getPayload } from 'payload'
 import { LoginForm } from '@/components/forms/LoginForm'
 import { redirect } from 'next/navigation'
 
-export default async function Login() {
+type SearchParams = { redirect?: string; error?: string; warning?: string }
+
+type Props = {
+  searchParams: Promise<SearchParams>
+}
+
+export default async function Login({ searchParams }: Props) {
   const headers = await getHeaders()
   const payload = await getPayload({ config: configPromise })
   const { user } = await payload.auth({ headers })
+  const params = await searchParams
 
-  if (user) {
-    redirect(`/account?warning=${encodeURIComponent('You are already logged in.')}`)
+  // Only redirect if user is logged in AND there's no error/warning (to avoid loops)
+  // If there's an error, let the user see it
+  if (user && !params?.error && !params?.warning) {
+    const redirectTo = params?.redirect || '/account'
+    redirect(`${redirectTo}?warning=${encodeURIComponent('You are already logged in.')}`)
   }
 
   return (
