@@ -66,7 +66,21 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
       .filter((p): p is Product => p !== null)
   }
 
-  if (!products?.length) return null
+  if (!products?.length) {
+    // Show a message in development to help debug
+    if (process.env.NODE_ENV === 'development') {
+      return (
+        <div className="container py-8">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              Product Carousel: No products found. Check your block configuration (categories, populateBy, or selectedDocs).
+            </p>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
 
   return <ProductCarousel products={products} title={title} limit={limit || 8} />
 }

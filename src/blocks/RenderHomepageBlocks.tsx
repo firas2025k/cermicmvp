@@ -39,19 +39,48 @@ export const RenderHomepageBlocks: React.FC<{
         {blocks.map((block, index) => {
           const { blockName, blockType } = block
 
+          // Debug logging (remove in production if needed)
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`Rendering block ${index}:`, {
+              blockType,
+              blockName,
+              hasBlockType: !!blockType,
+              inComponents: blockType ? blockType in blockComponents : false,
+            })
+          }
+
           if (blockType && blockType in blockComponents) {
             const Block = blockComponents[blockType]
 
             if (Block) {
-              return (
-                <div key={index}>
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/* @ts-ignore - weird type mismatch here */}
-                  <Block id={toKebabCase(blockName!)} {...block} />
-                </div>
-              )
+              try {
+                return (
+                  <div key={index}>
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-ignore - weird type mismatch here */}
+                    <Block id={toKebabCase(blockName!)} {...block} />
+                  </div>
+                )
+              } catch (error) {
+                console.error(`Error rendering block ${blockType}:`, error)
+                return (
+                  <div key={index} className="p-4 bg-red-50 border border-red-200 rounded">
+                    <p className="text-red-600">
+                      Error rendering block: {blockType}. Check console for details.
+                    </p>
+                  </div>
+                )
+              }
             }
           }
+
+          // Log if block type is missing or not found
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`Block type "${blockType}" not found in blockComponents`, {
+              availableTypes: Object.keys(blockComponents),
+            })
+          }
+
           return null
         })}
       </Fragment>

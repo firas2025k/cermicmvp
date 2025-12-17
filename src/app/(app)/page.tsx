@@ -22,10 +22,22 @@ export default async function HomePage() {
     homepage = await payload.findGlobal({
       slug: 'homepage' as any,
       depth: 2,
+      draft: false, // Explicitly fetch published version
     } as any)
   } catch (error) {
     // Global might not exist yet, fall back to hardcoded content
-    console.log('Homepage Global not found, using hardcoded content')
+    console.log('Homepage Global not found, using hardcoded content', error)
+  }
+
+  // Debug logging (helpful for Vercel debugging)
+  if (process.env.NODE_ENV === 'development' || process.env.VERCEL) {
+    console.log('Homepage fetch result:', {
+      exists: !!homepage,
+      hasLayout: !!(homepage?.layout),
+      layoutLength: homepage?.layout?.length || 0,
+      status: homepage?._status,
+      isPublished: homepage?._status === 'published',
+    })
   }
 
   // If homepage Global exists and has layout blocks, use them
@@ -41,6 +53,16 @@ export default async function HomePage() {
         <RenderHomepageBlocks blocks={homepage.layout} />
       </div>
     )
+  }
+
+  // Log why we're falling back (helpful for debugging)
+  if (process.env.NODE_ENV === 'development' || process.env.VERCEL) {
+    console.log('Falling back to hardcoded content because:', {
+      noHomepage: !homepage,
+      noLayout: !homepage?.layout,
+      emptyLayout: !Array.isArray(homepage?.layout) || homepage?.layout?.length === 0,
+      notPublished: homepage?._status !== 'published',
+    })
   }
 
   // Fallback to hardcoded content (for backward compatibility)

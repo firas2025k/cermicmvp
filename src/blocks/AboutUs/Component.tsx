@@ -9,7 +9,21 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
   imageCaption = 'Unser Team',
   content,
 }) => {
-  if (!content) return null
+  if (!content) {
+    // Show a message in development to help debug
+    if (process.env.NODE_ENV === 'development') {
+      return (
+        <div className="container py-8">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              About Us Block: Content is required. Please add content in the admin panel.
+            </p>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
 
   return (
     <section className="border-b border-neutral-200 bg-white py-20 dark:border-neutral-800 dark:bg-neutral-950">
