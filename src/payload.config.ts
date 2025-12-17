@@ -86,18 +86,16 @@ export default buildConfig({
   globals: [Header, Footer, Homepage],
   plugins: [
     ...plugins,
-    // Only use Vercel Blob Storage if token is provided (production)
-    // Otherwise, local storage will be used (development)
-    ...(process.env.BLOB_READ_WRITE_TOKEN
-      ? [
-          vercelBlobStorage({
-            collections: {
-              [Media.slug]: true,
-            },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-          }),
-        ]
-      : []),
+    // Always include Vercel Blob Storage plugin so the import map includes the client component
+    // The plugin will only be active when BLOB_READ_WRITE_TOKEN is provided
+    // In development without token, local storage will be used (configured in Media collection)
+    vercelBlobStorage({
+      collections: {
+        [Media.slug]: true,
+      },
+      // Provide token if available, otherwise use empty string (plugin will handle gracefully)
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    }),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
