@@ -37,6 +37,9 @@ export default buildConfig({
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeDashboard` statement on line 15.
       beforeDashboard: ['@/components/BeforeDashboard#BeforeDashboard'],
+      // Custom toggle that makes the main sidebar collapsible. It renders at the
+      // bottom of the nav and drives a body class that our SCSS responds to.
+      afterNavLinks: ['@/components/AdminSidebarToggle#AdminSidebarToggle'],
     },
     user: Users.slug,
   },
