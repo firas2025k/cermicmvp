@@ -12,6 +12,7 @@ import type { Category } from '@/payload-types'
 import { LogoIcon } from '@/components/icons/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utilities/cn'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 type Props = {
   header: Header
@@ -60,7 +61,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
               </Link>
             </div>
 
-            {/* Right: Search, User, Cart Icons */}
+            {/* Right: Search, Theme Toggle, User, Cart Icons */}
             <div className="flex items-center justify-end gap-4">
               <button
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
@@ -80,6 +81,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
                   />
                 </svg>
               </button>
+              <ThemeToggle />
               <Link
                 href="/account"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
