@@ -603,6 +603,10 @@ export interface Category {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Select a parent category to make this a subcategory. Leave empty for top-level categories.
+   */
+  parent?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
 }
@@ -1364,6 +1368,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  parent?: T;
   updatedAt?: T;
   createdAt?: T;
 }

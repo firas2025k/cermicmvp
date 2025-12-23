@@ -1,8 +1,8 @@
-import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { getPayload } from 'payload'
 
-import './index.css'
 import { HeaderClient } from './index.client'
+import './index.css'
 
 export async function Header() {
   // Fetch header directly without cache to avoid stale data
@@ -20,11 +20,12 @@ export async function Header() {
     console.log('Nav items length:', header?.navItems?.length || 0)
   }
   
-  // Fetch categories for the expandable menu
+  // Fetch categories for the expandable menu with parent relationships
   const categoriesResult = await payload.find({
     collection: 'categories',
     limit: 100,
     sort: 'title',
+    depth: 1, // Fetch parent relationships
   })
   
   const categories = categoriesResult.docs || []

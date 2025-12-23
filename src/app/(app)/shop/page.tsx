@@ -19,11 +19,12 @@ export default async function ShopPage({ searchParams }: Props) {
   const { q: searchValue, sort, category } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch categories for filters
+  // Fetch categories for filters with parent relationships
   const categoriesResult = await payload.find({
     collection: 'categories',
     limit: 100,
     sort: 'title',
+    depth: 1, // Fetch parent relationships
   })
   const categories = categoriesResult.docs || []
 

@@ -3,20 +3,19 @@
 import { CMSLink } from '@/components/Link'
 import { Button } from '@/components/ui/button'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from '@/components/ui/sheet'
+import type { Category, Header } from '@/payload-types'
 import { useAuth } from '@/providers/Auth'
-import { MenuIcon, ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, MenuIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
-import type { Header } from '@/payload-types'
-import type { Category } from '@/payload-types'
+import { useEffect, useState } from 'react'
 
 interface Props {
   menu: Header['navItems']
@@ -58,24 +57,11 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
     })
   }
 
-  // Group categories by parent (for now, we'll treat all as top-level)
-  // In the future, you can add parent-child relationships
-  const mainCategories = [
-    { title: 'Olive Wood Collection', slug: 'olive-wood', subcategories: [] },
-    { title: 'Ceramic Collection', slug: 'ceramic', subcategories: [] },
-  ]
-
-  // Map actual categories to main categories if they match
-  const categoryMap: Record<string, Category[]> = {
-    'olive-wood': categories.filter((cat) =>
-      cat.title.toLowerCase().includes('olive') || cat.title.toLowerCase().includes('wood'),
-    ),
-    ceramic: categories.filter(
-      (cat) =>
-        cat.title.toLowerCase().includes('ceramic') ||
-        cat.title.toLowerCase().includes('tile'),
-    ),
-  }
+  // Organize categories hierarchically using real parent-child relationships
+  const { topLevel, byParent } = useMemo(
+    () => organizeCategories(categories),
+    [categories],
+  )
 
   return (
     <Sheet onOpenChange={setIsOpen} open={isOpen}>
@@ -91,27 +77,35 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
 
         <div className="space-y-2">
           {/* Main Categories with Expandable Subcategories */}
-          {mainCategories.map((mainCat) => {
-            const subcategories = categoryMap[mainCat.slug] || []
-            const isExpanded = expandedCategories.has(mainCat.slug)
+          {topLevel.map((category) => {
+            const subcategories = getSubcategories(category.id, byParent)
+            const hasSubs = hasSubcategories(category.id, byParent)
+            const isExpanded = expandedCategories.has(category.slug)
 
             return (
-              <div key={mainCat.slug} className="border-b border-neutral-200 dark:border-neutral-800">
-                <button
-                  onClick={() => toggleCategory(mainCat.slug)}
-                  className="flex w-full items-center justify-between py-4 text-left font-medium text-neutral-900 transition hover:text-neutral-600 dark:text-neutral-50 dark:hover:text-neutral-300"
-                >
-                  <span>{mainCat.title}</span>
-                  {subcategories.length > 0 && (
-                    <span className="ml-2">
+              <div key={category.id} className="border-b border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/shop?category=${category.slug}`}
+                    onClick={closeMenu}
+                    className="flex-1 py-4 text-left font-medium text-neutral-900 transition hover:text-neutral-600 dark:text-neutral-50 dark:hover:text-neutral-300"
+                  >
+                    {category.title}
+                  </Link>
+                  {hasSubs && (
+                    <button
+                      onClick={() => toggleCategory(category.slug)}
+                      className="ml-2 p-2"
+                      aria-label={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
+                    >
                       {isExpanded ? (
                         <ChevronUp className="h-5 w-5" />
                       ) : (
                         <ChevronDown className="h-5 w-5" />
                       )}
-                    </span>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {/* Subcategories */}
                 {isExpanded && subcategories.length > 0 && (

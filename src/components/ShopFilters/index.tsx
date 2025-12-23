@@ -1,14 +1,69 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useState, useEffect } from 'react'
+import { Label } from '@/components/ui/label'
+import { getSubcategories, organizeCategories } from '@/lib/categories'
 import type { Category } from '@/payload-types'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
 
 type Props = {
   categories: Category[]
+}
+
+type CategoryFilterListProps = {
+  categories: Category[]
+  selectedCategories: string[]
+  onToggle: (slug: string) => void
+}
+
+function CategoryFilterList({ categories, selectedCategories, onToggle }: CategoryFilterListProps) {
+  const { topLevel, byParent } = useMemo(() => organizeCategories(categories), [categories])
+
+  return (
+    <div className="space-y-2">
+      {topLevel.map((category) => {
+        const subcategories = getSubcategories(category.id, byParent)
+        return (
+          <div key={category.id}>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={`category-${category.id}`}
+                checked={selectedCategories.includes(category.slug)}
+                onCheckedChange={() => onToggle(category.slug)}
+              />
+              <label
+                htmlFor={`category-${category.id}`}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                {category.title}
+              </label>
+            </div>
+            {subcategories.length > 0 && (
+              <div className="ml-6 mt-1 space-y-1">
+                {subcategories.map((subcategory) => (
+                  <div key={subcategory.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`category-${subcategory.id}`}
+                      checked={selectedCategories.includes(subcategory.slug)}
+                      onCheckedChange={() => onToggle(subcategory.slug)}
+                    />
+                    <label
+                      htmlFor={`category-${subcategory.id}`}
+                      className="text-sm text-neutral-600 dark:text-neutral-400 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {subcategory.title}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 export function ShopFilters({ categories }: Props) {
@@ -87,23 +142,11 @@ export function ShopFilters({ categories }: Props) {
       {categories.length > 0 && (
         <div className="space-y-3">
           <Label className="text-base font-medium">Categories</Label>
-          <div className="space-y-2">
-            {categories.map((category) => (
-              <div key={category.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`category-${category.id}`}
-                  checked={selectedCategories.includes(category.slug)}
-                  onCheckedChange={() => handleCategoryToggle(category.slug)}
-                />
-                <label
-                  htmlFor={`category-${category.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                >
-                  {category.title}
-                </label>
-              </div>
-            ))}
-          </div>
+          <CategoryFilterList
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onToggle={handleCategoryToggle}
+          />
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import clsx from 'clsx'
+import { getPayload } from 'payload'
 import React, { Suspense } from 'react'
 
 import { Item } from './Item'
@@ -10,13 +10,19 @@ async function List() {
   const categoriesData = await payload.find({
     collection: 'categories',
     sort: 'title',
+    depth: 1, // Fetch parent relationships
     select: {
       title: true,
       slug: true,
+      parent: true,
     },
   })
 
-  const categories = categoriesData.docs?.map((category) => {
+  const { organizeCategories } = await import('@/lib/categories')
+  const { topLevel } = organizeCategories(categoriesData.docs || [])
+
+  // For tabs, we'll show only top-level categories
+  const categories = topLevel.map((category) => {
     return {
       href: `/shop/${category.slug}`,
       title: category.title,
