@@ -3,45 +3,56 @@ import clsx from 'clsx'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
+import { getSubcategories, organizeCategories } from '@/lib/categories'
 import { CategoryItem } from './Categories.client'
 
 async function CategoryList() {
-  const payload = await getPayload({ config: configPromise })
+  try {
+    const payload = await getPayload({ config: configPromise })
 
-  const categoriesResult = await payload.find({
-    collection: 'categories',
-    sort: 'title',
-    depth: 1, // Fetch parent relationships
-  })
+    const categoriesResult = await payload.find({
+      collection: 'categories',
+      sort: 'title',
+      depth: 1, // Fetch parent relationships
+    })
 
-  const { organizeCategories, getSubcategories } = await import('@/lib/categories')
-  const { topLevel, byParent } = organizeCategories(categoriesResult.docs || [])
+    const { topLevel, byParent } = organizeCategories(categoriesResult.docs || [])
 
-  return (
-    <div>
-      <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">Category</h3>
+    return (
+      <div>
+        <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">Category</h3>
 
-      <ul>
-        {topLevel.map((category) => {
-          const subcategories = getSubcategories(category.id, byParent)
-          return (
-            <li key={category.id} className="mb-2">
-              <CategoryItem category={category} />
-              {subcategories.length > 0 && (
-                <ul className="ml-4 mt-1 space-y-1">
-                  {subcategories.map((subcategory) => (
-                    <li key={subcategory.id}>
-                      <CategoryItem category={subcategory} />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </div>
-  )
+        <ul>
+          {topLevel.map((category) => {
+            if (!category || !category.id) return null
+            const subcategories = getSubcategories(category.id, byParent)
+            return (
+              <li key={category.id} className="mb-2">
+                <CategoryItem category={category} />
+                {subcategories.length > 0 && (
+                  <ul className="ml-4 mt-1 space-y-1">
+                    {subcategories.map((subcategory) => (
+                      <li key={subcategory.id}>
+                        <CategoryItem category={subcategory} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    )
+  } catch (error) {
+    console.error('Error loading categories:', error)
+    return (
+      <div>
+        <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">Category</h3>
+        <p className="text-xs text-neutral-400">Unable to load categories</p>
+      </div>
+    )
+  }
 }
 
 const skeleton = 'mb-3 h-4 w-5/6 animate-pulse rounded'

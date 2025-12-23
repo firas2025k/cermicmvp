@@ -11,8 +11,25 @@ export function organizeCategories(categories: Category[]): {
   const topLevel: Category[] = []
   const byParent: Record<number | string, Category[]> = {}
 
+  if (!categories || !Array.isArray(categories)) {
+    return { topLevel, byParent }
+  }
+
   categories.forEach((category) => {
-    const parentId = typeof category.parent === 'object' ? category.parent?.id : category.parent
+    if (!category || !category.id) return
+
+    // Handle parent field - it can be null, undefined, a number, or a populated object
+    let parentId: number | string | null | undefined = null
+    
+    if (category.parent === null || category.parent === undefined) {
+      parentId = null
+    } else if (typeof category.parent === 'object' && category.parent !== null) {
+      // Populated parent object
+      parentId = category.parent.id
+    } else if (typeof category.parent === 'number' || typeof category.parent === 'string') {
+      // Just the ID
+      parentId = category.parent
+    }
 
     if (!parentId) {
       // Top-level category
@@ -27,9 +44,9 @@ export function organizeCategories(categories: Category[]): {
   })
 
   // Sort top-level and subcategories by title
-  topLevel.sort((a, b) => a.title.localeCompare(b.title))
+  topLevel.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
   Object.keys(byParent).forEach((parentId) => {
-    byParent[parentId].sort((a, b) => a.title.localeCompare(b.title))
+    byParent[parentId].sort((a, b) => (a.title || '').localeCompare(b.title || ''))
   })
 
   return { topLevel, byParent }

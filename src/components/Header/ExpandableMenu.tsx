@@ -12,10 +12,11 @@ import {
 } from '@/components/ui/sheet'
 import type { Category, Header } from '@/payload-types'
 import { useAuth } from '@/providers/Auth'
+import { getSubcategories, hasSubcategories, organizeCategories } from '@/lib/categories'
 import { ChevronDown, ChevronUp, MenuIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface Props {
   menu: Header['navItems']
