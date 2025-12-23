@@ -12,6 +12,10 @@ import { getPayload } from 'payload'
 // pick up title / SEO settings from the "home" document in Payload.
 export { generateMetadata } from './[slug]/page'
 
+// Use ISR with short revalidation time to balance freshness and performance
+// This ensures the page is regenerated at most every 10 seconds
+export const revalidate = 10
+
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise })
 

@@ -10,9 +10,9 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet'
+import { getSubcategories, hasSubcategories, organizeCategories } from '@/lib/categories'
 import type { Category, Header } from '@/payload-types'
 import { useAuth } from '@/providers/Auth'
-import { getSubcategories, hasSubcategories, organizeCategories } from '@/lib/categories'
 import { ChevronDown, ChevronUp, MenuIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
