@@ -37,6 +37,63 @@ export default async function ShopPage({ searchParams }: Props) {
     }
   }
 
+  // Parse price filters
+  const minPriceNum = minPrice ? parseFloat(String(minPrice)) : null
+  const maxPriceNum = maxPrice ? parseFloat(String(maxPrice)) : null
+
+  // Build where conditions
+  const whereConditions: any[] = [
+    {
+      _status: {
+        equals: 'published',
+      },
+    },
+  ]
+
+  // Add search filter
+  if (searchValue) {
+    whereConditions.push({
+      or: [
+        {
+          title: {
+            like: searchValue,
+          },
+        },
+        {
+          description: {
+            like: searchValue,
+          },
+        },
+      ],
+    })
+  }
+
+  // Add category filter
+  if (categoryId) {
+    whereConditions.push({
+      categories: {
+        contains: categoryId,
+      },
+    })
+  }
+
+  // Add price range filter
+  if (minPriceNum !== null || maxPriceNum !== null) {
+    const priceCondition: any = {}
+    
+    if (minPriceNum !== null) {
+      priceCondition.greater_than_equal = minPriceNum
+    }
+    
+    if (maxPriceNum !== null) {
+      priceCondition.less_than_equal = maxPriceNum
+    }
+
+    whereConditions.push({
+      priceInEUR: priceCondition,
+    })
+  }
+
   const products = await payload.find({
     collection: 'products',
     draft: false,
@@ -49,46 +106,9 @@ export default async function ShopPage({ searchParams }: Props) {
       priceInEUR: true,
     },
     ...(sort ? { sort } : { sort: 'title' }),
-    ...(searchValue || categoryId
-      ? {
-          where: {
-            and: [
-              {
-                _status: {
-                  equals: 'published',
-                },
-              },
-              ...(searchValue
-                ? [
-                    {
-                      or: [
-                        {
-                          title: {
-                            like: searchValue,
-                          },
-                        },
-                        {
-                          description: {
-                            like: searchValue,
-                          },
-                        },
-                      ],
-                    },
-                  ]
-                : []),
-              ...(categoryId
-                ? [
-                    {
-                      categories: {
-                        contains: categoryId,
-                      },
-                    },
-                  ]
-                : []),
-            ],
-          },
-        }
-      : {}),
+    where: {
+      and: whereConditions,
+    },
   })
 
   const resultsText = products.docs.length > 1 ? 'results' : 'result'
