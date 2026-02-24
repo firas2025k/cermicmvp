@@ -130,6 +130,17 @@ export const BeforeDashboard: React.FC = () => {
             </div>
 
             <div className={`${baseClass}__card`}>
+              <h3 className={`${baseClass}__cardTitle`}>Edit store logo</h3>
+              <p className={`${baseClass}__cardBody`}>
+                Update the logo and text shown in your storefront header.
+              </p>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href="/admin/globals/header" className={`${baseClass}__link`}>
+                Go to logo settings
+              </a>
+            </div>
+
+            <div className={`${baseClass}__card`}>
               <h3 className={`${baseClass}__cardTitle`}>Manage products</h3>
               <p className={`${baseClass}__cardBody`}>
                 Create, update, and organize the products in your storefront.

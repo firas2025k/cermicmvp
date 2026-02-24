@@ -9,6 +9,27 @@ export const Header: GlobalConfig = {
   },
   fields: [
     {
+      name: 'logo',
+      label: 'Logo',
+      type: 'group',
+      fields: [
+        {
+          name: 'image',
+          label: 'Logo image',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+        },
+        {
+          name: 'label',
+          label: 'Logo text',
+          type: 'text',
+          required: false,
+          defaultValue: 'TUNISIAN TILE STUDIO',
+        },
+      ],
+    },
+    {
       name: 'navItems',
       type: 'array',
       fields: [

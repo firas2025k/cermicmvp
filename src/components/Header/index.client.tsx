@@ -23,6 +23,9 @@ export function HeaderClient({ header, categories = [] }: Props) {
   const menu = header?.navItems || []
   const pathname = usePathname()
 
+  const logoImage = (header as any)?.logo?.image
+  const logoLabel = (header as any)?.logo?.label || 'TUNISIAN TILE STUDIO'
+
   // Debug: Log menu items to console
   if (typeof window !== 'undefined') {
     console.log('Header object:', header)
@@ -53,9 +56,18 @@ export function HeaderClient({ header, categories = [] }: Props) {
             <div className="flex-1 flex justify-center">
               <Link className="flex items-center py-1" href="/">
                 <span className="flex items-center gap-2">
-                  <LogoIcon className="h-8 w-8" />
+                  {logoImage?.url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoImage.url}
+                      alt={logoImage.alt || logoLabel}
+                      className="h-8 w-auto"
+                    />
+                  ) : (
+                    <LogoIcon className="h-8 w-8" />
+                  )}
                   <span className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                    TUNISIAN TILE STUDIO
+                    {logoLabel}
                   </span>
                 </span>
               </Link>
