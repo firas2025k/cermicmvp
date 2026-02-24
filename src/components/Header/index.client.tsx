@@ -24,7 +24,11 @@ export function HeaderClient({ header, categories = [] }: Props) {
   const pathname = usePathname()
 
   const logoImage = (header as any)?.logo?.image
-  const logoLabel = (header as any)?.logo?.label || 'TUNISIAN TILE STUDIO'
+  const rawLogoLabel = (header as any)?.logo?.label
+  const logoLabel =
+    rawLogoLabel === ''
+      ? ''
+      : rawLogoLabel ?? 'TUNISIAN TILE STUDIO'
 
   // Debug: Log menu items to console
   if (typeof window !== 'undefined') {

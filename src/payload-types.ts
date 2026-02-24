@@ -1793,6 +1793,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: number;
+  logo?: {
+    image?: (number | null) | Media;
+    label?: string | null;
+  };
   navItems?:
     | {
         link: {
@@ -2086,6 +2090,12 @@ export interface AboutUsBlock {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        image?: T;
+        label?: T;
+      };
   navItems?:
     | T
     | {
