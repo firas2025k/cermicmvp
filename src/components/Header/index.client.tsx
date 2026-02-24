@@ -59,20 +59,22 @@ export function HeaderClient({ header, categories = [] }: Props) {
             {/* Center: Logo */}
             <div className="flex-1 flex justify-center">
               <Link className="flex items-center py-1" href="/">
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-3">
                   {logoImage?.url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={logoImage.url}
                       alt={logoImage.alt || logoLabel}
-                      className="h-8 w-auto"
+                      className="h-12 w-auto max-h-14 object-contain"
                     />
                   ) : (
-                    <LogoIcon className="h-8 w-8" />
+                    <LogoIcon className="h-12 w-12" />
                   )}
-                  <span className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                    {logoLabel}
-                  </span>
+                  {logoLabel ? (
+                    <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+                      {logoLabel}
+                    </span>
+                  ) : null}
                 </span>
               </Link>
             </div>
