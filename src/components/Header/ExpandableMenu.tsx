@@ -70,101 +70,120 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
         <MenuIcon className="h-5 w-5" />
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-full overflow-y-auto sm:max-w-md">
-        <SheetHeader className="px-0 pt-4 pb-4">
-          <SheetTitle>Menu</SheetTitle>
+      <SheetContent
+        side="left"
+        className="w-full overflow-y-auto border-none bg-neutral-50/95 px-5 py-4 text-neutral-900 shadow-xl sm:max-w-md dark:bg-neutral-950 dark:text-neutral-50"
+      >
+        <SheetHeader className="px-0 pt-1 pb-4">
+          <SheetTitle className="text-xl font-semibold">Menu</SheetTitle>
           <SheetDescription />
         </SheetHeader>
 
-        <div className="space-y-2">
+        <div className="space-y-6">
           {/* Main Categories with Expandable Subcategories */}
-          {topLevel.map((category) => {
-            const subcategories = getSubcategories(category.id, byParent)
-            const hasSubs = hasSubcategories(category.id, byParent)
-            const isExpanded = expandedCategories.has(category.slug)
+          <div className="rounded-2xl border border-neutral-200 bg-white/90 p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              Shop by category
+            </p>
+            <div className="mt-1 divide-y divide-neutral-100 dark:divide-neutral-800">
+              {topLevel.map((category) => {
+                const subcategories = getSubcategories(category.id, byParent)
+                const hasSubs = hasSubcategories(category.id, byParent)
+                const isExpanded = expandedCategories.has(category.slug)
 
-            return (
-              <div key={category.id} className="border-b border-neutral-200 dark:border-neutral-800">
-                <div className="flex items-center justify-between">
-                  <Link
-                    href={`/shop?category=${category.slug}`}
-                    onClick={closeMenu}
-                    className="flex-1 py-4 text-left font-medium text-neutral-900 transition hover:text-neutral-600 dark:text-neutral-50 dark:hover:text-neutral-300"
-                  >
-                    {category.title}
-                  </Link>
-                  {hasSubs && (
-                    <button
-                      onClick={() => toggleCategory(category.slug)}
-                      className="ml-2 p-2"
-                      aria-label={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
-                    >
-                      {isExpanded ? (
-                        <ChevronUp className="h-5 w-5" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5" />
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                {/* Subcategories */}
-                {isExpanded && subcategories.length > 0 && (
-                  <div className="pb-2 pl-4">
-                    {subcategories.map((subcat) => (
+                return (
+                  <div key={category.id} className="py-1">
+                    <div className="flex items-center justify-between">
                       <Link
-                        key={subcat.id}
-                        href={`/shop?category=${subcat.slug}`}
+                        href={`/shop?category=${category.slug}`}
                         onClick={closeMenu}
-                        className="block py-2 text-sm text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+                        className="flex-1 py-3 text-left text-sm font-medium text-neutral-900 transition hover:text-neutral-600 dark:text-neutral-50 dark:hover:text-neutral-300"
                       >
-                        {subcat.title}
+                        {category.title}
                       </Link>
-                    ))}
+                      {hasSubs && (
+                        <button
+                          onClick={() => toggleCategory(category.slug)}
+                          className="ml-1 rounded-full p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                          aria-label={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Subcategories */}
+                    {isExpanded && subcategories.length > 0 && (
+                      <div className="pb-2 pl-4">
+                        {subcategories.map((subcat) => (
+                          <Link
+                            key={subcat.id}
+                            href={`/shop?category=${subcat.slug}`}
+                            onClick={closeMenu}
+                            className="block py-1.5 text-sm text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+                          >
+                            {subcat.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            )
-          })}
+                )
+              })}
+            </div>
+          </div>
 
           {/* Regular Menu Items */}
           {menu?.length ? (
-            <div className="border-b border-neutral-200 pt-2 dark:border-neutral-800">
-              {menu.map((item) => (
-                <div key={item.id} className="py-2">
+            <div className="rounded-2xl border border-neutral-200 bg-white/90 p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+              <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                Pages
+              </p>
+              <div className="mt-1 space-y-1">
+                {menu.map((item) => (
                   <CMSLink
+                    key={item.id}
                     {...item.link}
                     appearance="link"
-                    className="block text-neutral-900 dark:text-neutral-50"
+                    className="block rounded-lg px-2 py-2 text-sm text-neutral-900 transition hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-50 dark:hover:bg-neutral-800"
                   />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           ) : null}
 
           {/* Additional Menu Items */}
-          <div className="border-b border-neutral-200 pt-2 dark:border-neutral-800">
-            <Link
-              href="/imprint"
-              onClick={closeMenu}
-              className="block py-2 text-neutral-900 dark:text-neutral-50"
-            >
-              Imprint
-            </Link>
-            <Link
-              href="/contact"
-              onClick={closeMenu}
-              className="block py-2 text-neutral-900 dark:text-neutral-50"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/care-instructions"
-              onClick={closeMenu}
-              className="block py-2 text-neutral-900 dark:text-neutral-50"
-            >
-              Care Instructions
-            </Link>
+          <div className="rounded-2xl border border-neutral-200 bg-white/90 p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              Info
+            </p>
+            <div className="mt-1 space-y-1 text-sm">
+              <Link
+                href="/imprint"
+                onClick={closeMenu}
+                className="block rounded-lg px-2 py-2 text-neutral-900 transition hover:bg-neutral-100 dark:text-neutral-50 dark:hover:bg-neutral-800"
+              >
+                Imprint
+              </Link>
+              <Link
+                href="/contact"
+                onClick={closeMenu}
+                className="block rounded-lg px-2 py-2 text-neutral-900 transition hover:bg-neutral-100 dark:text-neutral-50 dark:hover:bg-neutral-800"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/care-instructions"
+                onClick={closeMenu}
+                className="block rounded-lg px-2 py-2 text-neutral-900 transition hover:bg-neutral-100 dark:text-neutral-50 dark:hover:bg-neutral-800"
+              >
+                Care Instructions
+              </Link>
+            </div>
           </div>
         </div>
 

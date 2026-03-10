@@ -48,7 +48,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
       <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950">
         <div className="container">
           {/* Top Row: Logo and Icons */}
-          <nav className="flex items-center justify-between py-4">
+          <nav className="relative flex items-center justify-between py-4">
             {/* Left: Hamburger Menu (Mobile) */}
             <div className="flex items-center md:hidden">
               <Suspense fallback={null}>
@@ -56,8 +56,8 @@ export function HeaderClient({ header, categories = [] }: Props) {
               </Suspense>
             </div>
 
-            {/* Center: Logo */}
-            <div className="flex-1 flex justify-center">
+            {/* Center: Logo - absolutely centered within the header */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <Link className="flex items-center py-1" href="/">
                 <span className="flex items-center gap-3">
                   {logoImage?.url ? (
@@ -65,10 +65,10 @@ export function HeaderClient({ header, categories = [] }: Props) {
                     <img
                       src={logoImage.url}
                       alt={logoImage.alt || logoLabel}
-                      className="h-12 w-auto max-h-14 object-contain"
+                      className="h-16 w-auto max-h-20 object-contain"
                     />
                   ) : (
-                    <LogoIcon className="h-12 w-12" />
+                    <LogoIcon className="h-16 w-16" />
                   )}
                   {logoLabel ? (
                     <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">

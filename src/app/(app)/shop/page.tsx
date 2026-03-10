@@ -98,6 +98,9 @@ export default async function ShopPage({ searchParams }: Props) {
     collection: 'products',
     draft: false,
     overrideAccess: false,
+    // Explicitly increase limit so we don't hit the default of 10
+    // Adjust this or implement pagination if the catalog grows large.
+    limit: 100,
     select: {
       title: true,
       slug: true,
