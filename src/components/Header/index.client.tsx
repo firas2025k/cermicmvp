@@ -49,14 +49,37 @@ export function HeaderClient({ header, categories = [] }: Props) {
         <div className="container">
           {/* Top Row: Logo and Icons */}
           <nav className="relative flex items-center justify-between py-3 md:py-4">
-            {/* Left: Hamburger Menu (Mobile) */}
-            <div className="flex items-center md:hidden">
-              <Suspense fallback={null}>
-                <ExpandableMenu menu={menu} categories={categories} />
-              </Suspense>
+            {/* Left: Menu + Account (mobile), Menu only on desktop */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center">
+                <Suspense fallback={null}>
+                  <ExpandableMenu menu={menu} categories={categories} />
+                </Suspense>
+              </div>
+
+              {/* Account icon on the left for mobile, hidden on desktop */}
+              <Link
+                href="/account"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:hidden"
+                aria-label="Account"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </Link>
             </div>
 
-            {/* Center: Logo - absolutely centered within the header */}
+            {/* Center: Logo - always centered within the header */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <Link className="flex items-center py-1" href="/">
                 <span className="flex items-center gap-3">
@@ -79,10 +102,10 @@ export function HeaderClient({ header, categories = [] }: Props) {
               </Link>
             </div>
 
-            {/* Right: Search, Theme Toggle, User, Cart Icons */}
-            <div className="flex items-center justify-end gap-3 md:gap-4">
+            {/* Right: Search, Theme Toggle, Account (desktop), Cart */}
+            <div className="flex items-center justify-end gap-3 md:gap-4 ml-auto">
               <button
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10"
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:flex md:h-10 md:w-10"
                 aria-label="Search"
               >
                 <svg
@@ -99,10 +122,16 @@ export function HeaderClient({ header, categories = [] }: Props) {
                   />
                 </svg>
               </button>
-              <ThemeToggle />
+
+              {/* Theme toggle only on desktop to reduce clutter on small screens */}
+              <div className="hidden md:flex">
+                <ThemeToggle />
+              </div>
+
+              {/* Account icon on the right only for desktop */}
               <Link
                 href="/account"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10"
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:flex md:h-10 md:w-10"
                 aria-label="Account"
               >
                 <svg
