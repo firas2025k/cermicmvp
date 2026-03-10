@@ -70,11 +70,11 @@ export const plugins: Plugin[] = [
       defaultCurrency: 'EUR',
     },
     access: {
-      adminOnly,
       adminOnlyFieldAccess,
-      adminOrCustomerOwner,
       adminOrPublishedStatus,
       customerOnlyFieldAccess,
+      isAdmin: adminOnly,
+      isDocumentOwner: adminOrCustomerOwner,
     },
     customers: {
       slug: 'users',
