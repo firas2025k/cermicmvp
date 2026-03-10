@@ -19,10 +19,12 @@ function FilterItemList({ list }: { list: ListItem[] }) {
 
 export function FilterList({ list, title }: { list: ListItem[]; title?: string }) {
   return (
-    <React.Fragment>
+    <div className="rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-neutral-900/60">
       <nav>
         {title ? (
-          <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">{title}</h3>
+          <h3 className="mb-2 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+            {title}
+          </h3>
         ) : null}
         <ul className="hidden md:block">
           <Suspense fallback={null}>
@@ -35,6 +37,6 @@ export function FilterList({ list, title }: { list: ListItem[]; title?: string }
           </Suspense>
         </ul>
       </nav>
-    </React.Fragment>
+    </div>
   )
 }

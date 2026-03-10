@@ -19,18 +19,20 @@ async function CategoryList() {
     const { topLevel, byParent } = organizeCategories(categoriesResult.docs || [])
 
     return (
-      <div>
-        <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">Category</h3>
+      <div className="space-y-3 rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-neutral-900/60">
+        <h3 className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          Category
+        </h3>
 
-        <ul>
+        <ul className="space-y-1">
           {topLevel.map((category) => {
             if (!category || !category.id) return null
             const subcategories = getSubcategories(category.id, byParent)
             return (
-              <li key={category.id} className="mb-2">
+              <li key={category.id} className="space-y-1.5">
                 <CategoryItem category={category} />
                 {subcategories.length > 0 && (
-                  <ul className="ml-4 mt-1 space-y-1">
+                  <ul className="ml-4 mt-1 space-y-0.5">
                     {subcategories.map((subcategory) => (
                       <li key={subcategory.id}>
                         <CategoryItem category={subcategory} />

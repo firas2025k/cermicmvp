@@ -45,10 +45,10 @@ export function HeaderClient({ header, categories = [] }: Props) {
       </div>
 
       {/* Main Header */}
-      <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950">
+      <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white/95 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/95">
         <div className="container">
           {/* Top Row: Logo and Icons */}
-          <nav className="relative flex items-center justify-between py-4">
+          <nav className="relative flex items-center justify-between py-3 md:py-4">
             {/* Left: Hamburger Menu (Mobile) */}
             <div className="flex items-center md:hidden">
               <Suspense fallback={null}>
@@ -65,13 +65,13 @@ export function HeaderClient({ header, categories = [] }: Props) {
                     <img
                       src={logoImage.url}
                       alt={logoImage.alt || logoLabel}
-                      className="h-16 w-auto max-h-20 object-contain"
+                      className="h-10 w-auto max-h-12 object-contain md:h-16 md:max-h-20"
                     />
                   ) : (
-                    <LogoIcon className="h-16 w-16" />
+                    <LogoIcon className="h-10 w-10 md:h-16 md:w-16" />
                   )}
                   {logoLabel ? (
-                    <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+                    <span className="hidden text-lg font-semibold text-neutral-900 dark:text-neutral-50 md:inline-block md:text-2xl">
                       {logoLabel}
                     </span>
                   ) : null}
@@ -80,9 +80,9 @@ export function HeaderClient({ header, categories = [] }: Props) {
             </div>
 
             {/* Right: Search, Theme Toggle, User, Cart Icons */}
-            <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-3 md:gap-4">
               <button
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10"
                 aria-label="Search"
               >
                 <svg
@@ -102,7 +102,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
               <ThemeToggle />
               <Link
                 href="/account"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10"
                 aria-label="Account"
               >
                 <svg
