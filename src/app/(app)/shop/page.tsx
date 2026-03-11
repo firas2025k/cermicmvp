@@ -102,17 +102,7 @@ export default async function ShopPage({ searchParams }: Props) {
             Shop
           </div>
           
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="space-y-3 max-w-2xl">
-              <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-4xl lg:text-5xl">
-                Tunisian ceramic tiles for every room.
-              </h1>
-              <p className="text-base leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-lg">
-                Browse collections suitable for kitchens, bathrooms, floors, and more. Use search or
-                filters to narrow down to the tiles that fit your project.
-              </p>
-            </div>
-
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3 rounded-lg border border-neutral-200/60 bg-white/80 px-4 py-2.5 shadow-sm dark:border-neutral-800/60 dark:bg-neutral-900/80">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
                 <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
