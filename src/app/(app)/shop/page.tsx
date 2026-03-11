@@ -129,7 +129,7 @@ export default async function ShopPage({ searchParams }: Props) {
                   </p>
                 ) : (
                   <p className="font-medium text-neutral-900 dark:text-neutral-50">
-                    {products.docs?.length || 0} {products.docs?.length === 1 ? 'tile' : 'tiles'} available
+                    {products.docs?.length || 0} {products.docs?.length === 1 ? 'product' : 'products'} available
                   </p>
                 )}
               </div>

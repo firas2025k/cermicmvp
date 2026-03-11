@@ -12,8 +12,6 @@ import type { Category } from '@/payload-types'
 import { LogoIcon } from '@/components/icons/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utilities/cn'
-import { ThemeToggle } from '@/components/ThemeToggle'
-
 type Props = {
   header: Header
   categories?: Category[]
@@ -122,11 +120,6 @@ export function HeaderClient({ header, categories = [] }: Props) {
                   />
                 </svg>
               </button>
-
-              {/* Theme toggle only on desktop to reduce clutter on small screens */}
-              <div className="hidden md:flex">
-                <ThemeToggle />
-              </div>
 
               {/* Account icon on the right only for desktop */}
               <Link
