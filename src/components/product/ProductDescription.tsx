@@ -68,9 +68,6 @@ export function ProductDescription({ product }: { product: Product }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300">
-          Tile
-        </div>
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-3xl">
           {product.title}
         </h1>
@@ -82,9 +79,6 @@ export function ProductDescription({ product }: { product: Product }) {
               <Price amount={amount} currencyCode="EUR" />
             )}
           </div>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Pricing example – typically per box. You can adjust exact units later.
-          </p>
         </div>
       </div>
 
