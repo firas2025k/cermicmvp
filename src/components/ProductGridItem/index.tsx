@@ -11,7 +11,8 @@ type Props = {
 }
 
 export const ProductGridItem: React.FC<Props> = ({ product }) => {
-  const { gallery, priceInEUR, title } = product
+  const { gallery, priceInEUR, title, inventory } = product
+  const isOutOfStock = inventory == null || Number(inventory) <= 0
 
   let price = priceInEUR
 
@@ -52,9 +53,16 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         {/* Overlay gradient on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20" />
         
-        {/* Badge */}
-        <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-white/95 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-neutral-800 shadow-md transition-all duration-300 group-hover:bg-white group-hover:shadow-lg dark:border-neutral-800/20 dark:bg-neutral-900/95 dark:text-neutral-100">
-          Tile
+        {/* Badges */}
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <span className="rounded-full border border-white/20 bg-white/95 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-neutral-800 shadow-md dark:border-neutral-800/20 dark:bg-neutral-900/95 dark:text-neutral-100">
+            Tile
+          </span>
+          {isOutOfStock && (
+            <span className="rounded-full border border-red-200 bg-red-500/95 px-3 py-1 text-xs font-semibold text-white shadow-md dark:border-red-900/40">
+              Out of stock
+            </span>
+          )}
         </div>
       </div>
 

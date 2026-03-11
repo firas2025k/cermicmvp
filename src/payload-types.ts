@@ -629,6 +629,10 @@ export interface Category {
   id: number;
   title: string;
   /**
+   * Lower numbers appear first. Used to rearrange categories and subcategories.
+   */
+  order?: number | null;
+  /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
@@ -1447,6 +1451,7 @@ export interface FormBlockSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
+  order?: T;
   generateSlug?: T;
   slug?: T;
   parent?: T;

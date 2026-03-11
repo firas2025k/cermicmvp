@@ -16,6 +16,13 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'order',
+      type: 'number',
+      admin: {
+        description: 'Lower numbers appear first. Used to rearrange categories and subcategories.',
+      },
+    },
     slugField({
       position: undefined,
     }),

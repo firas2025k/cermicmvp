@@ -1,6 +1,7 @@
 import * as migration_20251204_121656_add_eur_currency from './20251204_121656_add_eur_currency';
 import * as migration_20251223_231748 from './20251223_231748';
 import * as migration_20260224_000001_add_header_logo from './20260224_000001_add_header_logo';
+import * as migration_20260311_000001_add_categories_order from './20260311_000001_add_categories_order';
 
 export const migrations = [
   {
@@ -17,5 +18,10 @@ export const migrations = [
     up: migration_20260224_000001_add_header_logo.up,
     down: migration_20260224_000001_add_header_logo.down,
     name: '20260224_000001_add_header_logo',
+  },
+  {
+    up: migration_20260311_000001_add_categories_order.up,
+    down: migration_20260311_000001_add_categories_order.down,
+    name: '20260311_000001_add_categories_order',
   },
 ];

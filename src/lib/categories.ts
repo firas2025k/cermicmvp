@@ -43,10 +43,16 @@ export function organizeCategories(categories: Category[]): {
     }
   })
 
-  // Sort top-level and subcategories by title
-  topLevel.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+  // Sort by order (lower first), then by title. Categories without order go last.
+  const sortByOrderThenTitle = (a: Category, b: Category) => {
+    const orderA = (a as { order?: number }).order ?? 999
+    const orderB = (b as { order?: number }).order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+    return (a.title || '').localeCompare(b.title || '')
+  }
+  topLevel.sort(sortByOrderThenTitle)
   Object.keys(byParent).forEach((parentId) => {
-    byParent[parentId].sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+    byParent[parentId].sort(sortByOrderThenTitle)
   })
 
   return { topLevel, byParent }
@@ -70,4 +76,23 @@ export function hasSubcategories(
   byParent: Record<number | string, Category[]>,
 ): boolean {
   return (byParent[categoryId]?.length || 0) > 0
+}
+
+/**
+ * Returns the category ID and all descendant category IDs (children, etc.).
+ * Used so that selecting a parent category shows products in that category or any subcategory.
+ */
+export function getCategoryAndDescendantIds(
+  categoryId: number | string,
+  byParent: Record<number | string, Category[]>,
+): (number | string)[] {
+  const ids: (number | string)[] = [categoryId]
+  const children = byParent[categoryId] || []
+  for (const child of children) {
+    if (child.id != null) {
+      ids.push(child.id)
+      ids.push(...getCategoryAndDescendantIds(child.id, byParent))
+    }
+  }
+  return ids
 }

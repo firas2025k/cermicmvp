@@ -3,6 +3,8 @@ import { ProductGridItem } from '@/components/ProductGridItem'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
+import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
+
 export const metadata = {
   title: 'Shop tiles',
   description: 'Browse Tunisian ceramic tile collections for kitchens, bathrooms, floors, and more.',
@@ -15,7 +17,7 @@ type Props = {
 }
 
 export default async function ShopPage({ searchParams }: Props) {
-  const { q: searchValue, sort, category, minPrice, maxPrice } = await searchParams
+  const { q: searchValue, sort, category } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
   // Fetch categories for filters with parent relationships
@@ -23,23 +25,23 @@ export default async function ShopPage({ searchParams }: Props) {
     collection: 'categories',
     limit: 100,
     sort: 'title',
-    depth: 1, // Fetch parent relationships
+    depth: 1,
   })
   const categories = categoriesResult.docs || []
+  const { byParent } = organizeCategories(categories)
 
-  // Find category by slug if category filter is provided
-  let categoryId: number | undefined
-  if (category) {
-    const categorySlug = typeof category === 'string' ? category : category[0]
-    const foundCategory = categories.find((cat) => cat.slug === categorySlug)
-    if (foundCategory && typeof foundCategory.id === 'number') {
-      categoryId = foundCategory.id
+  // Support multiple categories; each selected slug expands to that category + its descendants (so parent shows all products in subcategories too)
+  const categorySlugs = category
+    ? (Array.isArray(category) ? category : [category]).filter(Boolean) as string[]
+    : []
+  const categoryIdsToMatch: (number | string)[] = []
+  for (const slug of categorySlugs) {
+    const found = categories.find((c) => c.slug === slug)
+    if (found && found.id != null) {
+      categoryIdsToMatch.push(...getCategoryAndDescendantIds(found.id, byParent))
     }
   }
-
-  // Parse price filters
-  const minPriceNum = minPrice ? parseFloat(String(minPrice)) : null
-  const maxPriceNum = maxPrice ? parseFloat(String(maxPrice)) : null
+  const uniqueCategoryIds = [...new Set(categoryIdsToMatch)]
 
   // Build where conditions
   const whereConditions: any[] = [
@@ -54,43 +56,18 @@ export default async function ShopPage({ searchParams }: Props) {
   if (searchValue) {
     whereConditions.push({
       or: [
-        {
-          title: {
-            like: searchValue,
-          },
-        },
-        {
-          description: {
-            like: searchValue,
-          },
-        },
+        { title: { like: searchValue } },
+        { description: { like: searchValue } },
       ],
     })
   }
 
-  // Add category filter
-  if (categoryId) {
+  // Add category filter: product must be in at least one of the selected (or descendant) categories
+  if (uniqueCategoryIds.length > 0) {
     whereConditions.push({
-      categories: {
-        contains: categoryId,
-      },
-    })
-  }
-
-  // Add price range filter
-  if (minPriceNum !== null || maxPriceNum !== null) {
-    const priceCondition: any = {}
-    
-    if (minPriceNum !== null) {
-      priceCondition.greater_than_equal = minPriceNum
-    }
-    
-    if (maxPriceNum !== null) {
-      priceCondition.less_than_equal = maxPriceNum
-    }
-
-    whereConditions.push({
-      priceInEUR: priceCondition,
+      or: uniqueCategoryIds.map((id) => ({
+        categories: { contains: id },
+      })),
     })
   }
 
@@ -98,8 +75,6 @@ export default async function ShopPage({ searchParams }: Props) {
     collection: 'products',
     draft: false,
     overrideAccess: false,
-    // Explicitly increase limit so we don't hit the default of 10
-    // Adjust this or implement pagination if the catalog grows large.
     limit: 100,
     select: {
       title: true,
@@ -107,6 +82,7 @@ export default async function ShopPage({ searchParams }: Props) {
       gallery: true,
       categories: true,
       priceInEUR: true,
+      inventory: true,
     },
     ...(sort ? { sort } : { sort: 'title' }),
     where: {

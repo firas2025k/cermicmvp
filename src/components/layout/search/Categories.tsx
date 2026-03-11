@@ -3,8 +3,9 @@ import clsx from 'clsx'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
-import { getSubcategories, organizeCategories } from '@/lib/categories'
-import { CategoryItem } from './Categories.client'
+import { organizeCategories } from '@/lib/categories'
+
+import { CategorySidebar } from './CategorySidebar'
 
 async function CategoryList() {
   try {
@@ -12,46 +13,20 @@ async function CategoryList() {
 
     const categoriesResult = await payload.find({
       collection: 'categories',
+      limit: 100,
       sort: 'title',
-      depth: 1, // Fetch parent relationships
+      depth: 1,
     })
 
     const { topLevel, byParent } = organizeCategories(categoriesResult.docs || [])
 
-    return (
-      <div className="space-y-3 rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-neutral-900/60">
-        <h3 className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-          Category
-        </h3>
-
-        <ul className="space-y-1">
-          {topLevel.map((category) => {
-            if (!category || !category.id) return null
-            const subcategories = getSubcategories(category.id, byParent)
-            return (
-              <li key={category.id} className="space-y-1.5">
-                <CategoryItem category={category} />
-                {subcategories.length > 0 && (
-                  <ul className="ml-4 mt-1 space-y-0.5">
-                    {subcategories.map((subcategory) => (
-                      <li key={subcategory.id}>
-                        <CategoryItem category={subcategory} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    )
+    return <CategorySidebar topLevel={topLevel} byParent={byParent} />
   } catch (error) {
     console.error('Error loading categories:', error)
     return (
-      <div>
-        <h3 className="text-xs mb-2 text-neutral-500 dark:text-neutral-400">Category</h3>
-        <p className="text-xs text-neutral-400">Unable to load categories</p>
+      <div className="rounded-xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800/80 dark:bg-neutral-900/60">
+        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">Categories</h3>
+        <p className="mt-2 text-xs text-neutral-500">Unable to load categories.</p>
       </div>
     )
   }
