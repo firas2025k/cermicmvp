@@ -13,19 +13,28 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
 
-    const flattenedCategories = categories?.length
-      ? categories.map((category) => {
-          if (typeof category === 'object') return category.id
-          else return category
-        })
-      : null
+    const flattenedCategories = (categories ?? [])
+      .map((category) => {
+        if (category == null) return null
+        if (typeof category === 'number') return category
+        if (typeof category === 'object') {
+          if ('id' in category && category.id != null) return category.id as number
+          if ('value' in category) {
+            const v = (category as { value?: unknown }).value
+            if (typeof v === 'number') return v
+            if (v && typeof v === 'object' && 'id' in v) return (v as { id: number }).id
+          }
+        }
+        return null
+      })
+      .filter((id): id is number => id != null)
 
     const fetchedProducts = await payload.find({
       collection: 'products',
       draft: false,
       overrideAccess: false,
       depth: 2,
-      limit: limit || undefined,
+      limit: limit || 100,
       sort: sort || '-createdAt',
       select: {
         id: true,
@@ -43,12 +52,12 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
           inventory: true,
         },
       },
-      ...(flattenedCategories && flattenedCategories.length > 0
+      ...(flattenedCategories.length > 0
         ? {
             where: {
-              categories: {
-                contains: flattenedCategories[0],
-              },
+              or: flattenedCategories.map((id) => ({
+                categories: { contains: id },
+              })),
             },
           }
         : {}),
