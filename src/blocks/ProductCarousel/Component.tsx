@@ -58,28 +58,50 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
   } else if (selectedDocs?.length) {
     products = selectedDocs
       .map((doc) => {
-        if (typeof doc === 'object' && doc.value && typeof doc.value !== 'string') {
-          return doc.value as Product
+        if (typeof doc !== 'object' || !doc) return null
+        const val = doc.value
+        if (typeof val === 'object' && val !== null && 'slug' in val) {
+          return val as Product
+        }
+        if (typeof val === 'number') {
+          return null
         }
         return null
       })
       .filter((p): p is Product => p !== null)
+
+    if (products.length === 0 && selectedDocs.some((d) => typeof d?.value === 'number')) {
+      const ids = selectedDocs
+        .map((d) => (typeof d?.value === 'number' ? d.value : null))
+        .filter((id): id is number => id != null)
+      if (ids.length > 0) {
+        const payload = await getPayload({ config: configPromise })
+        const found = await payload.find({
+          collection: 'products',
+          draft: false,
+          overrideAccess: false,
+          depth: 2,
+          where: { id: { in: ids } },
+          limit: ids.length,
+        })
+        products = found.docs as Product[]
+      }
+    }
   }
 
   if (!products?.length) {
-    // Show a message in development to help debug
-    if (process.env.NODE_ENV === 'development') {
-      return (
-        <div className="container py-8">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              Product Carousel: No products found. Check your block configuration (categories, populateBy, or selectedDocs).
-            </p>
-          </div>
+    return (
+      <section className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="container">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+            {title}
+          </h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            No products to display. Add products in the admin or adjust this block&apos;s configuration.
+          </p>
         </div>
-      )
-    }
-    return null
+      </section>
+    )
   }
 
   return <ProductCarousel products={products} title={title} limit={limit || 8} />

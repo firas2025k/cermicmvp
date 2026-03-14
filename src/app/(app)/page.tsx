@@ -25,7 +25,7 @@ export default async function HomePage() {
   try {
     homepage = await payload.findGlobal({
       slug: 'homepage' as any,
-      depth: 2,
+      depth: 3, // Deeper depth so product carousel selectedDocs/categories are populated
       draft: false, // Explicitly fetch published version
     } as any)
   } catch (error) {

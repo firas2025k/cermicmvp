@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+- if we need a migration write a sql file so i can execute it dirrectly on neon db
