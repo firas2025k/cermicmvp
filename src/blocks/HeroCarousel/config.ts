@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { HeroSlideRowLabel } from './HeroSlideRowLabel'
+
 export const HeroCarouselBlock: Block = {
   slug: 'heroCarousel',
   interfaceName: 'HeroCarouselBlock',
@@ -10,13 +12,17 @@ export const HeroCarouselBlock: Block = {
       label: 'Hero Slides',
       minRows: 1,
       maxRows: 10,
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
+      labels: {
+        singular: 'Slide',
+        plural: 'Slides',
+      },
+      admin: {
+        initCollapsed: false,
+        components: {
+          RowLabel: HeroSlideRowLabel,
         },
+      },
+      fields: [
         {
           name: 'title',
           type: 'text',
@@ -37,6 +43,16 @@ export const HeroCarouselBlock: Block = {
           type: 'text',
           label: 'Button Link',
           defaultValue: '/shop',
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          label: 'Slide Image',
+          admin: {
+            description: 'Image for this slide only. Each slide has its own image.',
+          },
         },
       ],
     },
