@@ -240,6 +240,8 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
       gallery: true,
       inventory: true,
       enableVariants: true,
+      variantTypes: true,
+      variants: true,
       priceInEUR: true,
       priceInEUREnabled: true,
       meta: true,
@@ -258,12 +260,22 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
       ],
     },
     populate: {
+      variantTypes: {
+        populate: {
+          options: true,
+        },
+      },
       variants: {
         title: true,
         priceInEUR: true,
         priceInEUREnabled: true,
         inventory: true,
         options: true,
+      },
+      gallery: {
+        populate: {
+          variantOption: true,
+        },
       },
       relatedProducts: {
         populate: {

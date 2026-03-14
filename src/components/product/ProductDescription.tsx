@@ -92,9 +92,6 @@ export function ProductDescription({ product }: { product: Product }) {
 
       {hasVariants && (
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-600 dark:text-neutral-300">
-            Color / style
-          </p>
           <Suspense fallback={null}>
             <VariantSelector product={product} />
           </Suspense>
