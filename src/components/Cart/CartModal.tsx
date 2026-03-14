@@ -35,7 +35,12 @@ export function CartModal() {
 
   const totalQuantity = useMemo(() => {
     if (!cart || !cart.items || !cart.items.length) return undefined
-    return cart.items.reduce((quantity, item) => (item.quantity || 0) + quantity, 0)
+    const validItems = cart.items.filter(
+      (item) => item != null && item.product != null && (item.quantity ?? 0) > 0,
+    )
+    if (validItems.length === 0) return undefined
+    const sum = validItems.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
+    return sum > 0 ? sum : undefined
   }, [cart])
 
   return (
