@@ -1,6 +1,7 @@
 import type { Media, Product } from '@/payload-types'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { Label } from '@/components/Grid/Label'
 import { GridTileImage } from '@/components/Grid/tile'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
@@ -168,29 +169,52 @@ function RelatedProducts({ products }: { products: Product[] }) {
     <div className="py-10">
       <div className="mb-4 flex items-baseline justify-between gap-4">
         <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-          Related tiles
+          Ähnliche Produkte
         </h2>
         <p className="text-xs text-neutral-600 dark:text-neutral-300">
-          More Tunisian ceramic tiles in a similar mood.
+          Weitere Produkte in ähnlicher Stimmung.
         </p>
       </div>
       <ul className="flex w-full gap-4 overflow-x-auto pt-1">
-        {products.map((product) => (
-          <li
-            className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
-            key={product.id}
-          >
-            <Link className="relative h-full w-full" href={`/products/${product.slug}`}>
-              <GridTileImage
-                label={{
-                  amount: product.priceInEUR!,
-                  title: product.title,
-                }}
-                media={product.meta?.image as Media}
-              />
-            </Link>
-          </li>
-        ))}
+        {products.map((product) => {
+          const galleryImage =
+            product.gallery?.[0]?.image && typeof product.gallery[0].image === 'object'
+              ? product.gallery[0].image
+              : undefined
+          const metaImage =
+            product.meta?.image && typeof product.meta.image === 'object'
+              ? product.meta.image
+              : undefined
+          const image = (galleryImage || metaImage) as Media | undefined
+
+          return (
+            <li
+              className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
+              key={product.id}
+            >
+              <Link className="relative block h-full w-full" href={`/products/${product.slug}`}>
+                <div className="relative flex h-full w-full overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                  {image ? (
+                    <GridTileImage
+                      label={{
+                        amount: product.priceInEUR!,
+                        title: product.title,
+                      }}
+                      media={image}
+                    />
+                  ) : (
+                    <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40">
+                      <Label
+                        amount={product.priceInEUR!}
+                        title={product.title}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
@@ -240,6 +264,12 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
         priceInEUREnabled: true,
         inventory: true,
         options: true,
+      },
+      relatedProducts: {
+        populate: {
+          gallery: true,
+          meta: true,
+        },
       },
     },
   })
