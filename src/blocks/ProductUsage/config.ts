@@ -29,10 +29,36 @@ export const ProductUsageBlock: Block = {
           label: 'Description',
         },
         {
+          name: 'linkType',
+          type: 'radio',
+          label: 'Link to',
+          defaultValue: 'custom',
+          options: [
+            { label: 'Custom URL', value: 'custom' },
+            { label: 'Product', value: 'product' },
+          ],
+          admin: {
+            layout: 'horizontal',
+          },
+        },
+        {
           name: 'link',
           type: 'text',
-          label: 'Link',
+          label: 'Custom URL',
           defaultValue: '/shop',
+          admin: {
+            condition: (_, siblingData) => siblingData?.linkType !== 'product',
+          },
+        },
+        {
+          name: 'product',
+          type: 'relationship',
+          relationTo: 'products',
+          label: 'Product',
+          admin: {
+            description: 'Pick a product to link to. The button will go to that product page.',
+            condition: (_, siblingData) => siblingData?.linkType === 'product',
+          },
         },
         {
           name: 'linkText',

@@ -1886,11 +1886,11 @@ export interface Header {
      */
     content?: string | null;
     /**
-     * Hex color (e.g. #991b1b for red). Leave empty for default.
+     * Pick a color or enter a hex code.
      */
     backgroundColor?: string | null;
     /**
-     * Hex color (e.g. #ffffff for white). Leave empty for default.
+     * Pick a color or enter a hex code.
      */
     textColor?: string | null;
   };
@@ -2153,7 +2153,12 @@ export interface ProductUsageBlock {
         image: number | Media;
         title: string;
         description?: string | null;
+        linkType?: ('custom' | 'product') | null;
         link?: string | null;
+        /**
+         * Pick a product to link to. The button will go to that product page.
+         */
+        product?: (number | null) | Product;
         linkText?: string | null;
         id?: string | null;
       }[]
@@ -2426,7 +2431,9 @@ export interface ProductUsageBlockSelect<T extends boolean = true> {
         image?: T;
         title?: T;
         description?: T;
+        linkType?: T;
         link?: T;
+        product?: T;
         linkText?: T;
         id?: T;
       };

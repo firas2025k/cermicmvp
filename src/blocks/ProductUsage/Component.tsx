@@ -3,6 +3,19 @@ import React from 'react'
 import Link from 'next/link'
 import { Media } from '@/components/Media'
 
+function getItemHref(item: NonNullable<ProductUsageBlockProps['items']>[number]): string | null {
+  // When linkType is 'product', use the product's slug
+  if (item.linkType === 'product' && item.product) {
+    const product = typeof item.product === 'object' ? item.product : null
+    if (product && 'slug' in product && product.slug) {
+      return `/products/${product.slug}`
+    }
+  }
+  // Custom URL or legacy data (linkType undefined = pre-migration)
+  if (item.link) return item.link
+  return null
+}
+
 export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ items }) => {
   if (!items || items.length === 0) return null
 
@@ -12,6 +25,7 @@ export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ i
         <div className="grid gap-6 md:grid-cols-3">
           {items.map((item, index) => {
             const image = typeof item.image === 'object' ? item.image : null
+            const href = getItemHref(item)
 
             return (
               <div
@@ -36,9 +50,9 @@ export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ i
                   {item.description && (
                     <p className="text-sm text-white/90 mb-4">{item.description}</p>
                   )}
-                  {item.link && (
+                  {href && (
                     <Link
-                      href={item.link}
+                      href={href}
                       className="inline-block rounded-md bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-100"
                     >
                       {item.linkText || 'Mehr erfahren'}

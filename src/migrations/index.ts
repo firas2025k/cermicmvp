@@ -3,6 +3,7 @@ import * as migration_20251223_231748 from './20251223_231748';
 import * as migration_20260224_000001_add_header_logo from './20260224_000001_add_header_logo';
 import * as migration_20260310_000001_add_promotional_banner from './20260310_000001_add_promotional_banner';
 import * as migration_20260311_000001_add_categories_order from './20260311_000001_add_categories_order';
+import * as migration_20260311_000001_add_product_usage_product_link from './20260311_000001_add_product_usage_product_link';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260311_000001_add_categories_order.up,
     down: migration_20260311_000001_add_categories_order.down,
     name: '20260311_000001_add_categories_order',
+  },
+  {
+    up: migration_20260311_000001_add_product_usage_product_link.up,
+    down: migration_20260311_000001_add_product_usage_product_link.down,
+    name: '20260311_000001_add_product_usage_product_link',
   },
 ];
