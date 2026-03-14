@@ -41,8 +41,11 @@ export const Header: GlobalConfig = {
           label: 'Background Color',
           defaultValue: '#991b1b',
           admin: {
-            description: 'Hex color (e.g. #991b1b for red). Leave empty for default.',
+            description: 'Pick a color or enter a hex code.',
             condition: (_, siblingData) => Boolean(siblingData?.enabled),
+            components: {
+              Field: '@/components/ColorPicker#ColorPicker',
+            },
           },
         },
         {
@@ -51,8 +54,11 @@ export const Header: GlobalConfig = {
           label: 'Text Color',
           defaultValue: '#ffffff',
           admin: {
-            description: 'Hex color (e.g. #ffffff for white). Leave empty for default.',
+            description: 'Pick a color or enter a hex code.',
             condition: (_, siblingData) => Boolean(siblingData?.enabled),
+            components: {
+              Field: '@/components/ColorPicker#ColorPicker',
+            },
           },
         },
       ],
