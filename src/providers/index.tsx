@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/providers/Auth'
+import { CartOpenProvider } from '@/providers/CartOpen'
 import { EcommerceProvider, EUR } from '@payloadcms/plugin-ecommerce/client/react'
 import { stripeAdapterClient } from '@payloadcms/plugin-ecommerce/payments/stripe'
 import React from 'react'
@@ -25,17 +26,23 @@ export const Providers: React.FC<{
               cartsFetchQuery: {
                 depth: 2,
                 populate: {
-                  products: {
-                    slug: true,
-                    title: true,
-                    gallery: true,
-                    inventory: true,
-                    priceInEUR: true,
-                  },
-                  variants: {
-                    title: true,
-                    inventory: true,
-                    priceInEUR: true,
+                  items: {
+                    populate: {
+                      product: {
+                        slug: true,
+                        title: true,
+                        gallery: true,
+                        inventory: true,
+                        priceInEUR: true,
+                        meta: true,
+                      },
+                      variant: {
+                        title: true,
+                        inventory: true,
+                        priceInEUR: true,
+                        options: true,
+                      },
+                    },
                   },
                 },
               },
@@ -46,7 +53,7 @@ export const Providers: React.FC<{
               }),
             ]}
           >
-            {children}
+            <CartOpenProvider>{children}</CartOpenProvider>
           </EcommerceProvider>
         </HeaderThemeProvider>
       </AuthProvider>

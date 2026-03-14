@@ -14,24 +14,25 @@ import { ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Product } from '@/payload-types'
+import { useCartOpen } from '@/providers/CartOpen'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
 import { OpenCartButton } from './OpenCart'
 
 export function CartModal() {
   const { cart } = useCart()
-  const [isOpen, setIsOpen] = useState(false)
+  const { isOpen, setOpen, closeCart } = useCartOpen()
 
   const pathname = usePathname()
 
   useEffect(() => {
     // Close the cart modal when the pathname changes.
-    setIsOpen(false)
-  }, [pathname])
+    closeCart()
+  }, [pathname, closeCart])
 
   const totalQuantity = useMemo(() => {
     if (!cart || !cart.items || !cart.items.length) return undefined
@@ -44,7 +45,7 @@ export function CartModal() {
   }, [cart])
 
   return (
-    <Sheet onOpenChange={setIsOpen} open={isOpen}>
+    <Sheet onOpenChange={setOpen} open={isOpen}>
       <SheetTrigger asChild>
         <OpenCartButton quantity={totalQuantity} />
       </SheetTrigger>

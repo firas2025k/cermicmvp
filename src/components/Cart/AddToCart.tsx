@@ -8,12 +8,15 @@ import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
+
+import { useCartOpen } from '@/providers/CartOpen'
 type Props = {
   product: Product
 }
 
 export function AddToCart({ product }: Props) {
   const { addItem, cart } = useCart()
+  const { openCart } = useCartOpen()
   const searchParams = useSearchParams()
 
   const variants = product.variants?.docs || []
@@ -46,14 +49,15 @@ export function AddToCart({ product }: Props) {
         variant: selectedVariant?.id ?? undefined,
       })
         .then(() => {
-        toast.success('Item added to cart.')
+          toast.success('Item added to cart.')
+          openCart()
         })
         .catch((error) => {
           console.error('Error adding to cart:', error)
           toast.error('Failed to add item to cart. Please try again.')
-      })
+        })
     },
-    [addItem, product, selectedVariant],
+    [addItem, product, selectedVariant, openCart],
   )
 
   const disabled = useMemo<boolean>(() => {
