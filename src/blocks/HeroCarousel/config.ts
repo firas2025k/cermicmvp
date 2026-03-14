@@ -1,7 +1,5 @@
 import type { Block } from 'payload'
 
-import { HeroSlideRowLabel } from './HeroSlideRowLabel'
-
 export const HeroCarouselBlock: Block = {
   slug: 'heroCarousel',
   interfaceName: 'HeroCarouselBlock',
@@ -19,7 +17,7 @@ export const HeroCarouselBlock: Block = {
       admin: {
         initCollapsed: false,
         components: {
-          RowLabel: HeroSlideRowLabel,
+          RowLabel: '@/blocks/HeroCarousel/HeroSlideRowLabel#HeroSlideRowLabel',
         },
       },
       fields: [

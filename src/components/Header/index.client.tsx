@@ -35,12 +35,26 @@ export function HeaderClient({ header, categories = [] }: Props) {
     console.log('Menu length:', menu.length)
   }
 
+  const banner = header?.promotionalBanner
+  const showBanner = banner?.enabled !== false
+  const bannerContent = banner?.content?.trim() || 'Kostenloser Versand ab 50€ Bestellwert'
+  const bannerBg = banner?.backgroundColor?.trim() || '#991b1b'
+  const bannerText = banner?.textColor?.trim() || '#ffffff'
+
   return (
     <>
-      {/* Top promotional bar */}
-      <div className="bg-red-900 text-white text-xs py-1.5 text-center">
-        <p>Kostenloser Versand ab 50€ Bestellwert</p>
-      </div>
+      {/* Top promotional bar - editable from Header global */}
+      {showBanner && bannerContent ? (
+        <div
+          className="text-xs py-1.5 text-center"
+          style={{
+            backgroundColor: bannerBg,
+            color: bannerText,
+          }}
+        >
+          <p>{bannerContent}</p>
+        </div>
+      ) : null}
 
       {/* Main Header */}
       <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white/95 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/95">

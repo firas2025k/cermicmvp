@@ -1873,6 +1873,27 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: number;
+  /**
+   * The small banner at the top of every page. Toggle visibility, edit content, and customize colors.
+   */
+  promotionalBanner?: {
+    /**
+     * Uncheck to hide the banner completely.
+     */
+    enabled?: boolean | null;
+    /**
+     * Edit or delete this text to change the banner message.
+     */
+    content?: string | null;
+    /**
+     * Hex color (e.g. #991b1b for red). Leave empty for default.
+     */
+    backgroundColor?: string | null;
+    /**
+     * Hex color (e.g. #ffffff for white). Leave empty for default.
+     */
+    textColor?: string | null;
+  };
   logo?: {
     image?: (number | null) | Media;
     label?: string | null;
@@ -1948,11 +1969,14 @@ export interface Homepage {
 export interface HeroCarouselBlock {
   slides?:
     | {
-        image: number | Media;
         title?: string | null;
         subtitle?: string | null;
         buttonText?: string | null;
         buttonLink?: string | null;
+        /**
+         * Image for this slide only. Each slide has its own image.
+         */
+        image: number | Media;
         id?: string | null;
       }[]
     | null;
@@ -2170,6 +2194,14 @@ export interface AboutUsBlock {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  promotionalBanner?:
+    | T
+    | {
+        enabled?: T;
+        content?: T;
+        backgroundColor?: T;
+        textColor?: T;
+      };
   logo?:
     | T
     | {
@@ -2249,11 +2281,11 @@ export interface HeroCarouselBlockSelect<T extends boolean = true> {
   slides?:
     | T
     | {
-        image?: T;
         title?: T;
         subtitle?: T;
         buttonText?: T;
         buttonLink?: T;
+        image?: T;
         id?: T;
       };
   autoPlay?: T;
