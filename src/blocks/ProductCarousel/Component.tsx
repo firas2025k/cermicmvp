@@ -3,6 +3,9 @@ import type { Product } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
+
+import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
+
 import { ProductCarousel } from '@/components/ProductCarousel'
 
 export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> = async (props) => {
@@ -29,6 +32,21 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
       })
       .filter((id): id is number => id != null)
 
+    const categoriesResult = await payload.find({
+      collection: 'categories',
+      limit: 100,
+      sort: 'title',
+      depth: 1,
+    })
+    const allCategories = categoriesResult.docs || []
+    const { byParent } = organizeCategories(allCategories)
+
+    const categoryIdsToMatch: (number | string)[] = []
+    for (const id of flattenedCategories) {
+      categoryIdsToMatch.push(...getCategoryAndDescendantIds(id, byParent))
+    }
+    const uniqueCategoryIds = [...new Set(categoryIdsToMatch)]
+
     const fetchedProducts = await payload.find({
       collection: 'products',
       draft: false,
@@ -52,10 +70,10 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
           inventory: true,
         },
       },
-      ...(flattenedCategories.length > 0
+      ...(uniqueCategoryIds.length > 0
         ? {
             where: {
-              or: flattenedCategories.map((id) => ({
+              or: uniqueCategoryIds.map((id) => ({
                 categories: { contains: id },
               })),
             },
