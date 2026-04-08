@@ -18,6 +18,8 @@ export function AddToCart({ product }: Props) {
   const { addItem, cart } = useCart()
   const { openCart } = useCartOpen()
   const searchParams = useSearchParams()
+  const cartStorageKey = 'cart'
+  const cartSecretStorageKey = 'cart_secret'
 
   const variants = product.variants?.docs || []
 
@@ -41,23 +43,117 @@ export function AddToCart({ product }: Props) {
   }, [product.enableVariants, searchParams, variants])
 
   const addToCart = useCallback(
-    (e: React.FormEvent<HTMLButtonElement>) => {
+    async (e: React.FormEvent<HTMLButtonElement>) => {
       e.preventDefault()
 
-      addItem({
-        product: product.id,
-        variant: selectedVariant?.id ?? undefined,
-      })
-        .then(() => {
-          toast.success('Item added to cart.')
-          openCart()
+      const targetProductID = product.id
+      const targetVariantID = selectedVariant?.id ?? undefined
+
+      try {
+        await addItem({
+          product: targetProductID,
+          variant: targetVariantID,
         })
-        .catch((error) => {
+        toast.success('Item added to cart.')
+        openCart()
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const isMissingAddItemRoute =
+          errorMessage.includes('Route not found') && errorMessage.includes('/add-item')
+
+        if (!isMissingAddItemRoute) {
           console.error('Error adding to cart:', error)
           toast.error('Failed to add item to cart. Please try again.')
-        })
+          return
+        }
+
+        try {
+          const existingItems =
+            cart?.items
+              ?.map((item) => {
+                const existingProductID =
+                  typeof item.product === 'object' ? item.product?.id : item.product
+                const existingVariantID = item.variant
+                  ? typeof item.variant === 'object'
+                    ? item.variant?.id
+                    : item.variant
+                  : undefined
+
+                if (!existingProductID || !item.quantity) return null
+
+                return {
+                  product: existingProductID,
+                  variant: existingVariantID,
+                  quantity: item.quantity,
+                }
+              })
+              .filter(Boolean) ?? []
+
+          const mergedItems = [...existingItems]
+          const existingIndex = mergedItems.findIndex(
+            (item) => item.product === targetProductID && item.variant === targetVariantID,
+          )
+
+          if (existingIndex >= 0) {
+            const currentItem = mergedItems[existingIndex]
+            if (currentItem) {
+              mergedItems[existingIndex] = {
+                ...currentItem,
+                quantity: currentItem.quantity + 1,
+              }
+            }
+          } else {
+            mergedItems.push({
+              product: targetProductID,
+              variant: targetVariantID,
+              quantity: 1,
+            })
+          }
+
+          const response = await fetch('/api/carts?depth=2', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              currency: 'EUR',
+              items: mergedItems,
+            }),
+          })
+
+          if (!response.ok) {
+            const fallbackErrorText = await response.text()
+            throw new Error(fallbackErrorText)
+          }
+
+          const fallbackData = (await response.json()) as {
+            doc?: { id?: number | string; secret?: string | null }
+          }
+          const fallbackCartID = fallbackData?.doc?.id
+
+          if (!fallbackCartID) {
+            throw new Error('Fallback cart creation did not return a cart ID.')
+          }
+
+          localStorage.setItem(cartStorageKey, String(fallbackCartID))
+
+          if (fallbackData?.doc?.secret) {
+            localStorage.setItem(cartSecretStorageKey, fallbackData.doc.secret)
+          } else {
+            localStorage.removeItem(cartSecretStorageKey)
+          }
+
+          toast.success('Item added to cart.')
+          openCart()
+          window.location.reload()
+        } catch (fallbackError) {
+          console.error('Fallback add-to-cart failed:', fallbackError)
+          toast.error('Failed to add item to cart. Please try again.')
+        }
+      }
     },
-    [addItem, product, selectedVariant, openCart],
+    [addItem, cart?.items, openCart, product.id, selectedVariant?.id],
   )
 
   const disabled = useMemo<boolean>(() => {
