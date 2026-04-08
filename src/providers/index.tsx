@@ -25,6 +25,11 @@ export const Providers: React.FC<{
             api={{
               cartsFetchQuery: {
                 depth: 2,
+                select: {
+                  items: true,
+                  subtotal: true,
+                  currency: true,
+                },
                 populate: {
                   items: {
                     populate: {
