@@ -5,7 +5,7 @@ import type { Product, Variant } from '@/payload-types'
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import clsx from 'clsx'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 
@@ -14,8 +14,11 @@ type Props = {
   product: Product
 }
 
+const CART_DEBUG_KEY = 'cermic_cart_debug'
+
 export function AddToCart({ product }: Props) {
-  const { cart } = useCart()
+  const { cart, refreshCart } = useCart()
+  const router = useRouter()
   const { openCart } = useCartOpen()
   const searchParams = useSearchParams()
   const cartStorageKey = 'cart'
@@ -49,7 +52,19 @@ export function AddToCart({ product }: Props) {
       const targetProductID = product.id
       const targetVariantID = selectedVariant?.id ?? undefined
 
-      const runFallbackCreateCart = async () => {
+      const persistCartDebug = (payload: Record<string, unknown>) => {
+        if (typeof globalThis.window === 'undefined') return
+        try {
+          globalThis.window.sessionStorage.setItem(
+            CART_DEBUG_KEY,
+            JSON.stringify({ at: new Date().toISOString(), ...payload }, null, 2),
+          )
+        } catch {
+          // ignore quota / private mode
+        }
+      }
+
+      const runFallbackCreateCart = async (context?: { lastAddItem?: { status: number; body: string } }) => {
         const existingItems =
           cart?.items
             ?.map((item) => {
@@ -106,6 +121,16 @@ export function AddToCart({ product }: Props) {
 
         if (!response.ok) {
           const fallbackErrorText = await response.text()
+          persistCartDebug({
+            step: 'fallback_post_carts',
+            status: response.status,
+            body: fallbackErrorText.slice(0, 4000),
+            context,
+          })
+          toast.error(
+            `Cart error (saved to sessionStorage “${CART_DEBUG_KEY}”). Open DevTools → Application → Session Storage.`,
+            { duration: 30_000 },
+          )
           throw new Error(fallbackErrorText)
         }
 
@@ -115,6 +140,15 @@ export function AddToCart({ product }: Props) {
         const fallbackCartID = fallbackData?.doc?.id
 
         if (!fallbackCartID) {
+          persistCartDebug({
+            step: 'fallback_missing_cart_id',
+            response: fallbackData,
+            context,
+          })
+          toast.error(
+            `Cart error (saved to sessionStorage “${CART_DEBUG_KEY}”). Open DevTools → Application → Session Storage.`,
+            { duration: 30_000 },
+          )
           throw new Error('Fallback cart creation did not return a cart ID.')
         }
 
@@ -126,7 +160,13 @@ export function AddToCart({ product }: Props) {
           localStorage.removeItem(cartSecretStorageKey)
         }
 
-        toast.success('Item added to cart.')
+        persistCartDebug({
+          step: 'fallback_ok_reload',
+          newCartId: fallbackCartID,
+          note: 'Full reload so the cart provider picks up the new cart id from localStorage.',
+          context,
+        })
+        toast.success('Item added to cart. Reloading once to sync cart…', { duration: 5000 })
         openCart()
         window.location.reload()
       }
@@ -164,24 +204,47 @@ export function AddToCart({ product }: Props) {
           }
 
           if (response.ok && parsed?.success) {
+            await refreshCart()
+            router.refresh()
             toast.success('Item added to cart.')
             openCart()
-            window.location.reload()
             return
           }
 
+          persistCartDebug({
+            step: 'add_item_failed',
+            status: response.status,
+            body: responseText.slice(0, 4000),
+            cartId: cartID,
+          })
           console.error('[AddToCart] add-item failed', {
             status: response.status,
             body: responseText,
           })
-          await runFallbackCreateCart()
+          await runFallbackCreateCart({
+            lastAddItem: { status: response.status, body: responseText.slice(0, 4000) },
+          })
         } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          persistCartDebug({
+            step: 'add_item_throw',
+            message,
+            cartId: cartID,
+          })
           console.error('[AddToCart] add-item error', err)
           try {
             await runFallbackCreateCart()
           } catch (fallbackError) {
             console.error('Fallback add-to-cart failed:', fallbackError)
-            toast.error('Failed to add item to cart. Please try again.')
+            const fbMsg = fallbackError instanceof Error ? fallbackError.message : String(fallbackError)
+            persistCartDebug({
+              step: 'fallback_throw',
+              message: fbMsg.slice(0, 4000),
+            })
+            toast.error(
+              `Failed to add item. Details in sessionStorage “${CART_DEBUG_KEY}” (30s toast).`,
+              { duration: 30_000 },
+            )
           }
         }
         return
@@ -191,10 +254,15 @@ export function AddToCart({ product }: Props) {
         await runFallbackCreateCart()
       } catch (fallbackError) {
         console.error('Fallback add-to-cart failed:', fallbackError)
-        toast.error('Failed to add item to cart. Please try again.')
+        const fbMsg = fallbackError instanceof Error ? fallbackError.message : String(fallbackError)
+        persistCartDebug({ step: 'no_cart_id_fallback_throw', message: fbMsg.slice(0, 4000) })
+        toast.error(
+          `Failed to add item. Details in sessionStorage “${CART_DEBUG_KEY}”.`,
+          { duration: 30_000 },
+        )
       }
     },
-    [cart?.items, openCart, product.id, selectedVariant?.id],
+    [cart?.items, openCart, product.id, refreshCart, router, selectedVariant?.id],
   )
 
   const disabled = useMemo<boolean>(() => {
