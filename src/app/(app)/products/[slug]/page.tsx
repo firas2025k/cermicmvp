@@ -261,9 +261,9 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
     },
     populate: {
       variantTypes: {
-        populate: {
-          options: true,
-        },
+        label: true,
+        name: true,
+        options: true,
       },
       variants: {
         title: true,

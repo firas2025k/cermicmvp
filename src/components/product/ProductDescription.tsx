@@ -74,7 +74,7 @@ export function ProductDescription({ product }: { product: Product }) {
         </h1>
         <div className="space-y-1">
           <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-            {hasVariantPrices ? (
+            {hasVariantPrices && (lowestAmount > 0 || highestAmount > 0) ? (
               <Price highestAmount={highestAmount} lowestAmount={lowestAmount} currencyCode="EUR" />
             ) : (
               <Price amount={amount} currencyCode="EUR" />
