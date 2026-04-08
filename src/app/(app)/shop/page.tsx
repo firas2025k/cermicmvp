@@ -16,8 +16,15 @@ type Props = {
   searchParams: Promise<SearchParams>
 }
 
+function normalizeSearchQuery(q: string | string[] | undefined): string {
+  if (q == null) return ''
+  const s = Array.isArray(q) ? q[0] : q
+  return typeof s === 'string' ? s.trim() : ''
+}
+
 export default async function ShopPage({ searchParams }: Props) {
-  const { q: searchValue, sort, category } = await searchParams
+  const { q: rawQ, sort, category } = await searchParams
+  const searchValue = normalizeSearchQuery(rawQ)
   const payload = await getPayload({ config: configPromise })
 
   // Fetch categories for filters with parent relationships
@@ -52,13 +59,10 @@ export default async function ShopPage({ searchParams }: Props) {
     },
   ]
 
-  // Add search filter
+  // Search title + slug only. `description` is Lexical JSON — querying it with `like` breaks Postgres / Payload.
   if (searchValue) {
     whereConditions.push({
-      or: [
-        { title: { like: searchValue } },
-        { description: { like: searchValue } },
-      ],
+      or: [{ title: { contains: searchValue } }, { slug: { contains: searchValue } }],
     })
   }
 
@@ -133,7 +137,7 @@ export default async function ShopPage({ searchParams }: Props) {
         <div className="w-full">
           {/* Products Grid */}
           <div className="min-h-[400px]">
-            {!searchValue && products.docs?.length === 0 && (
+            {!searchValue && products.docs?.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
                   <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -147,7 +151,19 @@ export default async function ShopPage({ searchParams }: Props) {
                   Try adjusting your search or check back soon for new collections.
                 </p>
               </div>
-            )}
+            ) : null}
+
+            {searchValue && products.docs?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Keine Produkte für diese Suche. Versuchen Sie einen anderen Begriff oder{' '}
+                  <a className="font-medium text-amber-700 underline hover:text-amber-800 dark:text-amber-400" href="/shop">
+                    alle Produkte anzeigen
+                  </a>
+                  .
+                </p>
+              </div>
+            ) : null}
 
             {products?.docs.length > 0 ? (
               <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">

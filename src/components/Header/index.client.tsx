@@ -40,13 +40,13 @@ export function HeaderClient({ header, categories = [] }: Props) {
       {/* Top promotional bar - editable from Header global */}
       {showBanner && bannerContent ? (
         <div
-          className="text-xs py-1.5 text-center"
+          className="px-2 py-2.5 text-center text-xs leading-snug sm:py-3 sm:text-sm"
           style={{
             backgroundColor: bannerBg,
             color: bannerText,
           }}
         >
-          <p>{bannerContent}</p>
+          <p className="mx-auto max-w-4xl">{bannerContent}</p>
         </div>
       ) : null}
 

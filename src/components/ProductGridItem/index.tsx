@@ -38,29 +38,31 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200/60 bg-white transition-all duration-300 hover:border-amber-300/60 hover:shadow-lg dark:border-neutral-800/60 dark:bg-neutral-900/50 dark:hover:border-amber-700/40 dark:hover:shadow-amber-900/20"
       href={`/products/${product.slug}`}
     >
-      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
-        {image ? (
-          <Media
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-            imgClassName="h-full w-full object-cover"
-            resource={image}
-            width={400}
-            height={400}
-          />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40" />
-        )}
-        {/* Overlay gradient on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20" />
+      <div className="relative aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
+        {/* Clip only the image so hover scale + rounded top corners don’t cover the ribbon */}
+        <div className="absolute inset-0 overflow-hidden rounded-t-2xl">
+          {image ? (
+            <Media
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              imgClassName="h-full w-full object-cover"
+              resource={image}
+              width={400}
+              height={400}
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20" />
+        </div>
 
         {isOutOfStock ? (
           <>
             <span className="sr-only">Nicht vorrätig</span>
             <div
-              className="pointer-events-none absolute right-0 top-0 z-10 h-[5.5rem] w-[5.25rem] overflow-hidden"
+              className="pointer-events-none absolute right-0 top-0 z-20 h-[7.25rem] w-[7.25rem] overflow-hidden rounded-tr-2xl"
               aria-hidden
             >
-              <div className="absolute right-[-2.25rem] top-[1.15rem] w-[9.5rem] origin-center rotate-45 bg-neutral-500 py-1.5 text-center text-[0.65rem] font-bold uppercase leading-tight tracking-wide text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)] dark:bg-neutral-600">
+              <div className="absolute right-[-2.75rem] top-[1.65rem] w-[11.5rem] origin-center rotate-45 bg-neutral-500 py-2 text-center text-[0.6rem] font-bold uppercase leading-snug tracking-wide text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)] sm:text-[0.65rem] dark:bg-neutral-600">
                 Nicht vorrätig
               </div>
             </div>
