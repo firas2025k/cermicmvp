@@ -14,9 +14,9 @@ export function VariantSelector({ product }: { product: Product }) {
   const searchParams = useSearchParams()
   const variants = product.variants?.docs
   const variantTypes = product.variantTypes
-  const hasVariants = Boolean(product.enableVariants && variants?.length && variantTypes?.length)
+  const hasVariantTypes = Boolean(product.enableVariants && variantTypes?.length)
 
-  if (!hasVariants) {
+  if (!hasVariantTypes) {
     return null
   }
 

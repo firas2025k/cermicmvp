@@ -973,6 +973,10 @@ export interface MediaBlock {
 export interface Variant {
   id: number;
   /**
+   * Unique stock code for this variant (for inventory and operations).
+   */
+  sku?: string | null;
+  /**
    * Used for administrative purposes, not shown to customers. This is populated by default.
    */
   title?: string | null;
@@ -1651,6 +1655,7 @@ export interface AddressesSelect<T extends boolean = true> {
  * via the `definition` "variants_select".
  */
 export interface VariantsSelect<T extends boolean = true> {
+  sku?: T;
   title?: T;
   product?: T;
   options?: T;

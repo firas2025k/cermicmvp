@@ -19,9 +19,10 @@ export function ProductDescription({ product }: { product: Product }) {
   // Use EUR as the primary currency (fallback if useCurrency doesn't return EUR)
   const currencyCode = currency?.code || 'EUR'
   const priceField = `priceIn${currencyCode}` as keyof Product
-  const hasVariants = product.enableVariants && Boolean(product.variants?.docs?.length)
+  const hasVariantTypes = product.enableVariants && Boolean(product.variantTypes?.length)
+  const hasVariantPrices = product.enableVariants && Boolean(product.variants?.docs?.length)
 
-  if (hasVariants) {
+  if (hasVariantPrices) {
     const variantPriceField = `priceIn${currencyCode}` as keyof Variant
     const variantsOrderedByPrice = product.variants?.docs
       ?.filter((variant) => variant && typeof variant === 'object')
@@ -73,7 +74,7 @@ export function ProductDescription({ product }: { product: Product }) {
         </h1>
         <div className="space-y-1">
           <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-            {hasVariants ? (
+            {hasVariantPrices ? (
               <Price highestAmount={highestAmount} lowestAmount={lowestAmount} currencyCode="EUR" />
             ) : (
               <Price amount={amount} currencyCode="EUR" />
@@ -90,7 +91,7 @@ export function ProductDescription({ product }: { product: Product }) {
         />
       ) : null}
 
-      {hasVariants && (
+      {hasVariantTypes && (
         <div className="space-y-3">
           <Suspense fallback={null}>
             <VariantSelector product={product} />

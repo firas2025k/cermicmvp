@@ -12,6 +12,7 @@ import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
 import { customerOnlyFieldAccess } from '@/access/customerOnlyFieldAccess'
 import { CartsCollection } from '@/collections/Carts'
 import { ProductsCollection } from '@/collections/Products'
+import { VariantsCollection } from '@/collections/Variants'
 import { Page, Product } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
@@ -81,6 +82,9 @@ export const plugins: Plugin[] = [
     },
     products: {
       productsCollectionOverride: ProductsCollection,
+      variants: {
+        variantsCollectionOverride: VariantsCollection,
+      },
     },
     carts: {
       cartsCollectionOverride: CartsCollection,
