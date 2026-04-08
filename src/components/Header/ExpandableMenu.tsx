@@ -1,6 +1,7 @@
 'use client'
 
 import { CMSLink } from '@/components/Link'
+import { Search } from '@/components/Search'
 import { Button } from '@/components/ui/button'
 import {
     Sheet,
@@ -16,7 +17,7 @@ import { useAuth } from '@/providers/Auth'
 import { ChevronDown, ChevronUp, MenuIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 
 interface Props {
   menu: Header['navItems']
@@ -78,6 +79,15 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
           <SheetTitle className="text-xl font-semibold">Menu</SheetTitle>
           <SheetDescription />
         </SheetHeader>
+
+        <div className="mb-6 rounded-2xl border border-neutral-200 bg-white/90 p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Search products
+          </p>
+          <Suspense fallback={<div className="h-10 animate-pulse rounded-lg bg-neutral-100 dark:bg-neutral-800" />}>
+            <Search onNavigate={closeMenu} />
+          </Suspense>
+        </div>
 
         <div className="space-y-6">
           {/* Main Categories with Expandable Subcategories */}

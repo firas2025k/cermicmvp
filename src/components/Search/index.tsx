@@ -8,9 +8,11 @@ import React from 'react'
 
 type Props = {
   className?: string
+  /** Called after navigating to shop with the query (e.g. close header dropdown). */
+  onNavigate?: () => void
 }
 
-export const Search: React.FC<Props> = ({ className }) => {
+export const Search: React.FC<Props> = ({ className, onNavigate }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -28,6 +30,7 @@ export const Search: React.FC<Props> = ({ className }) => {
     }
 
     router.push(createUrl('/shop', newParams))
+    onNavigate?.()
   }
 
   return (

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import React, { Suspense } from 'react'
 
 import { ExpandableMenu } from './ExpandableMenu'
+import { HeaderSearch } from './HeaderSearch'
 import type { Header } from 'src/payload-types'
 import type { Category } from '@/payload-types'
 
@@ -27,13 +28,6 @@ export function HeaderClient({ header, categories = [] }: Props) {
     rawLogoLabel === ''
       ? ''
       : rawLogoLabel ?? 'TUNISIAN TILE STUDIO'
-
-  // Debug: Log menu items to console
-  if (typeof window !== 'undefined') {
-    console.log('Header object:', header)
-    console.log('Menu items:', menu)
-    console.log('Menu length:', menu.length)
-  }
 
   const banner = header?.promotionalBanner
   const showBanner = banner?.enabled !== false
@@ -116,24 +110,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
 
             {/* Right: Search, Theme Toggle, Account (desktop), Cart */}
             <div className="flex items-center justify-end gap-3 md:gap-4 ml-auto">
-              <button
-                className="hidden h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:flex md:h-10 md:w-10"
-                aria-label="Search"
-              >
-                <svg
-                  className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
+              <HeaderSearch />
 
               {/* Account icon on the right only for desktop */}
               <Link
