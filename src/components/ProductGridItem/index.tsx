@@ -52,14 +52,20 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         )}
         {/* Overlay gradient on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20" />
-        
-        {isOutOfStock && (
-          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-            <span className="rounded-full border border-red-200 bg-red-500/95 px-3 py-1 text-xs font-semibold text-white shadow-md dark:border-red-900/40">
-              Out of stock
-            </span>
-          </div>
-        )}
+
+        {isOutOfStock ? (
+          <>
+            <span className="sr-only">Nicht vorrätig</span>
+            <div
+              className="pointer-events-none absolute right-0 top-0 z-10 h-[5.5rem] w-[5.25rem] overflow-hidden"
+              aria-hidden
+            >
+              <div className="absolute right-[-2.25rem] top-[1.15rem] w-[9.5rem] origin-center rotate-45 bg-neutral-500 py-1.5 text-center text-[0.65rem] font-bold uppercase leading-tight tracking-wide text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)] dark:bg-neutral-600">
+                Nicht vorrätig
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col justify-between p-5">
