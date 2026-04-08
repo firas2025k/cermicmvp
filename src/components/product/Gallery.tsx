@@ -18,9 +18,11 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
 
   // Sync active image with selected variant (if present in search params)
   useEffect(() => {
-    const values = searchParams.values().toArray()
+    const selectedOptionIDs = Array.from(searchParams.entries())
+      .filter(([key]) => key !== 'variant' && key !== 'image')
+      .map(([, value]) => value)
 
-    if (values) {
+    if (selectedOptionIDs.length) {
       const index = gallery.findIndex((item) => {
         if (!item.variantOption) return false
 
@@ -30,7 +32,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
           variantID = item.variantOption.id
         } else variantID = item.variantOption
 
-        return Boolean(values.find((value) => value === String(variantID)))
+        return selectedOptionIDs.includes(String(variantID))
       })
 
       if (index !== -1) {

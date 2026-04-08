@@ -5,6 +5,7 @@ import { RichText } from '@/components/RichText'
 import { AddToCart } from '@/components/Cart/AddToCart'
 import { Price } from '@/components/Price'
 import React, { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 import { VariantSelector } from './VariantSelector'
 import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
@@ -12,6 +13,7 @@ import { StockIndicator } from '@/components/product/StockIndicator'
 
 export function ProductDescription({ product }: { product: Product }) {
   const { currency } = useCurrency()
+  const searchParams = useSearchParams()
   let amount = 0,
     lowestAmount = 0,
     highestAmount = 0
@@ -21,48 +23,72 @@ export function ProductDescription({ product }: { product: Product }) {
   const priceField = `priceIn${currencyCode}` as keyof Product
   const hasVariantTypes = product.enableVariants && Boolean(product.variantTypes?.length)
   const hasVariantPrices = product.enableVariants && Boolean(product.variants?.docs?.length)
+  const toNumber = (value: unknown): number | null => {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null
+    if (typeof value === 'string' && value.trim() !== '') {
+      const parsed = Number(value)
+      return Number.isFinite(parsed) ? parsed : null
+    }
+    return null
+  }
+  const selectedVariantID = searchParams.get('variant')
 
   if (hasVariantPrices) {
+    const selectedVariant = product.variants?.docs?.find((variant) => {
+      if (!variant || typeof variant !== 'object') return false
+      return String(variant.id) === selectedVariantID
+    })
+
+    if (selectedVariant && typeof selectedVariant === 'object') {
+      const selectedVariantPrice = toNumber(selectedVariant.priceInEUR)
+      if (selectedVariantPrice && selectedVariantPrice > 0) {
+        amount = selectedVariantPrice
+      }
+    }
+
     const variantPriceField = `priceIn${currencyCode}` as keyof Variant
     const variantsOrderedByPrice = product.variants?.docs
       ?.filter((variant) => variant && typeof variant === 'object')
       .sort((a, b) => {
-        if (
-          typeof a === 'object' &&
-          typeof b === 'object' &&
-          variantPriceField in a &&
-          variantPriceField in b &&
-          typeof a[variantPriceField] === 'number' &&
-          typeof b[variantPriceField] === 'number'
-        ) {
-          return a[variantPriceField] - b[variantPriceField]
-        }
-
-        return 0
+        if (typeof a !== 'object' || typeof b !== 'object') return 0
+        const aPrice = toNumber(a[variantPriceField])
+        const bPrice = toNumber(b[variantPriceField])
+        if (aPrice === null || bPrice === null) return 0
+        return aPrice - bPrice
       }) as Variant[]
 
-    const lowestVariant = variantsOrderedByPrice[0]?.[variantPriceField]
-    const highestVariant = variantsOrderedByPrice[variantsOrderedByPrice.length - 1]?.[variantPriceField]
+    const lowestVariant = toNumber(variantsOrderedByPrice[0]?.[variantPriceField])
+    const highestVariant = toNumber(
+      variantsOrderedByPrice[variantsOrderedByPrice.length - 1]?.[variantPriceField],
+    )
     if (
       variantsOrderedByPrice &&
       variantsOrderedByPrice.length > 0 &&
-      typeof lowestVariant === 'number' &&
-      typeof highestVariant === 'number'
+      lowestVariant !== null &&
+      highestVariant !== null
     ) {
       lowestAmount = lowestVariant
       highestAmount = highestVariant
     }
+
+    if (amount === 0) {
+      const basePrice = toNumber(product.priceInEUR)
+      if (basePrice && basePrice > 0) {
+        amount = basePrice
+      }
+    }
   } else {
     // For non-variant products, check priceInEUR directly (with fallback)
-    const eurPrice = product.priceInEUR
-    const usdPrice = product.priceInUSD
+    const eurPrice = toNumber(product.priceInEUR)
+    const usdPrice = toNumber(product.priceInUSD)
+    const dynamicPrice = toNumber(product[priceField])
     
-    if (typeof eurPrice === 'number' && eurPrice > 0) {
+    if (eurPrice !== null && eurPrice > 0) {
       amount = eurPrice
-    } else if (typeof usdPrice === 'number' && usdPrice > 0) {
+    } else if (usdPrice !== null && usdPrice > 0) {
       amount = usdPrice
-    } else if (product[priceField] && typeof product[priceField] === 'number') {
-      amount = product[priceField] as number
+    } else if (dynamicPrice !== null && dynamicPrice > 0) {
+      amount = dynamicPrice
     }
   }
 
@@ -74,10 +100,12 @@ export function ProductDescription({ product }: { product: Product }) {
         </h1>
         <div className="space-y-1">
           <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-            {hasVariantPrices && (lowestAmount > 0 || highestAmount > 0) ? (
+            {amount > 0 ? (
+              <Price amount={amount} currencyCode="EUR" />
+            ) : hasVariantPrices && (lowestAmount > 0 || highestAmount > 0) ? (
               <Price highestAmount={highestAmount} lowestAmount={lowestAmount} currencyCode="EUR" />
             ) : (
-              <Price amount={amount} currencyCode="EUR" />
+              <Price amount={0} currencyCode="EUR" />
             )}
           </div>
         </div>
