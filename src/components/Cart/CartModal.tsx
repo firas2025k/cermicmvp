@@ -30,6 +30,24 @@ export function CartModal() {
   const pathname = usePathname()
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[CartModal] cart state', {
+        cartID: cart?.id,
+        subtotal: cart?.subtotal,
+        itemCount: cart?.items?.length ?? 0,
+        items: cart?.items?.map((item) => ({
+          id: item?.id,
+          quantity: item?.quantity,
+          productType: typeof item?.product,
+          productID: typeof item?.product === 'object' ? item.product?.id : item?.product,
+          variantType: typeof item?.variant,
+          variantID: typeof item?.variant === 'object' ? item.variant?.id : item?.variant,
+        })),
+      })
+    }
+  }, [cart])
+
+  useEffect(() => {
     // Close the cart modal when the pathname changes.
     closeCart()
   }, [pathname, closeCart])

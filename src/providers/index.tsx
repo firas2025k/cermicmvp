@@ -31,6 +31,20 @@ export const Providers: React.FC<{
                   currency: true,
                 },
                 populate: {
+                  products: {
+                    slug: true,
+                    title: true,
+                    gallery: true,
+                    inventory: true,
+                    priceInEUR: true,
+                    meta: true,
+                  },
+                  variants: {
+                    title: true,
+                    inventory: true,
+                    priceInEUR: true,
+                    options: true,
+                  },
                   items: {
                     populate: {
                       product: {
