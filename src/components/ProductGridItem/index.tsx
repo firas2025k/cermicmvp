@@ -35,67 +35,54 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
   return (
     <Link
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200/60 bg-white transition-all duration-300 hover:border-amber-300/60 hover:shadow-lg dark:border-neutral-800/60 dark:bg-neutral-900/50 dark:hover:border-amber-700/40 dark:hover:shadow-amber-900/20"
       href={`/products/${product.slug}`}
+      className="group flex h-full w-full flex-col bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:bg-neutral-900"
     >
-      <div className="relative aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900">
-        {/* Clip only the image so hover scale + rounded top corners don’t cover the ribbon */}
-        <div className="absolute inset-0 overflow-hidden rounded-t-2xl">
+      <div className="relative aspect-square bg-white dark:bg-neutral-950">
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden p-5 sm:p-7">
           {image ? (
             <Media
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-              imgClassName="h-full w-full object-cover"
+              className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+              imgClassName="max-h-full max-w-full object-contain"
               resource={image}
               width={400}
               height={400}
             />
           ) : (
-            <div className="h-full w-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40" />
+            <div className="h-full w-full rounded-md bg-gradient-to-br from-amber-50 to-amber-100/80 dark:from-amber-950/30 dark:to-amber-900/20" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/0 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20" />
         </div>
 
         {isOutOfStock ? (
           <>
             <span className="sr-only">Nicht vorrätig</span>
             <div
-              className="pointer-events-none absolute right-0 top-0 z-20 h-[7.25rem] w-[7.25rem] overflow-hidden rounded-tr-2xl"
+              className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[calc(100%-1.5rem)] bg-neutral-500 px-3 py-2 text-[0.65rem] font-semibold uppercase leading-tight tracking-wide text-white shadow-sm dark:bg-neutral-600"
               aria-hidden
             >
-              <div className="absolute right-[-2.75rem] top-[1.65rem] w-[11.5rem] origin-center rotate-45 bg-neutral-500 py-2 text-center text-[0.6rem] font-bold uppercase leading-snug tracking-wide text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)] sm:text-[0.65rem] dark:bg-neutral-600">
-                Nicht vorrätig
-              </div>
+              Nicht vorrätig
             </div>
           </>
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-5">
-        <div className="space-y-3">
-          <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-neutral-900 transition-colors group-hover:text-amber-700 dark:text-neutral-50 dark:group-hover:text-amber-400">
-            {title}
-          </h3>
-          
-          <div className="flex items-center gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            ))}
-            <span className="ml-1.5 text-xs text-neutral-500 dark:text-neutral-400">(5.0)</span>
-          </div>
+      <div className="flex flex-1 flex-col items-center px-4 pb-5 pt-4 text-center">
+        <h3 className="line-clamp-2 min-h-[2.75rem] text-base font-medium leading-snug text-neutral-900 transition-colors group-hover:text-amber-800 dark:text-neutral-100 dark:group-hover:text-amber-400">
+          {title}
+        </h3>
+
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-0.5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+          ))}
+          <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">(5.0)</span>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
-          {typeof price === 'number' && (
-            <div className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-              <Price amount={price} currencyCode="EUR" />
-            </div>
-          )}
-          <div className="rounded-full bg-amber-100 p-2 transition-colors group-hover:bg-amber-200 dark:bg-amber-900/40 dark:group-hover:bg-amber-900/60">
-            <svg className="h-4 w-4 text-amber-700 dark:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+        {typeof price === 'number' ? (
+          <div className="mt-3 text-lg font-bold tabular-nums text-neutral-900 dark:text-neutral-50">
+            <Price amount={price} currencyCode="EUR" />
           </div>
-        </div>
+        ) : null}
       </div>
     </Link>
   )
