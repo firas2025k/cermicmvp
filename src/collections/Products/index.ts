@@ -20,8 +20,11 @@ import {
 import type { Field } from 'payload'
 import { DefaultDocumentIDType, slugField, Where } from 'payload'
 
-/** Ecommerce plugin hides `inventory` when `enableVariants` is on; we keep product-level stock visible alongside variant inventory. */
-function withProductInventoryAlwaysVisible(fields: Field[]): Field[] {
+/**
+ * - Inventory: plugin hides it when variants are enabled; keep it visible.
+ * - Variants join: for single-collection joins Payload defaults `disableRowTypes` so row actions (delete) stay hidden; force them on.
+ */
+function patchEcommerceProductDetailFields(fields: Field[]): Field[] {
   return fields.map((field) => {
     if ('name' in field && field.name === 'inventory') {
       const prevAdmin =
@@ -34,6 +37,17 @@ function withProductInventoryAlwaysVisible(fields: Field[]): Field[] {
           description:
             (prevAdmin as { description?: string }).description ??
             'Product-level stock. Each variant can also have its own inventory below.',
+        },
+      } as Field
+    }
+    if ('name' in field && field.name === 'variants' && field.type === 'join') {
+      const prevAdmin =
+        field.admin && typeof field.admin === 'object' ? { ...field.admin } : {}
+      return {
+        ...field,
+        admin: {
+          ...prevAdmin,
+          disableRowTypes: false,
         },
       } as Field
     }
@@ -163,7 +177,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
         },
         {
           fields: [
-            ...withProductInventoryAlwaysVisible(defaultCollection.fields),
+            ...patchEcommerceProductDetailFields(defaultCollection.fields),
             {
               name: 'relatedProducts',
               type: 'relationship',
