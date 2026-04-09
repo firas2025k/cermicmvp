@@ -18,10 +18,16 @@ export const appearanceOptions: Record<LinkAppearances, { label: string; value: 
 type LinkType = (options?: {
   appearances?: LinkAppearances[] | false
   disableLabel?: boolean
+  /** When true, adds a "Category" type (shop link + optional submenu on storefront). Use only where appropriate (e.g. header nav). */
+  includeCategories?: boolean
   overrides?: Record<string, unknown>
 }) => Field
 
-export const link: LinkType = ({ appearances, disableLabel = false, overrides = {} } = {}) => {
+export const link: LinkType = ({
+  appearances,
+  disableLabel = false,
+  includeCategories = false,
+  overrides = {} } = {}) => {
   const linkResult: Field = {
     name: 'link',
     type: 'group',
@@ -49,6 +55,14 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
                 label: 'Custom URL',
                 value: 'custom',
               },
+              ...(includeCategories
+                ? [
+                    {
+                      label: 'Category',
+                      value: 'category',
+                    },
+                  ]
+                : []),
             ],
           },
           {
@@ -91,18 +105,15 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
   ]
 
   if (!disableLabel) {
-    linkTypes.map((linkType) => ({
-      ...linkType,
-      admin: {
-        ...linkType.admin,
-        width: '50%',
-      },
+    const rowLinkFields = linkTypes.map((field) => ({
+      ...field,
+      admin: { ...field.admin, width: '50%' },
     }))
 
     linkResult.fields.push({
       type: 'row',
       fields: [
-        ...linkTypes,
+        ...rowLinkFields,
         {
           name: 'label',
           type: 'text',
@@ -116,6 +127,22 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
     })
   } else {
     linkResult.fields = [...linkResult.fields, ...linkTypes]
+  }
+
+  if (includeCategories) {
+    linkResult.fields.push({
+      name: 'category',
+      type: 'relationship',
+      relationTo: 'categories',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'category',
+        description:
+          'Shop link to this category. On the storefront, hovering the nav item opens subcategories in a dropdown.',
+      },
+      label: 'Category',
+      maxDepth: 1,
+      required: true,
+    })
   }
 
   if (appearances !== false) {

@@ -1906,7 +1906,7 @@ export interface Header {
   navItems?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'category') | null;
           newTab?: boolean | null;
           reference?: {
             relationTo: 'pages';
@@ -1914,6 +1914,10 @@ export interface Header {
           } | null;
           url?: string | null;
           label: string;
+          /**
+           * Shop link to this category. On the storefront, hovering the nav item opens subcategories in a dropdown.
+           */
+          category?: (number | null) | Category;
         };
         id?: string | null;
       }[]
@@ -2229,6 +2233,7 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              category?: T;
             };
         id?: T;
       };

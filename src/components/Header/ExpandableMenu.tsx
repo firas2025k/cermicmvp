@@ -12,6 +12,7 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet'
 import { getSubcategories, hasSubcategories, organizeCategories } from '@/lib/categories'
+import { categoryNavHref, getNavCategory } from '@/lib/headerNav'
 import type { Category, Header } from '@/payload-types'
 import { useAuth } from '@/providers/Auth'
 import { ChevronDown, ChevronUp, MenuIcon } from 'lucide-react'
@@ -30,6 +31,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
   const searchParams = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [expandedHeaderNav, setExpandedHeaderNav] = useState<Set<string>>(new Set())
 
   const closeMenu = () => setIsOpen(false)
 
@@ -56,6 +58,15 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
         newSet.add(categorySlug)
       }
       return newSet
+    })
+  }
+
+  const toggleHeaderNavItem = (navKey: string) => {
+    setExpandedHeaderNav((prev) => {
+      const next = new Set(prev)
+      if (next.has(navKey)) next.delete(navKey)
+      else next.add(navKey)
+      return next
     })
   }
 
@@ -154,14 +165,71 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                 Pages
               </p>
               <div className="mt-1 space-y-1">
-                {menu.map((item) => (
-                  <CMSLink
-                    key={item.id}
-                    {...item.link}
-                    appearance="link"
-                    className="block rounded-lg px-2 py-2 text-sm text-neutral-900 transition hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-50 dark:hover:bg-neutral-800"
-                  />
-                ))}
+                {menu.map((item) => {
+                  if (!item?.link) return null
+                  const l = item.link
+                  const parentCat = getNavCategory(l)
+                  if (parentCat) {
+                    const subs = getSubcategories(parentCat.id, byParent)
+                    const navKey = item.id || `hdr-${parentCat.id}`
+                    const open = expandedHeaderNav.has(navKey)
+                    return (
+                      <div key={item.id || navKey} className="rounded-lg">
+                        <div className="flex items-center justify-between gap-1">
+                          <Link
+                            href={categoryNavHref(parentCat)}
+                            onClick={closeMenu}
+                            className="block flex-1 rounded-lg px-2 py-2 text-left text-sm font-medium text-neutral-900 transition hover:bg-neutral-100 dark:text-neutral-50 dark:hover:bg-neutral-800"
+                          >
+                            {l.label}
+                          </Link>
+                          {subs.length > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleHeaderNavItem(navKey)}
+                              className="rounded-full p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                              aria-expanded={open}
+                              aria-label={open ? 'Unterkategorien einklappen' : 'Unterkategorien anzeigen'}
+                            >
+                              {open ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                            </button>
+                          ) : null}
+                        </div>
+                        {open && subs.length > 0 ? (
+                          <div className="pb-2 pl-4">
+                            {subs.map((sub) => (
+                              <Link
+                                key={sub.id}
+                                href={categoryNavHref(sub)}
+                                onClick={closeMenu}
+                                className="block py-1.5 text-sm text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+                              >
+                                {sub.title}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  }
+                  if (l.type !== 'reference' && l.type !== 'custom') return null
+                  return (
+                    <CMSLink
+                      key={item.id}
+                      type={l.type}
+                      label={l.label}
+                      newTab={l.newTab}
+                      url={l.url}
+                      reference={l.reference}
+                      appearance="link"
+                      className="block rounded-lg px-2 py-2 text-sm text-neutral-900 transition hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-50 dark:hover:bg-neutral-800"
+                    />
+                  )
+                })}
               </div>
             </div>
           ) : null}

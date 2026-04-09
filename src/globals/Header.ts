@@ -90,6 +90,7 @@ export const Header: GlobalConfig = {
       fields: [
         link({
           appearances: false,
+          includeCategories: true,
         }),
       ],
       maxRows: 6,

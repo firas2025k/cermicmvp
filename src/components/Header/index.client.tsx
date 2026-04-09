@@ -1,18 +1,16 @@
 'use client'
-import { CMSLink } from '@/components/Link'
 import { Cart } from '@/components/Cart'
 import { OpenCartButton } from '@/components/Cart/OpenCart'
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 
 import { ExpandableMenu } from './ExpandableMenu'
+import { HeaderDesktopNav } from './HeaderDesktopNav'
 import { HeaderSearch } from './HeaderSearch'
 import type { Header } from 'src/payload-types'
 import type { Category } from '@/payload-types'
 
 import { LogoIcon } from '@/components/icons/logo'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/utilities/cn'
 type Props = {
   header: Header
   categories?: Category[]
@@ -20,7 +18,6 @@ type Props = {
 
 export function HeaderClient({ header, categories = [] }: Props) {
   const menu = header?.navItems || []
-  const pathname = usePathname()
 
   const logoImage = (header as any)?.logo?.image
   const rawLogoLabel = (header as any)?.logo?.label
@@ -141,44 +138,9 @@ export function HeaderClient({ header, categories = [] }: Props) {
           {/* Bottom Row: Navigation Links - Centered under logo */}
           {menu && Array.isArray(menu) && menu.length > 0 && (
             <div className="hidden md:block border-t border-neutral-200 dark:border-neutral-800">
-              <nav className="flex items-center justify-center py-3">
-                <ul className="flex items-center gap-8">
-                  {menu.map((item, index) => {
-                    if (!item || !item.link) {
-                      console.warn('Invalid menu item at index', index, item)
-                      return null
-                    }
-                    
-                    // Get the URL - handle both custom URL and reference types
-                    const url = item.link.type === 'custom' 
-                      ? item.link.url 
-                      : item.link.reference?.value && typeof item.link.reference.value === 'object'
-                        ? `/${item.link.reference.relationTo}/${item.link.reference.value.slug}`
-                        : item.link.url
-                    
-                    const label = item.link.label || 'Link'
-                    
-                    return (
-                      <li key={item.id || `nav-item-${index}`}>
-                        <Link
-                          href={url || '#'}
-                          target={item.link.newTab ? '_blank' : undefined}
-                          rel={item.link.newTab ? 'noopener noreferrer' : undefined}
-                          className={cn(
-                            'text-sm font-medium text-neutral-700 transition-colors hover:text-neutral-900 dark:text-neutral-200 dark:hover:text-white',
-                            {
-                              'text-neutral-900 dark:text-white font-semibold':
-                                url && url !== '/' && pathname.includes(url),
-                            },
-                          )}
-                        >
-                          {label}
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </nav>
+              <Suspense fallback={<nav className="flex justify-center py-3" aria-hidden />}>
+                <HeaderDesktopNav menu={menu} categories={categories} />
+              </Suspense>
             </div>
           )}
         </div>
