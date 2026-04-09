@@ -17,7 +17,29 @@ import {
     InlineToolbarFeature,
     lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import type { Field } from 'payload'
 import { DefaultDocumentIDType, slugField, Where } from 'payload'
+
+/** Ecommerce plugin hides `inventory` when `enableVariants` is on; we keep product-level stock visible alongside variant inventory. */
+function withProductInventoryAlwaysVisible(fields: Field[]): Field[] {
+  return fields.map((field) => {
+    if ('name' in field && field.name === 'inventory') {
+      const prevAdmin =
+        field.admin && typeof field.admin === 'object' ? { ...field.admin } : {}
+      return {
+        ...field,
+        admin: {
+          ...prevAdmin,
+          condition: () => true,
+          description:
+            (prevAdmin as { description?: string }).description ??
+            'Product-level stock. Each variant can also have its own inventory below.',
+        },
+      } as Field
+    }
+    return field
+  })
+}
 
 export const ProductsCollection: CollectionOverride = ({ defaultCollection }) => ({
   ...defaultCollection,
@@ -141,7 +163,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
         },
         {
           fields: [
-            ...defaultCollection.fields,
+            ...withProductInventoryAlwaysVisible(defaultCollection.fields),
             {
               name: 'relatedProducts',
               type: 'relationship',
