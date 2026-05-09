@@ -46,5 +46,18 @@ export const Categories: CollectionConfig = {
         return {}
       },
     },
+    {
+      name: 'productOrder',
+      type: 'join',
+      collection: 'category-product-orders',
+      on: 'category',
+      maxDepth: 1,
+      admin: {
+        description:
+          'Set a position number next to each product to control the order they appear in the storefront when this category is browsed. Lower numbers appear first.',
+        defaultColumns: ['product', 'position'],
+        allowCreate: true,
+      },
+    },
   ],
 }

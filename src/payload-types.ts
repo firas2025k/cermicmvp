@@ -75,6 +75,7 @@ export interface Config {
     users: User;
     pages: Page;
     categories: Category;
+    'category-product-orders': CategoryProductOrder;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -97,6 +98,9 @@ export interface Config {
       cart: 'carts';
       addresses: 'addresses';
     };
+    categories: {
+      productOrder: 'category-product-orders';
+    };
     variantTypes: {
       options: 'variantOptions';
     };
@@ -108,6 +112,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'category-product-orders': CategoryProductOrdersSelect<false> | CategoryProductOrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -290,6 +295,9 @@ export interface Product {
       }[]
     | null;
   layout?: (CallToActionBlock | ContentBlock | MediaBlock)[] | null;
+  /**
+   * Product-level stock. Each variant can also have its own inventory below.
+   */
   inventory?: number | null;
   enableVariants?: boolean | null;
   variantTypes?: (number | VariantType)[] | null;
@@ -641,6 +649,31 @@ export interface Category {
    * Select a parent category to make this a subcategory. Leave empty for top-level categories.
    */
   parent?: (number | null) | Category;
+  /**
+   * Set a position number next to each product to control the order they appear in the storefront when this category is browsed. Lower numbers appear first.
+   */
+  productOrder?: {
+    docs?: (number | CategoryProductOrder)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Controls the display order of products within a category on the storefront.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-product-orders".
+ */
+export interface CategoryProductOrder {
+  id: number;
+  category: number | Category;
+  product: number | Product;
+  /**
+   * Lower numbers appear first (1 = first, 2 = second…). Products with no entry here appear last, alphabetically.
+   */
+  position: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -973,7 +1006,7 @@ export interface MediaBlock {
 export interface Variant {
   id: number;
   /**
-   * Unique stock code for this variant (for inventory and operations).
+   * Optional. Leave blank to auto-generate from product slug + variant option values (unique). You can still set a custom code.
    */
   sku?: string | null;
   /**
@@ -1163,6 +1196,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'category-product-orders';
+        value: number | CategoryProductOrder;
       } | null)
     | ({
         relationTo: 'media';
@@ -1459,6 +1496,18 @@ export interface CategoriesSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   parent?: T;
+  productOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-product-orders_select".
+ */
+export interface CategoryProductOrdersSelect<T extends boolean = true> {
+  category?: T;
+  product?: T;
+  position?: T;
   updatedAt?: T;
   createdAt?: T;
 }

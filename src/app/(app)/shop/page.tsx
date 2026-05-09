@@ -42,10 +42,14 @@ export default async function ShopPage({ searchParams }: Props) {
     ? (Array.isArray(category) ? category : [category]).filter(Boolean) as string[]
     : []
   const categoryIdsToMatch: (number | string)[] = []
+
+  // Track the single exact category ID selected (used for per-category ordering)
+  let exactCategoryId: number | null = null
   for (const slug of categorySlugs) {
     const found = categories.find((c) => c.slug === slug)
     if (found && found.id != null) {
       categoryIdsToMatch.push(...getCategoryAndDescendantIds(found.id, byParent))
+      if (exactCategoryId === null) exactCategoryId = found.id
     }
   }
   const uniqueCategoryIds = [...new Set(categoryIdsToMatch)]
@@ -94,7 +98,43 @@ export default async function ShopPage({ searchParams }: Props) {
     },
   })
 
-  const resultsText = products.docs.length > 1 ? 'results' : 'result'
+  // Apply per-category custom ordering when:
+  // - exactly one category is selected (not an expanded parent tree)
+  // - no explicit sort param is set by the user
+  // - the editor has configured at least one position entry for that category
+  let orderedDocs = products.docs
+  if (!sort && exactCategoryId !== null && categorySlugs.length === 1) {
+    const orderResult = await payload.find({
+      collection: 'category-product-orders',
+      where: { category: { equals: exactCategoryId } },
+      limit: 500,
+      depth: 0,
+    })
+
+    if (orderResult.docs.length > 0) {
+      // Build a position map: productId → position
+      const positionMap = new Map<number | string, number>()
+      for (const entry of orderResult.docs) {
+        const productId =
+          typeof entry.product === 'object' && entry.product !== null
+            ? entry.product.id
+            : entry.product
+        if (productId != null) {
+          positionMap.set(productId, entry.position ?? 999)
+        }
+      }
+
+      orderedDocs = [...products.docs].sort((a, b) => {
+        const posA = positionMap.get(a.id) ?? Number.MAX_SAFE_INTEGER
+        const posB = positionMap.get(b.id) ?? Number.MAX_SAFE_INTEGER
+        if (posA !== posB) return posA - posB
+        // Stable tie-break: alphabetical by title
+        return (a.title ?? '').localeCompare(b.title ?? '')
+      })
+    }
+  }
+
+  const resultsText = orderedDocs.length > 1 ? 'results' : 'result'
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-50/50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
@@ -110,20 +150,20 @@ export default async function ShopPage({ searchParams }: Props) {
             <div className="flex items-center gap-3 rounded-lg border border-neutral-200/60 bg-white/80 px-4 py-2.5 shadow-sm dark:border-neutral-800/60 dark:bg-neutral-900/80">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
                 <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
-                  {products.docs?.length || 0}
+                  {orderedDocs?.length || 0}
                 </span>
               </div>
               <div className="text-sm">
                 {searchValue ? (
                   <p className="text-neutral-600 dark:text-neutral-400">
-                    {products.docs?.length === 0
+                    {orderedDocs?.length === 0
                       ? 'No tiles match '
-                      : `Showing ${products.docs.length} ${resultsText} for `}
+                      : `Showing ${orderedDocs.length} ${resultsText} for `}
                     <span className="font-semibold text-neutral-900 dark:text-neutral-50">&quot;{searchValue}&quot;</span>
                   </p>
                 ) : (
                   <p className="font-medium text-neutral-900 dark:text-neutral-50">
-                    {products.docs?.length || 0} {products.docs?.length === 1 ? 'product' : 'products'} available
+                    {orderedDocs?.length || 0} {orderedDocs?.length === 1 ? 'product' : 'products'} available
                   </p>
                 )}
               </div>
@@ -137,7 +177,7 @@ export default async function ShopPage({ searchParams }: Props) {
         <div className="w-full">
           {/* Products Grid */}
           <div className="min-h-[400px]">
-            {!searchValue && products.docs?.length === 0 ? (
+            {!searchValue && orderedDocs?.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
                   <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,7 +193,7 @@ export default async function ShopPage({ searchParams }: Props) {
               </div>
             ) : null}
 
-            {searchValue && products.docs?.length === 0 ? (
+            {searchValue && orderedDocs?.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   Keine Produkte für diese Suche. Versuchen Sie einen anderen Begriff oder{' '}
@@ -165,9 +205,9 @@ export default async function ShopPage({ searchParams }: Props) {
               </div>
             ) : null}
 
-            {products?.docs.length > 0 ? (
+            {orderedDocs?.length > 0 ? (
               <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                {products.docs.map((product) => {
+                {orderedDocs.map((product) => {
                   return <ProductGridItem key={product.id} product={product} />
                 })}
               </Grid>
