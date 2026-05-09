@@ -30,82 +30,89 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
     [pathname, router, searchParams],
   )
 
-  // Determine which top-level category is "active" (directly or via a selected sub)
   const activeParentCategory = useMemo(() => {
     if (!activeCategory) return null
-    // Direct parent match
     const direct = topLevel.find((p) => p.slug === activeCategory)
     if (direct) return direct
-    // Match via subcategory
     return (
       topLevel.find((p) => (byParent[p.id] ?? []).some((s) => s.slug === activeCategory)) ?? null
     )
   }, [activeCategory, topLevel, byParent])
 
-  // Subcategories to show under the pill row
   const activeSubs = activeParentCategory ? (byParent[activeParentCategory.id] ?? []) : []
 
   const handleParentClick = (parent: Category) => {
-    if (activeParentCategory?.slug === parent.slug) {
-      // Clicking the already-active parent deselects
-      setParam('category', null)
-    } else {
-      setParam('category', parent.slug)
-    }
+    setParam('category', activeParentCategory?.slug === parent.slug ? null : parent.slug)
   }
 
   const handleSubClick = (sub: Category) => {
-    if (activeCategory === sub.slug) {
-      // Clicking the active sub goes back up to its parent
-      setParam('category', activeParentCategory?.slug ?? null)
-    } else {
-      setParam('category', sub.slug)
-    }
+    setParam('category', activeCategory === sub.slug ? (activeParentCategory?.slug ?? null) : sub.slug)
   }
 
   return (
-    <div className="sticky top-0 z-30 border-b border-neutral-100 bg-white/95 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/95">
+    <div className="sticky top-0 z-30 bg-white/98 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-md dark:bg-neutral-950/98 dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)]">
       <div className="container">
-        {/* Main filter row */}
-        <div className="flex items-center justify-between gap-4 py-3">
-          {/* Category pills */}
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pb-px scrollbar-none">
-            <button
-              onClick={() => setParam('category', null)}
-              className={cn(
-                'shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
-                !activeCategory
-                  ? 'border-amber-500 bg-amber-500 text-white shadow-sm'
-                  : 'border-neutral-200 bg-white text-neutral-600 hover:border-amber-300 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300',
-              )}
-            >
-              Alle
-            </button>
 
-            {topLevel.map((parent) => {
-              const isActive = activeParentCategory?.slug === parent.slug
-              return (
-                <button
-                  key={parent.id}
-                  onClick={() => handleParentClick(parent)}
-                  className={cn(
-                    'shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
-                    isActive
-                      ? 'border-amber-500 bg-amber-500 text-white shadow-sm'
-                      : 'border-neutral-200 bg-white text-neutral-600 hover:border-amber-300 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300',
-                  )}
-                >
-                  {parent.title}
-                </button>
-              )
-            })}
-          </div>
+        {/* Parent category row */}
+        <div className="flex items-center gap-1.5 overflow-x-auto py-3 scrollbar-none">
 
+          {/* "Alle" pill */}
+          <button
+            onClick={() => setParam('category', null)}
+            className={cn(
+              'shrink-0 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-150',
+              !activeCategory
+                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200',
+            )}
+          >
+            Alle
+          </button>
+
+          {/* Divider */}
+          <div className="mx-1 h-4 w-px shrink-0 bg-neutral-200 dark:bg-neutral-700" />
+
+          {topLevel.map((parent) => {
+            const isActive = activeParentCategory?.slug === parent.slug
+            const hasSubs = (byParent[parent.id] ?? []).length > 0
+            return (
+              <button
+                key={parent.id}
+                onClick={() => handleParentClick(parent)}
+                className={cn(
+                  'group shrink-0 flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-150',
+                  isActive
+                    ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200',
+                )}
+              >
+                {parent.title}
+                {hasSubs && (
+                  <svg
+                    className={cn(
+                      'h-3 w-3 transition-transform duration-200',
+                      isActive ? 'rotate-180 text-amber-600' : 'text-neutral-400',
+                    )}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Subcategory pills — visible when a parent is selected and it has children */}
+        {/* Subcategory row — slides in when a parent is active */}
         {activeSubs.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto border-t border-neutral-100 py-2.5 scrollbar-none dark:border-neutral-800">
+            <span className="shrink-0 text-[0.65rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 pr-1">
+              {activeParentCategory?.title}
+            </span>
+            <div className="h-3 w-px shrink-0 bg-neutral-200 dark:bg-neutral-700" />
             {activeSubs.map((sub) => {
               const isActive = activeCategory === sub.slug
               return (
@@ -113,10 +120,10 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
                   key={sub.id}
                   onClick={() => handleSubClick(sub)}
                   className={cn(
-                    'shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-all',
+                    'shrink-0 rounded-md px-3 py-1 text-xs font-medium transition-all duration-150',
                     isActive
-                      ? 'border-amber-400 bg-amber-100 text-amber-800 dark:border-amber-600 dark:bg-amber-950/60 dark:text-amber-300'
-                      : 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:border-amber-300 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400',
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-amber-50 hover:text-amber-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-amber-950/40 dark:hover:text-amber-300',
                   )}
                 >
                   {sub.title}
@@ -125,6 +132,7 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
             })}
           </div>
         )}
+
       </div>
     </div>
   )

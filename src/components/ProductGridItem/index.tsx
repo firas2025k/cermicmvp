@@ -1,6 +1,11 @@
 'use client'
 
 import type { Media, Product, VariantType } from '@/payload-types'
+import { cn } from '@/utilities/cn'
+import { Price } from '@/components/Price'
+import Image from 'next/image'
+import Link from 'next/link'
+import React, { useCallback, useState } from 'react'
 
 // Extend VariantOption with the color field we added via collection override
 type VariantOptionWithColor = {
@@ -9,29 +14,21 @@ type VariantOptionWithColor = {
   value: string
   color?: string | null
 }
-import { cn } from '@/utilities/cn'
-import Link from 'next/link'
-import Image from 'next/image'
-import React, { useState, useCallback } from 'react'
-import { Price } from '@/components/Price'
 
 type Props = {
   product: Partial<Product>
 }
 
-/**
- * Extracts populated gallery items (where image is a Media object, not just an ID).
- */
 function getPopulatedGallery(product: Partial<Product>) {
   return (product.gallery ?? []).filter(
-    (item): item is { image: Media; variantOption?: VariantOptionWithColor | null | number; id?: string | null } =>
-      typeof item.image === 'object' && item.image !== null,
+    (item): item is {
+      image: Media
+      variantOption?: VariantOptionWithColor | null | number
+      id?: string | null
+    } => typeof item.image === 'object' && item.image !== null,
   )
 }
 
-/**
- * Extracts populated variant types with their option lists.
- */
 function getPopulatedVariantTypes(product: Partial<Product>): VariantType[] {
   if (!product.enableVariants || !product.variantTypes) return []
   return (product.variantTypes as (number | VariantType)[]).filter(
@@ -45,17 +42,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const gallery = getPopulatedGallery(product)
   const variantTypes = getPopulatedVariantTypes(product)
 
-  // Gather all selectable options across all variant types (flat list for the card)
-  const allOptions: VariantOptionWithColor[] = variantTypes.flatMap((vt) => {
-    const docs = vt.options?.docs ?? []
-    return docs.filter(
-      (opt): opt is VariantOptionWithColor => typeof opt === 'object' && opt !== null,
-    )
-  })
-
-  const hasVariantOptions = allOptions.length > 0
-
-  // Build a map: variantOptionId → gallery index for quick image lookup
+  // Build a map: variantOptionId → gallery index
   const optionImageMap = new Map<number, number>()
   gallery.forEach((item, idx) => {
     if (item.variantOption && typeof item.variantOption === 'object') {
@@ -65,119 +52,134 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
 
-  // Resolve which gallery item to display
   const activeImageIndex =
     selectedOptionId !== null && optionImageMap.has(selectedOptionId)
       ? optionImageMap.get(selectedOptionId)!
       : 0
 
   const activeImage = gallery[activeImageIndex]?.image as Media | undefined
-
   const isOutOfStock = inventory == null || Number(inventory) <= 0
 
-  const handleOptionClick = useCallback(
-    (e: React.MouseEvent, optionId: number) => {
-      // Prevent navigating to product page when clicking a variant pill
-      e.preventDefault()
-      e.stopPropagation()
-      setSelectedOptionId((prev) => (prev === optionId ? null : optionId))
-    },
-    [],
-  )
+  const handleOptionClick = useCallback((e: React.MouseEvent, optionId: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setSelectedOptionId((prev) => (prev === optionId ? null : optionId))
+  }, [])
 
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full w-full flex-col bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:bg-neutral-900"
+      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-neutral-100 transition-all duration-300 hover:shadow-lg hover:ring-neutral-200 dark:bg-neutral-900 dark:ring-neutral-800 dark:hover:ring-neutral-700"
     >
-      {/* Image area */}
-      <div className="relative aspect-square bg-white dark:bg-neutral-950">
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden p-5 sm:p-7">
-          {activeImage?.url ? (
-            <Image
-              src={activeImage.url}
-              alt={activeImage.alt ?? title ?? ''}
-              width={400}
-              height={400}
-              className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-            />
-          ) : (
-            <div className="h-full w-full rounded-md bg-gradient-to-br from-amber-50 to-amber-100/80 dark:from-amber-950/30 dark:to-amber-900/20" />
-          )}
-        </div>
+      {/* Image */}
+      <div className="relative aspect-square overflow-hidden bg-neutral-50 dark:bg-neutral-950">
+        {activeImage?.url ? (
+          <Image
+            src={activeImage.url}
+            alt={activeImage.alt ?? title ?? ''}
+            fill
+            className="object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-stone-100 dark:from-amber-950/20 dark:to-neutral-900" />
+        )}
 
         {isOutOfStock && (
-          <>
+          <div className="absolute left-0 top-3">
             <span className="sr-only">Nicht vorrätig</span>
             <div
               aria-hidden
-              className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[calc(100%-1.5rem)] bg-neutral-500 px-3 py-2 text-[0.65rem] font-semibold uppercase leading-tight tracking-wide text-white shadow-sm dark:bg-neutral-600"
+              className="rounded-r-full bg-neutral-700/90 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-sm"
             >
-              Nicht vorrätig
+              Ausverkauft
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      {/* Info area */}
-      <div className="flex flex-1 flex-col items-center px-4 pb-5 pt-4 text-center">
-        <h3 className="line-clamp-2 min-h-[2.75rem] text-base font-medium leading-snug text-neutral-900 transition-colors group-hover:text-amber-800 dark:text-neutral-100 dark:group-hover:text-amber-400">
+      {/* Info */}
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        {/* Title */}
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-800 transition-colors group-hover:text-amber-700 dark:text-neutral-100 dark:group-hover:text-amber-400">
           {title}
         </h3>
 
-        {/* Variant option pills */}
-        {hasVariantOptions && (
+        {/* Variant rows — one row per variant type */}
+        {variantTypes.length > 0 && (
           <div
-            className="mt-3 flex flex-wrap items-center justify-center gap-1.5"
+            className="flex flex-col gap-2"
             onClick={(e) => e.preventDefault()}
           >
-            {allOptions.map((opt) => {
-              const isSelected = selectedOptionId === opt.id
-              const isColor = Boolean(opt.color)
+            {variantTypes.map((vt) => {
+              const opts = (vt.options?.docs ?? []).filter(
+                (opt): opt is VariantOptionWithColor =>
+                  typeof opt === 'object' && opt !== null,
+              )
+              if (!opts.length) return null
 
-              if (isColor) {
-                // Color swatch — circle with the hex color
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={(e) => handleOptionClick(e, opt.id)}
-                    title={opt.label}
-                    className={cn(
-                      'h-5 w-5 rounded-full border-2 transition-all',
-                      isSelected
-                        ? 'border-amber-500 scale-110 shadow-sm'
-                        : 'border-transparent hover:border-neutral-400 hover:scale-105',
-                    )}
-                    style={{ backgroundColor: opt.color ?? undefined }}
-                  />
-                )
-              }
+              const isColorRow = opts.some((o) => Boolean(o.color))
 
-              // Text pill — for size, material, or any non-color option
               return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={(e) => handleOptionClick(e, opt.id)}
-                  title={opt.label}
-                  className={cn(
-                    'rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium transition-all',
-                    isSelected
-                      ? 'border-amber-500 bg-amber-500 text-white shadow-sm'
-                      : 'border-neutral-300 bg-white text-neutral-700 hover:border-amber-400 hover:text-amber-700 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-                  )}
-                >
-                  {opt.label}
-                </button>
+                <div key={vt.id} className="flex items-center gap-2">
+                  {/* Type label */}
+                  <span className="w-10 shrink-0 text-[0.6rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
+                    {vt.label}
+                  </span>
+
+                  {/* Options */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {opts.map((opt) => {
+                      const isSelected = selectedOptionId === opt.id
+
+                      if (isColorRow && opt.color) {
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={(e) => handleOptionClick(e, opt.id)}
+                            title={opt.label}
+                            className={cn(
+                              'h-5 w-5 rounded-full transition-all duration-150',
+                              isSelected
+                                ? 'ring-2 ring-amber-500 ring-offset-1 scale-110'
+                                : 'ring-1 ring-neutral-300 hover:ring-amber-400 hover:scale-110 dark:ring-neutral-600',
+                            )}
+                            style={{ backgroundColor: opt.color }}
+                          />
+                        )
+                      }
+
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={(e) => handleOptionClick(e, opt.id)}
+                          title={opt.label}
+                          className={cn(
+                            'rounded-md border px-2 py-0.5 text-[0.65rem] font-medium transition-all duration-150',
+                            isSelected
+                              ? 'border-amber-500 bg-amber-500 text-white'
+                              : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-amber-400 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+                          )}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
           </div>
         )}
 
+        {/* Price — pushed to bottom */}
         {typeof priceInEUR === 'number' && (
-          <div className="mt-3 text-lg font-bold tabular-nums text-neutral-900 dark:text-neutral-50">
-            <Price amount={priceInEUR} currencyCode="EUR" />
+          <div className="mt-auto pt-1">
+            <span className="text-base font-bold tabular-nums text-neutral-900 dark:text-neutral-50">
+              <Price amount={priceInEUR} currencyCode="EUR" />
+            </span>
           </div>
         )}
       </div>
