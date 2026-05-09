@@ -375,6 +375,10 @@ export interface VariantOption {
    * should be defaulted or dynamic based on label
    */
   value: string;
+  /**
+   * Optional hex color code (e.g. #E53935). When set, this option displays as a color swatch on the storefront instead of a text pill.
+   */
+  color?: string | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1737,6 +1741,7 @@ export interface VariantOptionsSelect<T extends boolean = true> {
   variantType?: T;
   label?: T;
   value?: T;
+  color?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

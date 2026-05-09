@@ -7,6 +7,7 @@ import * as migration_20260311_000001_add_product_usage_product_link from './202
 import * as migration_20260408_000001_add_variant_sku from './20260408_000001_add_variant_sku';
 import * as migration_20260409_000001_header_nav_category_link from './20260409_000001_header_nav_category_link';
 import * as migration_20260509_000001_category_product_order from './20260509_000001_category_product_order';
+import * as migration_20260509_000002_variant_option_color from './20260509_000002_variant_option_color';
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_20260509_000001_category_product_order.up,
     down: migration_20260509_000001_category_product_order.down,
     name: '20260509_000001_category_product_order',
+  },
+  {
+    up: migration_20260509_000002_variant_option_color.up,
+    down: migration_20260509_000002_variant_option_color.down,
+    name: '20260509_000002_variant_option_color',
   },
 ];

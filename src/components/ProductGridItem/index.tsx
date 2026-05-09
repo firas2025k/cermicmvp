@@ -1,6 +1,14 @@
 'use client'
 
-import type { Media, Product, VariantOption, VariantType } from '@/payload-types'
+import type { Media, Product, VariantType } from '@/payload-types'
+
+// Extend VariantOption with the color field we added via collection override
+type VariantOptionWithColor = {
+  id: number
+  label: string
+  value: string
+  color?: string | null
+}
 import { cn } from '@/utilities/cn'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -16,7 +24,7 @@ type Props = {
  */
 function getPopulatedGallery(product: Partial<Product>) {
   return (product.gallery ?? []).filter(
-    (item): item is { image: Media; variantOption?: VariantOption | null | number; id?: string | null } =>
+    (item): item is { image: Media; variantOption?: VariantOptionWithColor | null | number; id?: string | null } =>
       typeof item.image === 'object' && item.image !== null,
   )
 }
@@ -38,9 +46,11 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const variantTypes = getPopulatedVariantTypes(product)
 
   // Gather all selectable options across all variant types (flat list for the card)
-  const allOptions: VariantOption[] = variantTypes.flatMap((vt) => {
+  const allOptions: VariantOptionWithColor[] = variantTypes.flatMap((vt) => {
     const docs = vt.options?.docs ?? []
-    return docs.filter((opt): opt is VariantOption => typeof opt === 'object' && opt !== null)
+    return docs.filter(
+      (opt): opt is VariantOptionWithColor => typeof opt === 'object' && opt !== null,
+    )
   })
 
   const hasVariantOptions = allOptions.length > 0
@@ -49,7 +59,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const optionImageMap = new Map<number, number>()
   gallery.forEach((item, idx) => {
     if (item.variantOption && typeof item.variantOption === 'object') {
-      optionImageMap.set((item.variantOption as VariantOption).id, idx)
+      optionImageMap.set((item.variantOption as VariantOptionWithColor).id, idx)
     }
   })
 
@@ -123,7 +133,28 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           >
             {allOptions.map((opt) => {
               const isSelected = selectedOptionId === opt.id
-              const hasImage = optionImageMap.has(opt.id)
+              const isColor = Boolean(opt.color)
+
+              if (isColor) {
+                // Color swatch — circle with the hex color
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={(e) => handleOptionClick(e, opt.id)}
+                    title={opt.label}
+                    className={cn(
+                      'h-5 w-5 rounded-full border-2 transition-all',
+                      isSelected
+                        ? 'border-amber-500 scale-110 shadow-sm'
+                        : 'border-transparent hover:border-neutral-400 hover:scale-105',
+                    )}
+                    style={{ backgroundColor: opt.color ?? undefined }}
+                  />
+                )
+              }
+
+              // Text pill — for size, material, or any non-color option
               return (
                 <button
                   key={opt.id}
@@ -134,9 +165,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
                     'rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium transition-all',
                     isSelected
                       ? 'border-amber-500 bg-amber-500 text-white shadow-sm'
-                      : hasImage
-                        ? 'border-neutral-300 bg-white text-neutral-700 hover:border-amber-400 hover:text-amber-700 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-300'
-                        : 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400',
+                      : 'border-neutral-300 bg-white text-neutral-700 hover:border-amber-400 hover:text-amber-700 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
                   )}
                 >
                   {opt.label}
