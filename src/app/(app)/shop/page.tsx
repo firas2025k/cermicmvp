@@ -1,13 +1,14 @@
 import { Grid } from '@/components/Grid'
 import { ProductGridItem } from '@/components/ProductGridItem'
+import { ShopFilterBar } from '@/components/ShopFilterBar'
+import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-
-import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
+import { Suspense } from 'react'
 
 export const metadata = {
-  title: 'Shop tiles',
-  description: 'Browse Tunisian ceramic tile collections for kitchens, bathrooms, floors, and more.',
+  title: 'Shop',
+  description: 'Browse our product collections.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -25,26 +26,26 @@ function normalizeSearchQuery(q: string | string[] | undefined): string {
 export default async function ShopPage({ searchParams }: Props) {
   const { q: rawQ, sort, category } = await searchParams
   const searchValue = normalizeSearchQuery(rawQ)
+  const activeSort = typeof sort === 'string' ? sort : null
+  const activeCategory = typeof category === 'string' ? category : null
+
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch categories for filters with parent relationships
+  // Fetch all categories with parent relationships for the filter bar
   const categoriesResult = await payload.find({
     collection: 'categories',
     limit: 100,
-    sort: 'title',
+    sort: 'order',
     depth: 1,
   })
   const categories = categoriesResult.docs || []
-  const { byParent } = organizeCategories(categories)
+  const { topLevel, byParent } = organizeCategories(categories)
 
-  // Support multiple categories; each selected slug expands to that category + its descendants (so parent shows all products in subcategories too)
-  const categorySlugs = category
-    ? (Array.isArray(category) ? category : [category]).filter(Boolean) as string[]
-    : []
+  // Expand the selected category slug into that category + all its descendants
+  const categorySlugs = activeCategory ? [activeCategory] : []
   const categoryIdsToMatch: (number | string)[] = []
-
-  // Track the single exact category ID selected (used for per-category ordering)
   let exactCategoryId: number | null = null
+
   for (const slug of categorySlugs) {
     const found = categories.find((c) => c.slug === slug)
     if (found && found.id != null) {
@@ -54,28 +55,18 @@ export default async function ShopPage({ searchParams }: Props) {
   }
   const uniqueCategoryIds = [...new Set(categoryIdsToMatch)]
 
-  // Build where conditions
-  const whereConditions: any[] = [
-    {
-      _status: {
-        equals: 'published',
-      },
-    },
-  ]
+  // Build Payload where conditions
+  const whereConditions: any[] = [{ _status: { equals: 'published' } }]
 
-  // Search title + slug only. `description` is Lexical JSON — querying it with `like` breaks Postgres / Payload.
   if (searchValue) {
     whereConditions.push({
       or: [{ title: { contains: searchValue } }, { slug: { contains: searchValue } }],
     })
   }
 
-  // Add category filter: product must be in at least one of the selected (or descendant) categories
   if (uniqueCategoryIds.length > 0) {
     whereConditions.push({
-      or: uniqueCategoryIds.map((id) => ({
-        categories: { contains: id },
-      })),
+      or: uniqueCategoryIds.map((id) => ({ categories: { contains: id } })),
     })
   }
 
@@ -92,18 +83,14 @@ export default async function ShopPage({ searchParams }: Props) {
       priceInEUR: true,
       inventory: true,
     },
-    ...(sort ? { sort } : { sort: 'title' }),
-    where: {
-      and: whereConditions,
-    },
+    sort: activeSort ?? 'title',
+    where: { and: whereConditions },
   })
 
-  // Apply per-category custom ordering when:
-  // - exactly one category is selected (not an expanded parent tree)
-  // - no explicit sort param is set by the user
-  // - the editor has configured at least one position entry for that category
+  // Apply per-category custom ordering when a single specific category is selected
+  // and the editor has set explicit positions for it.
   let orderedDocs = products.docs
-  if (!sort && exactCategoryId !== null && categorySlugs.length === 1) {
+  if (!activeSort && exactCategoryId !== null && categorySlugs.length === 1) {
     const orderResult = await payload.find({
       collection: 'category-product-orders',
       where: { category: { equals: exactCategoryId } },
@@ -112,108 +99,91 @@ export default async function ShopPage({ searchParams }: Props) {
     })
 
     if (orderResult.docs.length > 0) {
-      // Build a position map: productId → position
       const positionMap = new Map<number | string, number>()
       for (const entry of orderResult.docs) {
         const productId =
           typeof entry.product === 'object' && entry.product !== null
             ? entry.product.id
             : entry.product
-        if (productId != null) {
-          positionMap.set(productId, entry.position ?? 999)
-        }
+        if (productId != null) positionMap.set(productId, entry.position ?? 999)
       }
 
       orderedDocs = [...products.docs].sort((a, b) => {
         const posA = positionMap.get(a.id) ?? Number.MAX_SAFE_INTEGER
         const posB = positionMap.get(b.id) ?? Number.MAX_SAFE_INTEGER
         if (posA !== posB) return posA - posB
-        // Stable tie-break: alphabetical by title
         return (a.title ?? '').localeCompare(b.title ?? '')
       })
     }
   }
 
-  const resultsText = orderedDocs.length > 1 ? 'results' : 'result'
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-50/50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
-      {/* Hero Section */}
-      <section className="border-b border-neutral-200/60 bg-gradient-to-br from-amber-50/50 via-white to-stone-50/30 dark:border-neutral-800/60 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
-        <div className="container space-y-6 py-12 md:py-16">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/60 bg-amber-50/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-            Shop
-          </div>
-          
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3 rounded-lg border border-neutral-200/60 bg-white/80 px-4 py-2.5 shadow-sm dark:border-neutral-800/60 dark:bg-neutral-900/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
-                  {orderedDocs?.length || 0}
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+      {/* Sticky filter bar */}
+      <Suspense fallback={<div className="h-[52px] border-b border-neutral-100 bg-white" />}>
+        <ShopFilterBar
+          topLevel={topLevel}
+          byParent={byParent}
+          activeCategory={activeCategory}
+          activeSort={activeSort}
+        />
+      </Suspense>
+
+      {/* Product grid */}
+      <section className="container py-8">
+        {/* Result count + search feedback */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            {searchValue ? (
+              <>
+                {orderedDocs.length === 0 ? 'Keine' : orderedDocs.length}{' '}
+                {orderedDocs.length === 1 ? 'Ergebnis' : 'Ergebnisse'} für{' '}
+                <span className="font-semibold text-neutral-800 dark:text-neutral-100">
+                  &quot;{searchValue}&quot;
                 </span>
-              </div>
-              <div className="text-sm">
-                {searchValue ? (
-                  <p className="text-neutral-600 dark:text-neutral-400">
-                    {orderedDocs?.length === 0
-                      ? 'No tiles match '
-                      : `Showing ${orderedDocs.length} ${resultsText} for `}
-                    <span className="font-semibold text-neutral-900 dark:text-neutral-50">&quot;{searchValue}&quot;</span>
-                  </p>
-                ) : (
-                  <p className="font-medium text-neutral-900 dark:text-neutral-50">
-                    {orderedDocs?.length || 0} {orderedDocs?.length === 1 ? 'product' : 'products'} available
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
+              </>
+            ) : (
+              <>
+                <span className="font-semibold text-neutral-800 dark:text-neutral-100">
+                  {orderedDocs.length}
+                </span>{' '}
+                {orderedDocs.length === 1 ? 'Produkt' : 'Produkte'}
+              </>
+            )}
+          </p>
+
+          {searchValue && orderedDocs.length === 0 && (
+            <a
+              href="/shop"
+              className="text-sm font-medium text-amber-700 underline-offset-2 hover:underline dark:text-amber-400"
+            >
+              Alle anzeigen
+            </a>
+          )}
         </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="container py-8 md:py-12">
-        <div className="w-full">
-          {/* Products Grid */}
-          <div className="min-h-[400px]">
-            {!searchValue && orderedDocs?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-                  <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                  </svg>
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                  No tiles found yet
-                </h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Try adjusting your search or check back soon for new collections.
-                </p>
-              </div>
-            ) : null}
-
-            {searchValue && orderedDocs?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-200 bg-white p-12 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Keine Produkte für diese Suche. Versuchen Sie einen anderen Begriff oder{' '}
-                  <a className="font-medium text-amber-700 underline hover:text-amber-800 dark:text-amber-400" href="/shop">
-                    alle Produkte anzeigen
-                  </a>
-                  .
-                </p>
-              </div>
-            ) : null}
-
-            {orderedDocs?.length > 0 ? (
-              <Grid className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                {orderedDocs.map((product) => {
-                  return <ProductGridItem key={product.id} product={product} />
-                })}
-              </Grid>
-            ) : null}
+        {/* Empty states */}
+        {orderedDocs.length === 0 && (
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white py-24 text-center dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
+              Keine Produkte gefunden
+            </p>
+            <p className="mt-1 text-sm text-neutral-500">
+              {searchValue
+                ? 'Versuche einen anderen Suchbegriff.'
+                : 'Schau bald wieder vorbei für neue Kollektionen.'}
+            </p>
           </div>
-        </div>
+        )}
+
+        {/* 4-column product grid */}
+        {orderedDocs.length > 0 && (
+          <Grid className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+            {orderedDocs.map((product) => (
+              <ProductGridItem key={product.id} product={product} />
+            ))}
+          </Grid>
+        )}
       </section>
     </div>
   )
