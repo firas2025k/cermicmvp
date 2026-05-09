@@ -91,18 +91,37 @@ export const CheckoutPage: React.FC = () => {
           setPaymentData(paymentData)
         }
       } catch (error) {
-        const errorData = error instanceof Error ? JSON.parse(error.message) : {}
-        let errorMessage = 'An error occurred while initiating payment.'
+        console.error('[checkout] initiatePayment failed:', error)
 
-        if (errorData?.cause?.code === 'OutOfStock') {
-          errorMessage = 'One or more items in your cart are out of stock.'
+        let errorMessage = 'An error occurred while initiating payment.'
+        if (error instanceof Error) {
+          const raw = error.message.trim()
+          try {
+            const parsed = JSON.parse(raw) as { message?: string; cause?: { code?: string } }
+            if (parsed?.cause?.code === 'OutOfStock') {
+              errorMessage = 'One or more items in your cart are out of stock.'
+            } else if (typeof parsed.message === 'string' && parsed.message.length > 0) {
+              errorMessage = parsed.message
+            }
+          } catch {
+            // Response was not JSON (e.g. HTML error page) — show a short hint
+            if (raw.length > 0 && raw.length < 500) {
+              errorMessage = raw
+            }
+          }
         }
 
         setError(errorMessage)
         toast.error(errorMessage)
       }
     },
-    [billingAddress, billingAddressSameAsShipping, shippingAddress],
+    [
+      billingAddress,
+      billingAddressSameAsShipping,
+      email,
+      initiatePayment,
+      shippingAddress,
+    ],
   )
 
   if (!stripe) return null

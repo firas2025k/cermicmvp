@@ -1,11 +1,11 @@
 # Vercel Runtime Log
 
 ## Request
-ID: 687t8-1778343498196-e99d67a9163b
-Time: 2026-05-09T16:18:18.196Z
-POST /api/payments/stripe/initiate → 404
+ID: kjcjw-1778344030731-9b0684f89209
+Time: 2026-05-09T16:27:10.731Z
+POST /api/payments/stripe/initiate → 500
 Host: cermicmvp.vercel.app
-Duration: 137ms
+Duration: 1179ms
 Cache: MISS
 Region: cdg1
 User Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
@@ -17,14 +17,45 @@ nxtPslug=payments/stripe/initiate
 ## Lifecycle
 
 ### Function
-Status: 404
+Status: 500
 Route: /api/[...slug]
-Duration: 22ms
+Duration: 1065ms
 Runtime: nodejs24.x
-Memory: 304MB / 2048MB
+Memory: 313MB / 2048MB
 Region: iad1
 
 ## Deployment
-ID: dpl_8YUZYtq8sQkhPjaGjittnScHDayS
+ID: dpl_626ijuyoymzni2N7ftZiTCcMAGuC
+Environment: production
+Branch: main
+
+# Vercel Runtime Log
+
+## Request
+ID: sq9d6-1778343979005-2ed9f378c7fe
+Time: 2026-05-09T16:26:19.005Z
+POST /api/payments/stripe/initiate → 500
+Host: cermicmvp.vercel.app
+Duration: 2380ms
+Cache: MISS
+Region: cdg1
+User Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Referer: https://cermicmvp.vercel.app/checkout
+
+## Query Params
+nxtPslug=payments/stripe/initiate
+
+## Lifecycle
+
+### Function
+Status: 500
+Route: /api/[...slug]
+Duration: 2277ms
+Runtime: nodejs24.x
+Memory: 343MB / 2048MB
+Region: iad1
+
+## Deployment
+ID: dpl_626ijuyoymzni2N7ftZiTCcMAGuC
 Environment: production
 Branch: main
