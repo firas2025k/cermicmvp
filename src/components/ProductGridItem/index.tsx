@@ -69,7 +69,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-neutral-100 transition-all duration-300 hover:shadow-lg hover:ring-neutral-200 dark:bg-neutral-900 dark:ring-neutral-800 dark:hover:ring-neutral-700"
+      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-neutral-50 dark:bg-neutral-950">
@@ -99,7 +99,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       </div>
 
       {/* Info */}
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div className="flex flex-1 flex-col items-center gap-3 p-4 text-center">
         {/* Title */}
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-800 transition-colors group-hover:text-amber-700 dark:text-neutral-100 dark:group-hover:text-amber-400">
           {title}
@@ -108,7 +108,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         {/* Variant rows — one row per variant type */}
         {variantTypes.length > 0 && (
           <div
-            className="flex flex-col gap-2"
+            className="flex w-full flex-col items-center gap-2"
             onClick={(e) => e.preventDefault()}
           >
             {variantTypes.map((vt) => {
@@ -121,14 +121,14 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
               const isColorRow = opts.some((o) => Boolean(o.color))
 
               return (
-                <div key={vt.id} className="flex items-center gap-2">
+                <div key={vt.id} className="flex flex-col items-center gap-1.5">
                   {/* Type label */}
-                  <span className="w-10 shrink-0 text-[0.6rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
                     {vt.label}
                   </span>
 
                   {/* Options */}
-                  <div className="flex flex-wrap items-center gap-1.5">
+                  <div className="flex flex-wrap items-center justify-center gap-1.5">
                     {opts.map((opt) => {
                       const isSelected = selectedOptionId === opt.id
 
@@ -176,7 +176,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
         {/* Price — pushed to bottom */}
         {typeof priceInEUR === 'number' && (
-          <div className="mt-auto pt-1">
+          <div className="mt-auto pt-1 text-center">
             <span className="text-base font-bold tabular-nums text-neutral-900 dark:text-neutral-50">
               <Price amount={priceInEUR} currencyCode="EUR" />
             </span>
