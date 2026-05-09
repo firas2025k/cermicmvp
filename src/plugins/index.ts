@@ -1,4 +1,5 @@
 import { EUR, ecommercePlugin } from '@payloadcms/plugin-ecommerce'
+import { stripeAdapter } from '@payloadcms/plugin-ecommerce/payments/stripe'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
@@ -90,6 +91,17 @@ export const plugins: Plugin[] = [
     },
     carts: {
       cartsCollectionOverride: CartsCollection,
+    },
+    // Server-side Stripe adapter registers POST /api/payments/stripe/initiate and webhooks.
+    // Without this, paymentMethods defaults to [] and those routes return 404.
+    payments: {
+      paymentMethods: [
+        stripeAdapter({
+          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
+          secretKey: process.env.STRIPE_SECRET_KEY || '',
+          webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET || '',
+        }),
+      ],
     },
   }),
 ]
