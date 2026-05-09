@@ -47,3 +47,21 @@ CREATE INDEX IF NOT EXISTS "category_product_orders_product_idx"
 
 CREATE INDEX IF NOT EXISTS "category_product_orders_created_at_idx"
   ON "category_product_orders" USING btree ("created_at");
+
+-- Payload tracks document locks for every collection via payload_locked_documents_rels.
+-- We must add a column for this new collection so the admin dashboard can query it.
+ALTER TABLE "payload_locked_documents_rels"
+  ADD COLUMN IF NOT EXISTS "category_product_orders_id" integer;
+
+DO $$ BEGIN
+  ALTER TABLE "payload_locked_documents_rels"
+    ADD CONSTRAINT "payload_locked_documents_rels_category_product_orders_fk"
+    FOREIGN KEY ("category_product_orders_id")
+    REFERENCES "public"."category_product_orders"("id")
+    ON DELETE CASCADE ON UPDATE NO ACTION;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_category_product_orders_id_idx"
+  ON "payload_locked_documents_rels" USING btree ("category_product_orders_id");

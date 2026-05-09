@@ -33,16 +33,35 @@ export const CategoryProductOrder: CollectionConfig = {
       type: 'relationship',
       relationTo: 'products',
       required: true,
-      filterOptions: ({ data }) => ({
-        _status: { equals: 'published' },
-        ...(data?.category
-          ? {
-              categories: {
-                contains: typeof data.category === 'object' ? data.category.id : data.category,
-              },
-            }
-          : {}),
-      }),
+      filterOptions: async ({ data, req }) => {
+        const categoryId = data?.category
+          ? typeof data.category === 'object'
+            ? (data.category as { id: number }).id
+            : (data.category as number)
+          : null
+
+        if (!categoryId) {
+          return { _status: { equals: 'published' } }
+        }
+
+        // Fetch direct subcategories of the selected category
+        const subResult = await req.payload.find({
+          collection: 'categories',
+          where: { parent: { equals: categoryId } },
+          limit: 200,
+          depth: 0,
+        })
+
+        const subcategoryIds = subResult.docs.map((c) => c.id)
+
+        // Include products tagged with the parent category itself OR any of its subcategories
+        const allIds = [categoryId, ...subcategoryIds]
+
+        return {
+          _status: { equals: 'published' },
+          or: allIds.map((id) => ({ categories: { contains: id } })),
+        }
+      },
     },
     {
       name: 'position',
