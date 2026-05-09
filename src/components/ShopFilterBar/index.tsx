@@ -1,37 +1,21 @@
 'use client'
 
 import type { Category } from '@/payload-types'
-import { sorting } from '@/lib/constants'
 import { cn } from '@/utilities/cn'
-import { ChevronDown } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 type Props = {
   topLevel: Category[]
   byParent: Record<string | number, Category[]>
   activeCategory: string | null
-  activeSort: string | null
+  activeSort?: string | null
 }
 
-export function ShopFilterBar({ topLevel, byParent, activeCategory, activeSort }: Props) {
+export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [sortOpen, setSortOpen] = useState(false)
-  const sortRef = useRef<HTMLDivElement>(null)
-
-  // Close sort dropdown when clicking outside
-  useEffect(() => {
-    if (!sortOpen) return
-    const handler = (e: MouseEvent) => {
-      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
-        setSortOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [sortOpen])
 
   const setParam = useCallback(
     (key: string, value: string | null) => {
@@ -60,8 +44,6 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory, activeSort }
 
   // Subcategories to show under the pill row
   const activeSubs = activeParentCategory ? (byParent[activeParentCategory.id] ?? []) : []
-
-  const currentSort = sorting.find((s) => s.slug === activeSort) ?? sorting[0]!
 
   const handleParentClick = (parent: Category) => {
     if (activeParentCategory?.slug === parent.slug) {
@@ -119,43 +101,6 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory, activeSort }
             })}
           </div>
 
-          {/* Sort dropdown */}
-          <div className="relative shrink-0" ref={sortRef}>
-            <button
-              onClick={() => setSortOpen((v) => !v)}
-              className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 py-1.5 text-sm font-medium text-neutral-600 transition-all hover:border-amber-300 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
-            >
-              <span>{currentSort.title}</span>
-              <ChevronDown
-                className={cn('h-3.5 w-3.5 transition-transform', sortOpen && 'rotate-180')}
-              />
-            </button>
-
-            {sortOpen && (
-              <div className="absolute right-0 top-full z-50 mt-1.5 w-52 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
-                {sorting.map((s) => {
-                  const active = s.slug === activeSort || (!s.slug && !activeSort)
-                  return (
-                    <button
-                      key={s.slug ?? 'default'}
-                      onClick={() => {
-                        setParam('sort', s.slug)
-                        setSortOpen(false)
-                      }}
-                      className={cn(
-                        'block w-full px-4 py-2.5 text-left text-sm transition-colors',
-                        active
-                          ? 'bg-amber-50 font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                          : 'text-neutral-600 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800',
-                      )}
-                    >
-                      {s.title}
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Subcategory pills — visible when a parent is selected and it has children */}

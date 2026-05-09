@@ -74,6 +74,7 @@ export default async function ShopPage({ searchParams }: Props) {
     collection: 'products',
     draft: false,
     overrideAccess: false,
+    depth: 2,
     limit: 100,
     select: {
       title: true,
@@ -82,6 +83,15 @@ export default async function ShopPage({ searchParams }: Props) {
       categories: true,
       priceInEUR: true,
       inventory: true,
+      enableVariants: true,
+      variantTypes: true,
+    },
+    populate: {
+      variantTypes: {
+        label: true,
+        name: true,
+        options: true,
+      },
     },
     sort: activeSort ?? 'title',
     where: { and: whereConditions },
