@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import React, { Fragment } from 'react'
+import React, { Suspense } from 'react'
 import { ConfirmOrder } from '@/components/checkout/ConfirmOrder'
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
@@ -17,7 +17,9 @@ export default async function ConfirmOrderPage({
 
   return (
     <div className="container min-h-[90vh] flex py-12">
-      <ConfirmOrder />
+      <Suspense fallback={<div className="w-full text-center text-muted-foreground">Loading…</div>}>
+        <ConfirmOrder />
+      </Suspense>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import React, { Fragment } from 'react'
+import React, { Fragment, Suspense } from 'react'
 
 import { CheckoutPage } from '@/components/checkout/CheckoutPage'
 
@@ -34,7 +34,10 @@ export default function Checkout() {
 
       <h1 className="sr-only">Checkout</h1>
 
-      <CheckoutPage />
+      {/* useSearchParams (via checkout / ecommerce client hooks) requires Suspense for static generation */}
+      <Suspense fallback={<div className="w-full flex-1 py-24 text-center text-muted-foreground">Loading checkout…</div>}>
+        <CheckoutPage />
+      </Suspense>
     </div>
   )
 }
