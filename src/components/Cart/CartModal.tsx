@@ -1,32 +1,23 @@
 'use client'
 
 import { Price } from '@/components/Price'
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
-import { ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useMemo } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
 import { OpenCartButton } from './OpenCart'
 
+const FREE_SHIPPING_THRESHOLD_CENTS = 8000 // € 80,00
+
 export function CartModal() {
   const { cart } = useCart()
   const { isOpen, setOpen, closeCart } = useCartOpen()
-
   const pathname = usePathname()
 
   useEffect(() => {
@@ -35,180 +26,256 @@ export function CartModal() {
         cartID: cart?.id,
         subtotal: cart?.subtotal,
         itemCount: cart?.items?.length ?? 0,
-        items: cart?.items?.map((item) => ({
-          id: item?.id,
-          quantity: item?.quantity,
-          productType: typeof item?.product,
-          productID: typeof item?.product === 'object' ? item.product?.id : item?.product,
-          variantType: typeof item?.variant,
-          variantID: typeof item?.variant === 'object' ? item.variant?.id : item?.variant,
-        })),
       })
     }
   }, [cart])
 
   useEffect(() => {
-    // Close the cart modal when the pathname changes.
     closeCart()
   }, [pathname, closeCart])
 
   const totalQuantity = useMemo(() => {
-    if (!cart || !cart.items || !cart.items.length) return undefined
+    if (!cart?.items?.length) return undefined
     const validItems = cart.items.filter(
       (item) => item != null && item.product != null && (item.quantity ?? 0) > 0,
     )
-    if (validItems.length === 0) return undefined
     const sum = validItems.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
     return sum > 0 ? sum : undefined
   }, [cart])
 
+  const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
+  const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
+  const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
+
+  const hasItems = (cart?.items?.length ?? 0) > 0
+
   return (
-    <Sheet onOpenChange={setOpen} open={isOpen}>
-      <SheetTrigger asChild>
-        <OpenCartButton quantity={totalQuantity} />
-      </SheetTrigger>
+    <>
+      {/* Trigger button */}
+      <OpenCartButton quantity={totalQuantity} onClick={() => setOpen(true)} />
 
-      <SheetContent className="flex flex-col">
-        <SheetHeader>
-          <SheetTitle>My Cart</SheetTitle>
+      {/* Overlay */}
+      <div
+        aria-hidden="true"
+        className={`fixed inset-0 z-[60] transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        style={{ background: 'rgba(44,42,39,0.4)' }}
+        onClick={closeCart}
+      />
 
-          <SheetDescription>Manage your cart here, add items to view the total.</SheetDescription>
-        </SheetHeader>
+      {/* Drawer */}
+      <aside
+        aria-label="Shopping cart"
+        className={`fixed top-0 right-0 h-full w-full max-w-md z-[70] flex flex-col transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{ background: '#F8F4EE', boxShadow: '-8px 0 40px rgba(44,42,39,0.15)' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-warm-border">
+          <h2 className="font-serif text-2xl font-light text-charcoal">Your Cart</h2>
+          <button
+            aria-label="Close cart"
+            className="text-warm-gray hover:text-charcoal transition-colors"
+            onClick={closeCart}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-        {!cart || cart?.items?.length === 0 ? (
-          <div className="text-center flex flex-col items-center gap-2">
-            <ShoppingCart className="h-16" />
-            <p className="text-center text-2xl font-bold">Your cart is empty.</p>
-          </div>
-        ) : (
-          <div className="grow flex px-4">
-            <div className="flex flex-col justify-between w-full">
-              <ul className="grow overflow-auto py-4">
-                {cart?.items?.map((item, i) => {
-                  const product = item.product
-                  const variant = item.variant
-
-                  if (typeof product !== 'object' || !item || !product || !product.slug)
-                    return <React.Fragment key={i} />
-
-                  const metaImage =
-                    product.meta?.image && typeof product.meta?.image === 'object'
-                      ? product.meta.image
-                      : undefined
-
-                  const firstGalleryImage =
-                    typeof product.gallery?.[0]?.image === 'object'
-                      ? product.gallery?.[0]?.image
-                      : undefined
-
-                  let image = firstGalleryImage || metaImage
-                  let price = product.priceInEUR
-
-                  const isVariant = Boolean(variant) && typeof variant === 'object'
-
-                  if (isVariant) {
-                    price = variant?.priceInEUR
-
-                    const imageVariant = product.gallery?.find((item) => {
-                      if (!item.variantOption) return false
-                      const variantOptionID =
-                        typeof item.variantOption === 'object'
-                          ? item.variantOption.id
-                          : item.variantOption
-
-                      const hasMatch = variant?.options?.some((option) => {
-                        if (typeof option === 'object') return option.id === variantOptionID
-                        else return option === variantOptionID
-                      })
-
-                      return hasMatch
-                    })
-
-                    if (imageVariant && typeof imageVariant.image === 'object') {
-                      image = imageVariant.image
-                    }
-                  }
-
-                  return (
-                    <li className="flex w-full flex-col" key={i}>
-                      <div className="relative flex w-full flex-row justify-between px-1 py-4">
-                        <div className="absolute z-40 -mt-2 ml-[55px]">
-                          <DeleteItemButton item={item} />
-                        </div>
-                        <Link
-                          className="z-30 flex flex-row space-x-4"
-                          href={`/products/${(item.product as Product)?.slug}`}
-                        >
-                          <div className="relative h-16 w-16 cursor-pointer overflow-hidden rounded-md border border-neutral-300 bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800">
-                            {image?.url && (
-                              <Image
-                                alt={image?.alt || product?.title || ''}
-                                className="h-full w-full object-cover"
-                                height={94}
-                                src={image.url}
-                                width={94}
-                              />
-                            )}
-                          </div>
-
-                          <div className="flex flex-1 flex-col text-base">
-                            <span className="leading-tight">{product?.title}</span>
-                            {isVariant && variant ? (
-                              <p className="text-sm text-neutral-500 dark:text-neutral-400 capitalize">
-                                {variant.options
-                                  ?.map((option) => {
-                                    if (typeof option === 'object') return option.label
-                                    return null
-                                  })
-                                  .join(', ')}
-                              </p>
-                            ) : null}
-                          </div>
-                        </Link>
-                        <div className="flex h-16 flex-col justify-between">
-                          {typeof price === 'number' && (
-                            <Price
-                              amount={price}
-                              className="flex justify-end space-y-2 text-right text-sm"
-                            />
-                          )}
-                          <div className="ml-auto flex h-9 flex-row items-center rounded-lg border">
-                            <EditItemQuantityButton item={item} type="minus" />
-                            <p className="w-6 text-center">
-                              <span className="w-full text-sm">{item.quantity}</span>
-                            </p>
-                            <EditItemQuantityButton item={item} type="plus" />
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-
-              <div className="px-4">
-                <div className="py-4 text-sm text-neutral-500 dark:text-neutral-400">
-                  {typeof cart?.subtotal === 'number' && (
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                      <p>Total</p>
-                      <Price
-                        amount={cart?.subtotal}
-                        className="text-right text-base text-black dark:text-white"
-                      />
-                    </div>
-                  )}
-
-                  <Button asChild>
-                    <Link className="w-full" href="/checkout">
-                      Proceed to Checkout
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
+        {/* Empty state */}
+        {!hasItems && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
+            <svg className="w-12 h-12 text-[#E2DBD0]" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24" aria-hidden>
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+            <p className="font-serif text-xl font-light text-warm-gray">Your cart is empty</p>
+            <button
+              onClick={closeCart}
+              className="font-sans text-xs tracking-widest uppercase px-6 py-3 border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"
+            >
+              Continue Shopping
+            </button>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+
+        {/* Items list */}
+        {hasItems && (
+          <ul className="flex-1 overflow-y-auto px-6 py-2">
+            {cart?.items?.map((item, i) => {
+              const product = item.product
+              const variant = item.variant
+
+              if (typeof product !== 'object' || !item || !product || !product.slug)
+                return <React.Fragment key={i} />
+
+              const metaImage =
+                product.meta?.image && typeof product.meta?.image === 'object'
+                  ? product.meta.image
+                  : undefined
+
+              const firstGalleryImage =
+                typeof product.gallery?.[0]?.image === 'object'
+                  ? product.gallery?.[0]?.image
+                  : undefined
+
+              let image = firstGalleryImage || metaImage
+              let price = product.priceInEUR
+
+              const isVariant = Boolean(variant) && typeof variant === 'object'
+
+              if (isVariant) {
+                price = variant?.priceInEUR
+
+                const imageVariant = product.gallery?.find((galleryItem) => {
+                  if (!galleryItem.variantOption) return false
+                  const variantOptionID =
+                    typeof galleryItem.variantOption === 'object'
+                      ? galleryItem.variantOption.id
+                      : galleryItem.variantOption
+
+                  return variant?.options?.some((option) => {
+                    if (typeof option === 'object') return option.id === variantOptionID
+                    return option === variantOptionID
+                  })
+                })
+
+                if (imageVariant && typeof imageVariant.image === 'object') {
+                  image = imageVariant.image
+                }
+              }
+
+              const variantLabel = isVariant && variant
+                ? variant.options
+                    ?.map((option) => (typeof option === 'object' ? option.label : null))
+                    .filter(Boolean)
+                    .join(', ')
+                : null
+
+              const linePriceCents =
+                typeof price === 'number' && typeof item.quantity === 'number'
+                  ? price * item.quantity
+                  : null
+
+              return (
+                <li key={i} className="flex gap-4 py-5 border-b border-warm-border last:border-0">
+                  {/* Image */}
+                  <Link href={`/products/${(item.product as Product)?.slug}`} className="shrink-0" onClick={closeCart}>
+                    <div className="w-20 h-20 overflow-hidden bg-[rgba(226,219,208,0.35)]">
+                      {image?.url && (
+                        <Image
+                          alt={image?.alt || product?.title || ''}
+                          className="w-full h-full object-cover"
+                          height={80}
+                          src={image.url}
+                          width={80}
+                        />
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/products/${(item.product as Product)?.slug}`} onClick={closeCart}>
+                      <p className="font-serif text-base font-light text-charcoal leading-snug mb-0.5">
+                        {product?.title}
+                      </p>
+                    </Link>
+                    {variantLabel && (
+                      <p className="font-sans text-xs text-warm-gray mb-3">{variantLabel}</p>
+                    )}
+
+                    <div className="flex items-center justify-between mt-3">
+                      {/* Qty stepper */}
+                      <div className="flex items-center border border-warm-border">
+                        <EditItemQuantityButton item={item} type="minus" />
+                        <span className="font-sans text-xs w-8 text-center text-charcoal">
+                          {item.quantity}
+                        </span>
+                        <EditItemQuantityButton item={item} type="plus" />
+                      </div>
+
+                      {/* Price + remove */}
+                      <div className="flex items-center gap-3">
+                        {linePriceCents !== null && (
+                          <Price
+                            amount={linePriceCents}
+                            className="font-sans text-sm font-medium text-charcoal"
+                          />
+                        )}
+                        <DeleteItemButton item={item} />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+
+        {/* Footer */}
+        {hasItems && (
+          <div className="px-6 py-6 border-t border-warm-border">
+            {/* Free shipping progress */}
+            <div className="mb-5">
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-sans text-xs text-warm-gray">Free shipping from € 80,00</p>
+                <p
+                  className="font-sans text-xs font-medium"
+                  style={{ color: remainingCents <= 0 ? '#4A5E3A' : '#8C8680' }}
+                >
+                  {remainingCents > 0
+                    ? `€ ${(remainingCents / 100).toFixed(2).replace('.', ',')} away`
+                    : 'Free shipping!'}
+                </p>
+              </div>
+              <div className="h-px w-full bg-warm-border">
+                <div
+                  className="h-px bg-olive transition-all duration-500"
+                  style={{ width: `${shippingPct}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Subtotal */}
+            <div className="flex items-center justify-between mb-5">
+              <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Subtotal</p>
+              {subtotalCents > 0 && (
+                <Price
+                  amount={subtotalCents}
+                  className="font-serif text-xl font-light text-charcoal"
+                />
+              )}
+            </div>
+
+            {/* Buttons */}
+            <Link
+              href="/cart"
+              onClick={closeCart}
+              className="flex items-center justify-center w-full py-3.5 mb-3 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"
+            >
+              View Cart
+            </Link>
+            <Link
+              href="/checkout"
+              onClick={closeCart}
+              className="flex items-center justify-center w-full py-3.5 font-sans text-sm tracking-wide text-white transition-colors duration-200 hover:opacity-90"
+              style={{ background: '#6B1F3A' }}
+            >
+              Proceed to Checkout →
+            </Link>
+
+            <p className="font-sans text-[10px] text-center mt-4 text-warm-gray">
+              Taxes and shipping calculated at checkout
+            </p>
+          </div>
+        )}
+      </aside>
+    </>
   )
 }
