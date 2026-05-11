@@ -2,6 +2,7 @@
 
 import type { Product, Variant } from '@/payload-types'
 import { AddToCart } from '@/components/Cart/AddToCart'
+import { Price } from '@/components/Price'
 import { RichText } from '@/components/RichText'
 import { cn } from '@/utilities/cn'
 import { useCurrency, EUR } from '@payloadcms/plugin-ecommerce/client/react'
@@ -148,14 +149,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
     }
   }
 
-  const formatEUR = (n: number) => `€ ${n.toFixed(2).replace('.', ',')}`
-
-  const displayPrice =
-    hasVariantPrices && !selectedVariantID && highestAmount > lowestAmount
-      ? `${formatEUR(lowestAmount)} – ${formatEUR(highestAmount)}`
-      : amount > 0
-        ? formatEUR(amount)
-        : null
+  // Price display — use Price component so cents→euros conversion is handled correctly
 
   // ── Accordion items ─────────────────────────────────────────────────
   // Description panel rendered separately using RichText; the rest are static
@@ -176,8 +170,23 @@ export function ProductDescription({ product, categoryLabel }: Props) {
       </h1>
 
       {/* Price */}
-      {displayPrice && (
-        <p className="font-serif text-3xl font-normal text-charcoal">{displayPrice}</p>
+      {(amount > 0 || (lowestAmount > 0 && highestAmount > 0)) && (
+        hasVariantPrices && !selectedVariantID && highestAmount > lowestAmount ? (
+          <Price
+            as="p"
+            lowestAmount={lowestAmount}
+            highestAmount={highestAmount}
+            currencyCode="EUR"
+            className="font-serif text-3xl font-normal text-charcoal"
+          />
+        ) : amount > 0 ? (
+          <Price
+            as="p"
+            amount={amount}
+            currencyCode="EUR"
+            className="font-serif text-3xl font-normal text-charcoal"
+          />
+        ) : null
       )}
       <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">Incl. VAT · Free shipping over € 50</p>
 

@@ -174,9 +174,10 @@ export default async function ProductPage({ params }: Args) {
 function RelatedProducts({ products }: { products: Product[] }) {
   if (!products.length) return null
 
-  const formatEUR = (amount?: number | null) =>
-    typeof amount === 'number'
-      ? `€ ${amount.toFixed(2).replace('.', ',')}`
+  // Prices are stored in cents — divide by 100 for display
+  const formatEUR = (cents?: number | null) =>
+    typeof cents === 'number'
+      ? `€ ${(cents / 100).toFixed(2).replace('.', ',')}`
       : ''
 
   return (

@@ -2,6 +2,7 @@
 
 import type { Media, Product, VariantType } from '@/payload-types'
 import { cn } from '@/utilities/cn'
+import { Price } from '@/components/Price'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useCallback, useState } from 'react'
@@ -172,9 +173,12 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
       {/* Price */}
       {typeof priceInEUR === 'number' && (
-        <p className="mb-1 font-sans text-sm font-medium text-charcoal">
-          € {priceInEUR.toFixed(2).replace('.', ',')}
-        </p>
+        <Price
+          as="p"
+          amount={priceInEUR}
+          currencyCode="EUR"
+          className="mb-1 font-sans text-sm font-medium text-charcoal"
+        />
       )}
 
       {/* Quick-add to cart button — links to product page with selected variant pre-filled */}
