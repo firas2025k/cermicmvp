@@ -30,38 +30,28 @@ export function HeaderSearch() {
     <div className="relative" ref={containerRef}>
       <button
         type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10"
+        className="flex h-9 w-9 items-center justify-center text-charcoal transition-colors hover:text-olive md:h-10 md:w-10"
         aria-label={open ? 'Close search' : 'Open search'}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => setOpen((v) => !v)}
       >
-        <svg
-          className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden>
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.35-4.35" />
         </svg>
       </button>
 
       {open ? (
         <div
           id={panelId}
-          className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-xl border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-700 dark:bg-neutral-950 md:w-[min(100vw-2rem,28rem)]"
+          className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] border border-warm-border bg-linen p-3 shadow-lg md:w-[min(100vw-2rem,28rem)]"
           role="search"
         >
-          <p className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-            Search products
-          </p>
-          <Suspense fallback={<div className="h-10 animate-pulse rounded-lg bg-neutral-100 dark:bg-neutral-800" />}>
+          <p className="mb-2 font-sans text-xs font-medium tracking-wide text-warm-gray">Search products</p>
+          <Suspense
+            fallback={<div className="h-10 animate-pulse bg-[#EDE8DD]" />}
+          >
             <Search onNavigate={close} />
           </Suspense>
         </div>

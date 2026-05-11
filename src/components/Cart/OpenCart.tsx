@@ -10,16 +10,15 @@ export function OpenCartButton({
   return (
     <button
       type="button"
-      className={`relative flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 md:h-10 md:w-10 ${className ?? ''}`}
+      className={`relative flex h-9 w-9 items-center justify-center text-charcoal transition-colors hover:text-olive md:h-10 md:w-10 ${className ?? ''}`}
       aria-label="Cart"
       {...rest}
     >
-      {/* Simple tote bag outline - matches stroke style of search/account icons */}
       <svg
-        className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
+        className="h-5 w-5"
         fill="none"
         stroke="currentColor"
-        strokeWidth={2}
+        strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
         viewBox="0 0 24 24"
@@ -30,7 +29,7 @@ export function OpenCartButton({
         <path d="M16 10a4 4 0 01-8 0" />
       </svg>
       {quantity != null && quantity > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-600 px-1 text-[10px] font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#6B1F3A] px-1 font-sans text-[10px] font-medium text-white">
           {quantity > 99 ? '99+' : quantity}
         </span>
       ) : null}

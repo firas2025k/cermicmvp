@@ -11,17 +11,21 @@ import React, { useMemo } from 'react'
 
 type Props = {
   menu: NonNullable<Header['navItems']>
+  categories?: Category[]
 }
 
-export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories?: Category[] }) {
+export function HeaderDesktopNav({ menu, categories = [] }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const shopCategory = searchParams.get('category')
   const { byParent } = useMemo(() => organizeCategories(categories), [categories])
 
+  const linkBase =
+    'header-nav-underline inline-flex items-center gap-1 font-sans text-sm tracking-wide text-charcoal transition-colors hover:text-olive'
+
   return (
-    <nav className="flex items-center justify-center py-3">
-      <ul className="flex items-center gap-8">
+    <nav className="flex items-center justify-center py-3.5">
+      <ul className="flex items-center gap-8 lg:gap-10">
         {menu.map((item, index) => {
           if (!item || !item.link) {
             console.warn('Invalid menu item at index', index, item)
@@ -37,22 +41,19 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories
             const href = categoryNavHref(parentCat)
             const subs = getSubcategories(parentCat.id, byParent)
             const isActive = pathname.startsWith('/shop') && shopCategory === parentCat.slug
+            const subActive = subs.some((s) => shopCategory === s.slug)
             const hasSubs = subs.length > 0
 
             return (
               <li key={key} className="group relative focus-within:z-50">
                 <Link
                   href={href}
-                  className={cn(
-                    'inline-flex items-center gap-1 text-sm font-medium text-neutral-700 transition-colors hover:text-amber-800 dark:text-neutral-200 dark:hover:text-white',
-                    (isActive || subs.some((s) => shopCategory === s.slug)) &&
-                      'font-semibold text-neutral-900 dark:text-white',
-                  )}
+                  className={cn(linkBase, (isActive || subActive) && 'header-nav-underline--active text-olive font-medium')}
                 >
                   {label}
                   {hasSubs ? (
                     <ChevronDown
-                      className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:rotate-180"
+                      className="h-3.5 w-3.5 text-warm-gray transition-transform group-hover:rotate-180 group-hover:text-olive"
                       aria-hidden
                     />
                   ) : null}
@@ -63,7 +64,7 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories
                     role="presentation"
                   >
                     <ul
-                      className="rounded-lg border border-neutral-200 bg-white py-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+                      className="border border-warm-border bg-white py-2 shadow-md"
                       role="menu"
                       aria-label={label}
                     >
@@ -71,7 +72,7 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories
                         <Link
                           role="menuitem"
                           href={href}
-                          className="block px-4 py-2 text-sm text-neutral-700 hover:bg-amber-50 hover:text-amber-900 dark:text-neutral-200 dark:hover:bg-amber-950/40 dark:hover:text-amber-200"
+                          className="block px-4 py-2 font-sans text-sm text-warm-gray transition-colors hover:bg-linen hover:text-olive"
                         >
                           Alle {parentCat.title}
                         </Link>
@@ -82,9 +83,8 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories
                             role="menuitem"
                             href={categoryNavHref(sub)}
                             className={cn(
-                              'block px-4 py-2 text-sm text-neutral-700 hover:bg-amber-50 hover:text-amber-900 dark:text-neutral-200 dark:hover:bg-amber-950/40 dark:hover:text-amber-200',
-                              shopCategory === sub.slug &&
-                                'bg-amber-50 font-medium text-amber-900 dark:bg-amber-950/50 dark:text-amber-200',
+                              'block px-4 py-2 font-sans text-sm text-warm-gray transition-colors hover:bg-linen hover:text-olive',
+                              shopCategory === sub.slug && 'bg-linen font-medium text-olive',
                             )}
                           >
                             {sub.title}
@@ -105,19 +105,15 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props & { categories
                 ? `/${link.reference.relationTo}/${link.reference.value.slug}`
                 : link.url
 
+          const pathActive = Boolean(url && url !== '/' && pathname.includes(url))
+
           return (
             <li key={key}>
               <Link
                 href={url || '#'}
                 target={link.newTab ? '_blank' : undefined}
                 rel={link.newTab ? 'noopener noreferrer' : undefined}
-                className={cn(
-                  'text-sm font-medium text-neutral-700 transition-colors hover:text-neutral-900 dark:text-neutral-200 dark:hover:text-white',
-                  {
-                    'text-neutral-900 dark:text-white font-semibold':
-                      url && url !== '/' && pathname.includes(url),
-                  },
-                )}
+                className={cn(linkBase, pathActive && 'header-nav-underline--active text-olive font-medium')}
               >
                 {label}
               </Link>
