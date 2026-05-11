@@ -5,7 +5,8 @@ import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
@@ -19,6 +20,12 @@ export function CartModal() {
   const { cart } = useCart()
   const { isOpen, setOpen, closeCart } = useCartOpen()
   const pathname = usePathname()
+  // Portal requires the DOM to be mounted — skip SSR
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
@@ -46,15 +53,12 @@ export function CartModal() {
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
   const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
   const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
-
   const hasItems = (cart?.items?.length ?? 0) > 0
 
-  return (
+  // ─── Drawer markup (rendered via portal into document.body) ───────────────
+  const drawer = (
     <>
-      {/* Trigger button */}
-      <OpenCartButton quantity={totalQuantity} onClick={() => setOpen(true)} />
-
-      {/* Overlay */}
+      {/* Overlay — darkens the page, closes on click */}
       <div
         aria-hidden="true"
         className={`fixed inset-0 z-[60] transition-opacity duration-300 ${
@@ -64,7 +68,7 @@ export function CartModal() {
         onClick={closeCart}
       />
 
-      {/* Drawer */}
+      {/* Drawer panel */}
       <aside
         aria-label="Shopping cart"
         className={`fixed top-0 right-0 h-full w-full max-w-md z-[70] flex flex-col transition-transform duration-300 ease-in-out ${
@@ -73,7 +77,7 @@ export function CartModal() {
         style={{ background: '#F8F4EE', boxShadow: '-8px 0 40px rgba(44,42,39,0.15)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-warm-border">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-warm-border flex-shrink-0">
           <h2 className="font-serif text-2xl font-light text-charcoal">Your Cart</h2>
           <button
             aria-label="Close cart"
@@ -106,7 +110,7 @@ export function CartModal() {
 
         {/* Items list */}
         {hasItems && (
-          <ul className="flex-1 overflow-y-auto px-6 py-2">
+          <ul className="flex-1 overflow-y-auto px-6 py-2 min-h-0">
             {cart?.items?.map((item, i) => {
               const product = item.product
               const variant = item.variant
@@ -150,12 +154,13 @@ export function CartModal() {
                 }
               }
 
-              const variantLabel = isVariant && variant
-                ? variant.options
-                    ?.map((option) => (typeof option === 'object' ? option.label : null))
-                    .filter(Boolean)
-                    .join(', ')
-                : null
+              const variantLabel =
+                isVariant && variant
+                  ? variant.options
+                      ?.map((option) => (typeof option === 'object' ? option.label : null))
+                      .filter(Boolean)
+                      .join(', ')
+                  : null
 
               const linePriceCents =
                 typeof price === 'number' && typeof item.quantity === 'number'
@@ -164,8 +169,12 @@ export function CartModal() {
 
               return (
                 <li key={i} className="flex gap-4 py-5 border-b border-warm-border last:border-0">
-                  {/* Image */}
-                  <Link href={`/products/${(item.product as Product)?.slug}`} className="shrink-0" onClick={closeCart}>
+                  {/* Product image */}
+                  <Link
+                    href={`/products/${(item.product as Product)?.slug}`}
+                    className="shrink-0"
+                    onClick={closeCart}
+                  >
                     <div className="w-20 h-20 overflow-hidden bg-[rgba(226,219,208,0.35)]">
                       {image?.url && (
                         <Image
@@ -179,9 +188,12 @@ export function CartModal() {
                     </div>
                   </Link>
 
-                  {/* Info */}
+                  {/* Product info */}
                   <div className="flex-1 min-w-0">
-                    <Link href={`/products/${(item.product as Product)?.slug}`} onClick={closeCart}>
+                    <Link
+                      href={`/products/${(item.product as Product)?.slug}`}
+                      onClick={closeCart}
+                    >
                       <p className="font-serif text-base font-light text-charcoal leading-snug mb-0.5">
                         {product?.title}
                       </p>
@@ -194,13 +206,13 @@ export function CartModal() {
                       {/* Qty stepper */}
                       <div className="flex items-center border border-warm-border">
                         <EditItemQuantityButton item={item} type="minus" />
-                        <span className="font-sans text-xs w-8 text-center text-charcoal">
+                        <span className="font-sans text-xs w-8 text-center text-charcoal select-none">
                           {item.quantity}
                         </span>
                         <EditItemQuantityButton item={item} type="plus" />
                       </div>
 
-                      {/* Price + remove */}
+                      {/* Line price + remove */}
                       <div className="flex items-center gap-3">
                         {linePriceCents !== null && (
                           <Price
@@ -220,7 +232,7 @@ export function CartModal() {
 
         {/* Footer */}
         {hasItems && (
-          <div className="px-6 py-6 border-t border-warm-border">
+          <div className="px-6 py-6 border-t border-warm-border flex-shrink-0">
             {/* Free shipping progress */}
             <div className="mb-5">
               <div className="flex justify-between items-center mb-2">
@@ -253,7 +265,7 @@ export function CartModal() {
               )}
             </div>
 
-            {/* Buttons */}
+            {/* CTA buttons */}
             <Link
               href="/cart"
               onClick={closeCart}
@@ -276,6 +288,17 @@ export function CartModal() {
           </div>
         )}
       </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* Trigger button stays in the header DOM tree */}
+      <OpenCartButton quantity={totalQuantity} onClick={() => setOpen(true)} />
+
+      {/* Overlay + drawer rendered via portal to escape the header's stacking context
+          (the header uses backdrop-blur which breaks position:fixed on children) */}
+      {mounted ? createPortal(drawer, document.body) : null}
     </>
   )
 }
