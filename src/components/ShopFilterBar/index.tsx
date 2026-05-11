@@ -76,7 +76,7 @@ export function ShopFilterBar({
     )
 
   return (
-    <section className="sticky top-[72px] z-20 border-y border-warm-border bg-white">
+    <section className="sticky top-16 z-20 border-y border-warm-border bg-white">
       {/* Row 1: categories + sort */}
       <div className="container py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -24,8 +24,7 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props) {
     'header-nav-underline inline-flex items-center gap-1 font-sans text-sm tracking-wide text-charcoal transition-colors hover:text-olive'
 
   return (
-    <nav className="flex items-center justify-center py-3.5">
-      <ul className="flex items-center gap-8 lg:gap-10">
+    <ul className="flex items-center gap-8 lg:gap-10">
         {menu.map((item, index) => {
           if (!item || !item.link) {
             console.warn('Invalid menu item at index', index, item)
@@ -105,7 +104,12 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props) {
                 ? `/${link.reference.relationTo}/${link.reference.value.slug}`
                 : link.url
 
-          const pathActive = Boolean(url && url !== '/' && pathname.includes(url))
+          const pathActive =
+            !url || url === '#'
+              ? false
+              : url === '/'
+                ? pathname === '/'
+                : pathname === url || pathname.startsWith(`${url}/`)
 
           return (
             <li key={key}>
@@ -120,7 +124,6 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props) {
             </li>
           )
         })}
-      </ul>
-    </nav>
+    </ul>
   )
 }
