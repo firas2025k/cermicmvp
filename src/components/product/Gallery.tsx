@@ -1,22 +1,32 @@
 'use client'
 
 import type { Product } from '@/payload-types'
-
-import { Media } from '@/components/Media'
-import { GridTileImage } from '@/components/Grid/tile'
+import { cn } from '@/utilities/cn'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { DefaultDocumentIDType } from 'payload'
 
+type GalleryItem = {
+  image: NonNullable<NonNullable<Product['gallery']>[number]['image']> & {
+    url?: string | null
+    alt?: string
+    width?: number | null
+    height?: number | null
+  }
+  variantOption?: { id: DefaultDocumentIDType } | number | null
+  id?: string | null
+}
+
 type Props = {
-  gallery: NonNullable<Product['gallery']>
+  gallery: GalleryItem[]
 }
 
 export const Gallery: React.FC<Props> = ({ gallery }) => {
   const searchParams = useSearchParams()
   const [current, setCurrent] = useState(0)
 
-  // Sync active image with selected variant (if present in search params)
+  // Sync active image when a variant option is selected (via URL params)
   useEffect(() => {
     const selectedOptionIDs = Array.from(searchParams.entries())
       .filter(([key]) => key !== 'variant' && key !== 'image')
@@ -25,50 +35,68 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
     if (selectedOptionIDs.length) {
       const index = gallery.findIndex((item) => {
         if (!item.variantOption) return false
-
-        let variantID: DefaultDocumentIDType
-
-        if (typeof item.variantOption === 'object') {
-          variantID = item.variantOption.id
-        } else variantID = item.variantOption
-
-        return selectedOptionIDs.includes(String(variantID))
+        const variantID =
+          typeof item.variantOption === 'object'
+            ? String((item.variantOption as { id: DefaultDocumentIDType }).id)
+            : String(item.variantOption)
+        return selectedOptionIDs.includes(variantID)
       })
-
-      if (index !== -1) {
-        setCurrent(index)
-      }
+      if (index !== -1) setCurrent(index)
     }
   }, [searchParams, gallery])
 
-  return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-start">
-      {/* Thumbnails column */}
-      <div className="order-2 flex gap-3 md:order-1 md:flex-col md:gap-3 md:pr-4">
-        {gallery.map((item, i) => {
-          if (typeof item.image !== 'object') return null
+  const activeImage = gallery[current]?.image
 
-          return (
-            <button
-              key={`${item.image.id}-${i}`}
-              type="button"
-              onClick={() => setCurrent(i)}
-              className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 transition hover:border-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
-              aria-label={`View image ${i + 1}`}
-            >
-              <GridTileImage active={i === current} media={item.image} />
-            </button>
-          )
-        })}
-      </div>
+  return (
+    <div className="flex gap-3.5">
+      {/* Thumbnail column */}
+      {gallery.length > 1 && (
+        <div className="flex w-[84px] flex-shrink-0 flex-col gap-2">
+          {gallery.map((item, i) => {
+            if (typeof item.image !== 'object' || !item.image?.url) return null
+            return (
+              <button
+                key={`${item.image.id ?? i}-thumb`}
+                type="button"
+                onClick={() => setCurrent(i)}
+                aria-label={`View image ${i + 1}`}
+                className={cn(
+                  'h-[84px] w-[84px] flex-shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200',
+                  i === current
+                    ? 'border-2 border-charcoal'
+                    : 'border-2 border-transparent hover:border-warm-border',
+                )}
+              >
+                <Image
+                  src={item.image.url}
+                  alt={item.image.alt ?? ''}
+                  width={84}
+                  height={84}
+                  className="h-full w-full object-cover"
+                />
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Main image */}
-      <div className="order-1 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 md:order-2 dark:border-neutral-800 dark:bg-neutral-950">
-        <Media
-          resource={gallery[current].image}
-          className="w-full"
-          imgClassName="h-full w-full object-cover"
-        />
+      <div className="group relative flex-1 overflow-hidden bg-[#EDE8DD]" style={{ aspectRatio: '1' }}>
+        {activeImage && typeof activeImage === 'object' && activeImage.url ? (
+          <Image
+            src={activeImage.url}
+            alt={activeImage.alt ?? ''}
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
+        ) : null}
+
+        {/* Zoom hint */}
+        <span className="absolute bottom-3 right-3 bg-[rgba(248,244,238,0.92)] px-2.5 py-1.5 font-sans text-[10px] font-semibold tracking-[0.1em] uppercase text-charcoal opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none select-none">
+          Hover to zoom
+        </span>
       </div>
     </div>
   )

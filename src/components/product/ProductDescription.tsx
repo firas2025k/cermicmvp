@@ -1,143 +1,287 @@
 'use client'
-import type { Product, Variant } from '@/payload-types'
 
-import { RichText } from '@/components/RichText'
+import type { Product, Variant } from '@/payload-types'
 import { AddToCart } from '@/components/Cart/AddToCart'
-import { Price } from '@/components/Price'
-import React, { Suspense } from 'react'
+import { RichText } from '@/components/RichText'
+import { cn } from '@/utilities/cn'
+import { useCurrency, EUR } from '@payloadcms/plugin-ecommerce/client/react'
 import { useSearchParams } from 'next/navigation'
+import React, { Suspense, useCallback, useMemo, useState } from 'react'
 
 import { VariantSelector } from './VariantSelector'
-import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
-import { StockIndicator } from '@/components/product/StockIndicator'
+import { StockIndicator } from './StockIndicator'
+import { STATIC_CARE_AND_SHIPPING, type AccordionItem } from './staticFaq'
 
-export function ProductDescription({ product }: { product: Product }) {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function toNumber(v: unknown): number | null {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null
+  if (typeof v === 'string' && v.trim() !== '') {
+    const p = Number(v)
+    return Number.isFinite(p) ? p : null
+  }
+  return null
+}
+
+// ── Accordion item ────────────────────────────────────────────────────────────
+
+function Accordion({ item, defaultOpen = false }: { item: AccordionItem; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className={cn('border-t border-warm-border', open && 'open')}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between py-4 text-left transition-colors hover:text-olive"
+      >
+        <span className="font-sans text-xs font-bold tracking-[0.08em] uppercase text-charcoal">
+          {item.title}
+        </span>
+        <svg
+          className={cn(
+            'h-4 w-4 flex-shrink-0 text-warm-gray transition-transform duration-250',
+            open && 'rotate-180',
+          )}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="pb-4 font-sans text-sm leading-relaxed text-warm-gray">{item.body}</div>
+      )}
+    </div>
+  )
+}
+
+// ── Trust bullets ─────────────────────────────────────────────────────────────
+
+const TRUST_ITEMS = [
+  {
+    label: 'Free shipping on orders over € 50',
+    icon: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+    ),
+  },
+  {
+    label: '30-day hassle-free returns',
+    icon: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    ),
+  },
+  {
+    label: 'Secure SSL checkout',
+    icon: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    ),
+  },
+  {
+    label: 'Ships within 1–2 business days from Vienna',
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+      </>
+    ),
+  },
+]
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+type Props = {
+  product: Product
+  categoryLabel?: string | null
+}
+
+export function ProductDescription({ product, categoryLabel }: Props) {
   const { currency } = useCurrency()
   const searchParams = useSearchParams()
-  let amount = 0,
-    lowestAmount = 0,
-    highestAmount = 0
-  
-  // Use EUR as the primary currency (fallback if useCurrency doesn't return EUR)
+
   const currencyCode = currency?.code || 'EUR'
   const priceField = `priceIn${currencyCode}` as keyof Product
   const hasVariantTypes = product.enableVariants && Boolean(product.variantTypes?.length)
   const hasVariantPrices = product.enableVariants && Boolean(product.variants?.docs?.length)
-  const toNumber = (value: unknown): number | null => {
-    if (typeof value === 'number') return Number.isFinite(value) ? value : null
-    if (typeof value === 'string' && value.trim() !== '') {
-      const parsed = Number(value)
-      return Number.isFinite(parsed) ? parsed : null
-    }
-    return null
-  }
+
   const selectedVariantID = searchParams.get('variant')
 
+  // ── Compute displayed price ──────────────────────────────────────────
+  let amount = 0
+  let lowestAmount = 0
+  let highestAmount = 0
+
   if (hasVariantPrices) {
-    const selectedVariant = product.variants?.docs?.find((variant) => {
-      if (!variant || typeof variant !== 'object') return false
-      return String(variant.id) === selectedVariantID
-    })
+    const selectedVariant = product.variants?.docs?.find((v) => {
+      if (typeof v !== 'object') return false
+      return String(v.id) === selectedVariantID
+    }) as Variant | undefined
 
-    if (selectedVariant && typeof selectedVariant === 'object') {
+    if (selectedVariant) {
       const selectedVariantPrice = toNumber(selectedVariant.priceInEUR)
-      if (selectedVariantPrice && selectedVariantPrice > 0) {
+      if (selectedVariantPrice !== null && selectedVariantPrice > 0) {
         amount = selectedVariantPrice
+      } else {
+        const basePrice = toNumber(product.priceInEUR)
+        amount = basePrice !== null && basePrice > 0 ? basePrice : 0
       }
-    }
-
-    const variantPriceField = `priceIn${currencyCode}` as keyof Variant
-    const variantsOrderedByPrice = product.variants?.docs
-      ?.filter((variant) => variant && typeof variant === 'object')
-      .sort((a, b) => {
-        if (typeof a !== 'object' || typeof b !== 'object') return 0
-        const aPrice = toNumber(a[variantPriceField])
-        const bPrice = toNumber(b[variantPriceField])
-        if (aPrice === null || bPrice === null) return 0
-        return aPrice - bPrice
-      }) as Variant[]
-
-    const lowestVariant = toNumber(variantsOrderedByPrice[0]?.[variantPriceField])
-    const highestVariant = toNumber(
-      variantsOrderedByPrice[variantsOrderedByPrice.length - 1]?.[variantPriceField],
-    )
-    if (
-      variantsOrderedByPrice &&
-      variantsOrderedByPrice.length > 0 &&
-      lowestVariant !== null &&
-      highestVariant !== null
-    ) {
-      lowestAmount = lowestVariant
-      highestAmount = highestVariant
-    }
-
-    if (amount === 0) {
-      const basePrice = toNumber(product.priceInEUR)
-      if (basePrice && basePrice > 0) {
-        amount = basePrice
+    } else {
+      // Show range from lowest to highest variant price
+      const variantPrices = (product.variants?.docs ?? [])
+        .map((v) => (typeof v === 'object' ? toNumber(v.priceInEUR) : null))
+        .filter((p): p is number => p !== null && p > 0)
+      if (variantPrices.length) {
+        lowestAmount = Math.min(...variantPrices)
+        highestAmount = Math.max(...variantPrices)
+        amount = lowestAmount
       }
     }
   } else {
-    // For non-variant products, check priceInEUR directly (with fallback)
     const eurPrice = toNumber(product.priceInEUR)
-    const usdPrice = toNumber(product.priceInUSD)
     const dynamicPrice = toNumber(product[priceField])
-    
     if (eurPrice !== null && eurPrice > 0) {
       amount = eurPrice
-    } else if (usdPrice !== null && usdPrice > 0) {
-      amount = usdPrice
     } else if (dynamicPrice !== null && dynamicPrice > 0) {
       amount = dynamicPrice
     }
   }
 
+  const formatEUR = (n: number) => `€ ${n.toFixed(2).replace('.', ',')}`
+
+  const displayPrice =
+    hasVariantPrices && !selectedVariantID && highestAmount > lowestAmount
+      ? `${formatEUR(lowestAmount)} – ${formatEUR(highestAmount)}`
+      : amount > 0
+        ? formatEUR(amount)
+        : null
+
+  // ── Accordion items ─────────────────────────────────────────────────
+  // Description panel rendered separately using RichText; the rest are static
+  const extraAccordionItems: AccordionItem[] = STATIC_CARE_AND_SHIPPING
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 md:text-3xl">
-          {product.title}
-        </h1>
-        <div className="space-y-1">
-          <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-            {amount > 0 ? (
-              <Price amount={amount} currencyCode="EUR" />
-            ) : hasVariantPrices && (lowestAmount > 0 || highestAmount > 0) ? (
-              <Price highestAmount={highestAmount} lowestAmount={lowestAmount} currencyCode="EUR" />
-            ) : (
-              <Price amount={0} currencyCode="EUR" />
-            )}
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col gap-0">
+      {/* Brand / category label */}
+      {categoryLabel && (
+        <p className="mb-2 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-warm-gray">
+          {categoryLabel} · Nabea
+        </p>
+      )}
 
-      {product.description ? (
-        <RichText
-          className="prose prose-sm max-w-none text-neutral-600 dark:prose-invert dark:text-neutral-300"
-          data={product.description}
-          enableGutter={false}
-        />
-      ) : null}
+      {/* Product title */}
+      <h1 className="mb-4 font-serif text-[clamp(1.9rem,2.8vw,2.8rem)] font-light leading-[1.1] tracking-[-0.01em] text-charcoal">
+        {product.title}
+      </h1>
 
+      {/* Price */}
+      {displayPrice && (
+        <p className="font-serif text-3xl font-normal text-charcoal">{displayPrice}</p>
+      )}
+      <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">Incl. VAT · Free shipping over € 50</p>
+
+      <hr className="border-warm-border" />
+
+      {/* Variant selector */}
       {hasVariantTypes && (
-        <div className="space-y-3">
+        <div className="mt-5 mb-5">
           <Suspense fallback={null}>
             <VariantSelector product={product} />
           </Suspense>
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-neutral-200 pt-4 text-xs text-neutral-600 dark:border-neutral-800 dark:text-neutral-300">
+      <hr className="border-warm-border mb-5" />
+
+      {/* QTY + Add to Cart */}
+      <div className="mb-4 flex items-stretch gap-2.5">
+        <Suspense fallback={null}>
+          <AddToCart product={product} />
+        </Suspense>
+      </div>
+
+      {/* Stock indicator */}
+      <div className="mb-5">
         <Suspense fallback={null}>
           <StockIndicator product={product} />
         </Suspense>
       </div>
 
-      <div className="mt-2 flex flex-col gap-3">
-        <Suspense fallback={null}>
-          <AddToCart product={product} />
-        </Suspense>
+      {/* Trust bullets */}
+      <div className="mb-5 flex flex-col gap-2.5">
+        {TRUST_ITEMS.map((item) => (
+          <div key={item.label} className="flex items-center gap-2.5">
+            <svg
+              className="h-4 w-4 flex-shrink-0 text-olive"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              {item.icon}
+            </svg>
+            <span className="font-sans text-sm text-warm-gray">{item.label}</span>
+          </div>
+        ))}
       </div>
+
+      {/* Accordions */}
+      <div className="border-b border-warm-border">
+        {/* Description — from CMS if present */}
+        {product.description ? (
+          <div className="border-t border-warm-border">
+            <DescriptionAccordion product={product} />
+          </div>
+        ) : null}
+
+        {/* Static care, shipping & FAQ panels */}
+        {extraAccordionItems.map((item, i) => (
+          <Accordion key={item.title} item={item} defaultOpen={i === 0 && !product.description} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Description accordion (needs RichText, keeps CMS content as-is) ──────────
+
+function DescriptionAccordion({ product }: { product: Product }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between py-4 text-left transition-colors hover:text-olive"
+      >
+        <span className="font-sans text-xs font-bold tracking-[0.08em] uppercase text-charcoal">
+          Description
+        </span>
+        <svg
+          className={cn(
+            'h-4 w-4 flex-shrink-0 text-warm-gray transition-transform duration-250',
+            open && 'rotate-180',
+          )}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="pb-4">
+          <RichText
+            className="prose prose-sm max-w-none font-sans text-warm-gray"
+            data={product.description!}
+            enableGutter={false}
+          />
+        </div>
+      )}
     </div>
   )
 }

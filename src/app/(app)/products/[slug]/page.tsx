@@ -1,15 +1,12 @@
-import type { Media, Product } from '@/payload-types'
+import type { Category, Media, Product } from '@/payload-types'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { Label } from '@/components/Grid/Label'
-import { GridTileImage } from '@/components/Grid/tile'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
-import { Button } from '@/components/ui/button'
 import configPromise from '@payload-config'
-import { ChevronLeftIcon } from 'lucide-react'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
@@ -28,10 +25,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   if (!product) return notFound()
 
   const gallery = product.gallery?.filter((item) => typeof item.image === 'object') || []
-
   const metaImage = typeof product.meta?.image === 'object' ? product.meta?.image : undefined
   const canIndex = product._status === 'published'
-
   const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
 
   return {
@@ -50,10 +45,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
       : null,
     robots: {
       follow: canIndex,
-      googleBot: {
-        follow: canIndex,
-        index: canIndex,
-      },
+      googleBot: { follow: canIndex, index: canIndex },
       index: canIndex,
     },
     title: product.meta?.title || product.title,
@@ -69,10 +61,7 @@ export default async function ProductPage({ params }: Args) {
   const gallery =
     product.gallery
       ?.filter((item) => typeof item.image === 'object')
-      .map((item) => ({
-        ...item,
-        image: item.image as Media,
-      })) || []
+      .map((item) => ({ ...item, image: item.image as Media })) || []
 
   const metaImage = typeof product.meta?.image === 'object' ? product.meta?.image : undefined
   const hasStock = product.enableVariants
@@ -83,7 +72,6 @@ export default async function ProductPage({ params }: Args) {
     : product.inventory! > 0
 
   let price = product.priceInEUR
-
   if (product.enableVariants && product?.variants?.docs?.length) {
     price = product?.variants?.docs?.reduce((acc, variant) => {
       if (typeof variant === 'object' && variant?.priceInEUR && acc && variant?.priceInEUR > acc) {
@@ -108,121 +96,169 @@ export default async function ProductPage({ params }: Args) {
   }
 
   const relatedProducts =
-    product.relatedProducts?.filter((relatedProduct) => typeof relatedProduct === 'object') ?? []
+    product.relatedProducts?.filter((p) => typeof p === 'object') ?? []
+
+  // Derive first category label for breadcrumb and product info
+  const firstCategory =
+    (product.categories ?? []).find(
+      (c): c is Category => typeof c === 'object' && c !== null,
+    ) ?? null
 
   return (
     <React.Fragment>
       <script
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productJsonLd),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
         type="application/ld+json"
       />
-      <section className="bg-neutral-50 dark:bg-neutral-950/40">
-        <div className="container pt-10 pb-16">
-          <Button
-            asChild
-            variant="outline"
-            className="mb-6 inline-flex items-center gap-2 rounded-full border-neutral-200 bg-white px-4 py-1.5 text-xs font-medium text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900"
-          >
-          <Link href="/shop">
-              <ChevronLeftIcon className="h-3.5 w-3.5" />
-              Back to shop
-          </Link>
-        </Button>
 
-          <div className="flex flex-col gap-10 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 lg:flex-row lg:gap-10 dark:border-neutral-800 dark:bg-neutral-950">
-          <div className="h-full w-full basis-full lg:basis-1/2">
-            <Suspense
-              fallback={
-                  <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden rounded-2xl bg-neutral-200/60 dark:bg-neutral-800/60" />
-              }
-            >
-              {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
-            </Suspense>
-          </div>
-
-          <div className="basis-full lg:basis-1/2">
-            <ProductDescription product={product} />
-          </div>
+      <div className="bg-linen min-h-screen">
+        {/* ── Breadcrumb ──────────────────────────────────────── */}
+        <div className="container pt-8 lg:pt-10">
+          <nav className="flex items-center gap-2 font-sans text-[11px] text-warm-gray">
+            <Link href="/" className="transition-colors hover:text-charcoal">
+              Home
+            </Link>
+            <span className="text-warm-border">/</span>
+            {firstCategory ? (
+              <Link href={`/shop?category=${firstCategory.slug ?? ''}`} className="transition-colors hover:text-charcoal">
+                {firstCategory.title}
+              </Link>
+            ) : (
+              <Link href="/shop" className="transition-colors hover:text-charcoal">
+                Shop
+              </Link>
+            )}
+            <span className="text-warm-border">/</span>
+            <span className="text-charcoal">{product.title}</span>
+          </nav>
         </div>
-      </div>
-      </section>
 
-      {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
+        {/* ── Two-column product layout ────────────────────────── */}
+        <section className="container pb-16 pt-8 lg:pb-24">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left: sticky gallery */}
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <Suspense
+                fallback={
+                  <div className="aspect-square w-full bg-[#EDE8DD]" />
+                }
+              >
+                {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
+              </Suspense>
+            </div>
 
-      {relatedProducts.length ? (
-        <section className="bg-neutral-50 dark:bg-neutral-950/40">
-        <div className="container">
-          <RelatedProducts products={relatedProducts as Product[]} />
-        </div>
+            {/* Right: product info */}
+            <div>
+              <ProductDescription
+                product={product}
+                categoryLabel={firstCategory?.title ?? null}
+              />
+            </div>
+          </div>
         </section>
-      ) : null}
+
+        {/* ── Extra content blocks (CTA / content / media from CMS) ── */}
+        {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
+
+        {/* ── You May Also Like ─────────────────────────────────── */}
+        {relatedProducts.length > 0 ? (
+          <RelatedProducts products={relatedProducts as Product[]} />
+        ) : null}
+      </div>
     </React.Fragment>
   )
 }
 
+// ── Related products section ─────────────────────────────────────────────────
+
 function RelatedProducts({ products }: { products: Product[] }) {
   if (!products.length) return null
 
-  return (
-    <div className="py-10">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-          Ähnliche Produkte
-        </h2>
-        <p className="text-xs text-neutral-600 dark:text-neutral-300">
-          Weitere Produkte in ähnlicher Stimmung.
-        </p>
-      </div>
-      <ul className="flex w-full gap-4 overflow-x-auto pt-1">
-        {products.map((product) => {
-          const galleryImage =
-            product.gallery?.[0]?.image && typeof product.gallery[0].image === 'object'
-              ? product.gallery[0].image
-              : undefined
-          const metaImage =
-            product.meta?.image && typeof product.meta.image === 'object'
-              ? product.meta.image
-              : undefined
-          const image = (galleryImage || metaImage) as Media | undefined
+  const formatEUR = (amount?: number | null) =>
+    typeof amount === 'number'
+      ? `€ ${amount.toFixed(2).replace('.', ',')}`
+      : ''
 
-          return (
-            <li
-              className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
-              key={product.id}
-            >
-              <Link className="relative block h-full w-full" href={`/products/${product.slug}`}>
-                <div className="relative flex h-full w-full overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-                  {image ? (
-                    <GridTileImage
-                      label={{
-                        amount: product.priceInEUR!,
-                        title: product.title,
-                      }}
-                      media={image}
-                    />
-                  ) : (
-                    <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40">
-                      <Label
-                        amount={product.priceInEUR!}
-                        title={product.title}
+  return (
+    <section className="bg-linen border-t-2 border-charcoal">
+      <div className="container py-16">
+        <div className="mb-8 flex items-baseline justify-between gap-4">
+          <h2 className="font-serif text-3xl font-light text-charcoal">
+            You May Also Like
+          </h2>
+          <Link
+            href="/shop"
+            className="font-sans text-xs font-semibold tracking-[0.1em] uppercase text-charcoal underline underline-offset-4 transition-colors hover:text-olive"
+          >
+            View All →
+          </Link>
+        </div>
+
+        <ul className="grid grid-cols-2 gap-px bg-warm-border lg:grid-cols-4">
+          {products.slice(0, 4).map((product) => {
+            const galleryImage =
+              product.gallery?.[0]?.image && typeof product.gallery[0].image === 'object'
+                ? (product.gallery[0].image as Media)
+                : undefined
+            const metaImg =
+              product.meta?.image && typeof product.meta.image === 'object'
+                ? (product.meta.image as Media)
+                : undefined
+            const image = galleryImage || metaImg
+
+            const categoryLabel =
+              (product.categories ?? []).find(
+                (c): c is Category => typeof c === 'object' && c !== null,
+              )?.title ?? null
+
+            return (
+              <li key={product.id} className="group bg-linen">
+                <Link href={`/products/${product.slug}`} className="block">
+                  {/* 3:4 image */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE8DD]">
+                    {image?.url ? (
+                      <Image
+                        src={image.url}
+                        alt={image.alt || product.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 1024px) 50vw, 25vw"
                       />
+                    ) : null}
+                    {/* Slide-up quick-add overlay */}
+                    <div className="absolute inset-x-0 bottom-0 translate-y-full bg-[rgba(248,244,238,0.96)] p-2.5 transition-transform duration-200 group-hover:translate-y-0">
+                      <span className="block w-full bg-charcoal py-2.5 text-center font-sans text-[11px] font-bold tracking-[0.1em] uppercase text-linen transition-colors hover:bg-terra">
+                        View Product
+                      </span>
                     </div>
-                  )}
-                </div>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+                  </div>
+                  <div className="px-3 py-4">
+                    {categoryLabel && (
+                      <p className="mb-1 font-sans text-[10px] font-bold tracking-[0.15em] uppercase text-warm-gray">
+                        {categoryLabel}
+                      </p>
+                    )}
+                    <p className="mb-1 font-serif text-base text-charcoal transition-colors group-hover:text-olive">
+                      {product.title}
+                    </p>
+                    <p className="font-sans text-sm font-bold text-charcoal">
+                      {formatEUR(product.priceInEUR)}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </section>
   )
 }
 
+// ── Data query ───────────────────────────────────────────────────────────────
+
 const queryProductBySlug = async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
-
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -251,20 +287,12 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
     },
     where: {
       and: [
-        {
-          slug: {
-            equals: slug,
-          },
-        },
+        { slug: { equals: slug } },
         ...(draft ? [] : [{ _status: { equals: 'published' } }]),
       ],
     },
     populate: {
-      variantTypes: {
-        label: true,
-        name: true,
-        options: true,
-      },
+      variantTypes: { label: true, name: true, options: true },
       variants: {
         title: true,
         priceInEUR: true,
@@ -272,18 +300,9 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
         inventory: true,
         options: true,
       },
-      gallery: {
-        populate: {
-          variantOption: true,
-        },
-      },
-      relatedProducts: {
-        populate: {
-          gallery: true,
-          meta: true,
-        },
-      },
-    },
+      gallery: { populate: { variantOption: true } },
+      relatedProducts: { populate: { gallery: true, meta: true } },
+    } as any,
   })
 
   return result.docs?.[0] || null
