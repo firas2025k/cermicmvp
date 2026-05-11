@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Nabea</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            linen:        '#F8F4EE',
+            olive:        '#4A5E3A',
+            'olive-light':'#6B7F5A',
+            terra:        '#C4714A',
+            charcoal:     '#2C2A27',
+            'warm-gray':  '#8C8680',
+            'warm-border':'#E2DBD0',
+            bordeaux:     '#6B1F3A',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans:  ['"DM Sans"', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: #F8F4EE; }
+
+    .nav-bg { background: rgba(248,244,238,0.95); backdrop-filter: blur(8px); }
+
+    /* ── form fields ── */
+    .field-label {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8C8680;
+      margin-bottom: 0.4rem;
+    }
+    .field-input {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      color: #2C2A27;
+      background: #fff;
+      border: 1px solid #E2DBD0;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      border-radius: 0;
+      appearance: none;
+    }
+    .field-input:focus { border-color: #4A5E3A; }
+    .field-input::placeholder { color: #C5BFB8; }
+
+    select.field-input { cursor: pointer; }
+
+    /* ── step indicator ── */
+    .step { display: flex; align-items: center; gap: 0.5rem; }
+    .step-dot {
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .step-dot.active   { background: #4A5E3A; color: #F8F4EE; }
+    .step-dot.done     { background: #4A5E3A; color: #F8F4EE; }
+    .step-dot.inactive { background: #E2DBD0; color: #8C8680; }
+    .step-line { flex: 1; height: 1px; background: #E2DBD0; }
+
+    /* ── section card ── */
+    .section-card {
+      background: #fff;
+      border: 1px solid #E2DBD0;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── payment radio ── */
+    .pay-option {
+      border: 1px solid #E2DBD0;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+    .pay-option.selected { border-color: #4A5E3A; }
+    .pay-radio {
+      width: 1rem; height: 1rem;
+      border-radius: 50%;
+      border: 2px solid #E2DBD0;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+      position: relative;
+    }
+    .pay-option.selected .pay-radio {
+      border-color: #4A5E3A;
+    }
+    .pay-option.selected .pay-radio::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: #4A5E3A;
+    }
+
+    /* ── order summary item ── */
+    .order-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .order-item-img {
+      width: 4rem; height: 4rem;
+      object-fit: cover;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .order-item-badge {
+      position: absolute;
+      top: -0.4rem; right: -0.4rem;
+      background: #6B1F3A;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      width: 1.15rem; height: 1.15rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── submit button ── */
+    .btn-checkout {
+      width: 100%;
+      padding: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: #6B1F3A;
+      color: #F8F4EE;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-checkout:hover { background: #4E1628; }
+
+    /* ── success overlay ── */
+    #successOverlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(248,244,238,0.97);
+      align-items: center; justify-content: center;
+    }
+    #successOverlay.show { display: flex; }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ══════════════════════════════════════ NAV ══ -->
+  <header class="fixed top-0 left-0 right-0 z-50 nav-bg border-b" style="border-color:#E2DBD0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
+      <a href="index.html" class="font-serif text-2xl font-light tracking-widest text-charcoal">Nabea</a>
+      <div class="flex items-center gap-6">
+        <a href="shop.html" class="font-sans text-xs tracking-widest uppercase text-warm-gray hover:text-olive transition-colors">← Back to Shop</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════ MAIN ══ -->
+  <main class="max-w-7xl mx-auto px-6 lg:px-10 pt-28 pb-20">
+
+    <!-- Page title -->
+    <div class="mb-10">
+      <p class="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-2">Secure Checkout</p>
+      <h1 class="font-serif text-4xl lg:text-5xl font-light text-charcoal">Your Order</h1>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="flex items-center gap-2 mb-12 max-w-xs">
+      <div class="step">
+        <div class="step-dot active" id="dot1">1</div>
+        <span class="font-sans text-xs text-charcoal">Info</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-dot inactive" id="dot2">2</div>
+        <span class="font-sans text-xs text-warm-gray" id="label2">Shipping</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-dot inactive" id="dot3">3</div>
+        <span class="font-sans text-xs text-warm-gray" id="label3">Payment</span>
+      </div>
+    </div>
+
+    <div class="lg:grid lg:grid-cols-[1fr_400px] lg:gap-14 items-start">
+
+      <!-- ══ LEFT COLUMN — FORM ══ -->
+      <div>
+
+        <!-- STEP 1: Contact + Shipping Address -->
+        <div id="step1">
+          <!-- Contact -->
+          <div class="section-card">
+            <h2 class="font-serif text-xl font-light text-charcoal mb-6">Contact Information</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="field-label">First Name</label>
+                <input type="text" class="field-input" placeholder="Sophie" id="firstName" />
+              </div>
+              <div>
+                <label class="field-label">Last Name</label>
+                <input type="text" class="field-input" placeholder="Maier" id="lastName" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label">Email Address</label>
+                <input type="email" class="field-input" placeholder="sophie@example.com" id="email" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label">Phone (optional)</label>
+                <input type="tel" class="field-input" placeholder="+43 123 456 789" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="section-card">
+            <h2 class="font-serif text-xl font-light text-charcoal mb-6">Shipping Address</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="field-label">Street &amp; Number</label>
+                <input type="text" class="field-input" placeholder="Mariahilfer Straße 12" id="street" />
+              </div>
+              <div>
+                <label class="field-label">City</label>
+                <input type="text" class="field-input" placeholder="Vienna" id="city" />
+              </div>
+              <div>
+                <label class="field-label">Postal Code</label>
+                <input type="text" class="field-input" placeholder="1060" id="postcode" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label">Country</label>
+                <select class="field-input" id="country">
+                  <option value="">Select country…</option>
+                  <option selected>Austria</option>
+                  <option>Germany</option>
+                  <option>Switzerland</option>
+                  <option>France</option>
+                  <option>Italy</option>
+                  <option>Netherlands</option>
+                  <option>United Kingdom</option>
+                  <option>United States</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label">Delivery Notes (optional)</label>
+                <input type="text" class="field-input" placeholder="Apartment, suite, building entrance…" />
+              </div>
+            </div>
+          </div>
+
+          <button onclick="goToStep(2)"
+                  class="btn-checkout mb-2">
+            Continue to Shipping →
+          </button>
+        </div>
+
+        <!-- STEP 2: Shipping Method -->
+        <div id="step2" style="display:none;">
+          <div class="section-card">
+            <h2 class="font-serif text-xl font-light text-charcoal mb-6">Shipping Method</h2>
+            <div class="space-y-3">
+              <label class="pay-option selected cursor-pointer" id="ship-std" onclick="selectShipping(this,'std')">
+                <div class="pay-radio"></div>
+                <div class="flex-1">
+                  <p class="font-sans text-sm text-charcoal font-medium">Standard Delivery</p>
+                  <p class="font-sans text-xs text-warm-gray mt-0.5">3–5 business days</p>
+                </div>
+                <span class="font-sans text-sm text-charcoal font-medium" id="ship-std-price">€ 4,90</span>
+              </label>
+              <label class="pay-option cursor-pointer" id="ship-exp" onclick="selectShipping(this,'exp')">
+                <div class="pay-radio"></div>
+                <div class="flex-1">
+                  <p class="font-sans text-sm text-charcoal font-medium">Express Delivery</p>
+                  <p class="font-sans text-xs text-warm-gray mt-0.5">1–2 business days</p>
+                </div>
+                <span class="font-sans text-sm text-charcoal font-medium">€ 9,90</span>
+              </label>
+              <label class="pay-option cursor-pointer" id="ship-free" onclick="selectShipping(this,'free')">
+                <div class="pay-radio"></div>
+                <div class="flex-1">
+                  <p class="font-sans text-sm text-charcoal font-medium">Free Shipping</p>
+                  <p class="font-sans text-xs text-warm-gray mt-0.5">5–8 business days · Orders over € 80</p>
+                </div>
+                <span class="font-sans text-sm text-charcoal font-medium">€ 0,00</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button onclick="goToStep(1)"
+                    class="flex-none px-6 py-4 font-sans text-xs tracking-widest uppercase border text-warm-gray hover:text-charcoal transition-colors"
+                    style="border-color:#E2DBD0;">
+              ← Back
+            </button>
+            <button onclick="goToStep(3)"
+                    class="btn-checkout flex-1">
+              Continue to Payment →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Payment -->
+        <div id="step3" style="display:none;">
+          <div class="section-card">
+            <h2 class="font-serif text-xl font-light text-charcoal mb-6">Payment Method</h2>
+            <div class="space-y-3 mb-6">
+              <div class="pay-option selected" id="pay-card" onclick="selectPayment(this,'card')">
+                <div class="pay-radio"></div>
+                <div class="flex-1">
+                  <p class="font-sans text-sm text-charcoal font-medium">Credit / Debit Card</p>
+                </div>
+                <div class="flex gap-2">
+                  <svg viewBox="0 0 38 24" width="32" class="opacity-60"><rect width="38" height="24" rx="3" fill="#016FD0"/><text x="6" y="16" fill="white" font-family="sans-serif" font-size="9" font-weight="bold">VISA</text></svg>
+                  <svg viewBox="0 0 38 24" width="32" class="opacity-60"><rect width="38" height="24" rx="3" fill="#EB001B" opacity=".9"/><circle cx="22" cy="12" r="7" fill="#F79E1B" opacity=".85"/></svg>
+                </div>
+              </div>
+              <div class="pay-option" id="pay-paypal" onclick="selectPayment(this,'paypal')">
+                <div class="pay-radio"></div>
+                <p class="font-sans text-sm text-charcoal font-medium">PayPal</p>
+              </div>
+              <div class="pay-option" id="pay-bank" onclick="selectPayment(this,'bank')">
+                <div class="pay-radio"></div>
+                <p class="font-sans text-sm text-charcoal font-medium">Bank Transfer</p>
+              </div>
+            </div>
+
+            <!-- Card fields -->
+            <div id="cardFields" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="field-label">Card Number</label>
+                <input type="text" class="field-input" placeholder="1234 5678 9012 3456"
+                       maxlength="19" oninput="formatCard(this)" id="cardNumber" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label">Name on Card</label>
+                <input type="text" class="field-input" placeholder="Sophie Maier" />
+              </div>
+              <div>
+                <label class="field-label">Expiry Date</label>
+                <input type="text" class="field-input" placeholder="MM / YY"
+                       maxlength="7" oninput="formatExpiry(this)" />
+              </div>
+              <div>
+                <label class="field-label">Security Code</label>
+                <input type="text" class="field-input" placeholder="CVV" maxlength="4" />
+              </div>
+            </div>
+
+            <!-- PayPal placeholder -->
+            <div id="paypalInfo" style="display:none;" class="py-4 text-center">
+              <p class="font-sans text-sm text-warm-gray">You will be redirected to PayPal to complete your payment securely.</p>
+            </div>
+
+            <!-- Bank transfer placeholder -->
+            <div id="bankInfo" style="display:none;" class="py-4 space-y-1">
+              <p class="font-sans text-xs text-warm-gray tracking-wide uppercase mb-2">Bank Details</p>
+              <p class="font-sans text-sm text-charcoal">IBAN: AT12 3456 7890 1234 5678</p>
+              <p class="font-sans text-sm text-charcoal">BIC: RZOOAT2L</p>
+              <p class="font-sans text-sm text-charcoal">Reference: Your order number (sent by email)</p>
+            </div>
+          </div>
+
+          <!-- Trust row -->
+          <div class="flex flex-wrap gap-6 mb-6 px-1">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-olive" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span class="font-sans text-xs text-warm-gray">SSL Encrypted</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-olive" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+              <span class="font-sans text-xs text-warm-gray">30-Day Returns</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-olive" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span class="font-sans text-xs text-warm-gray">Ships in 1–2 Days</span>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button onclick="goToStep(2)"
+                    class="flex-none px-6 py-4 font-sans text-xs tracking-widest uppercase border text-warm-gray hover:text-charcoal transition-colors"
+                    style="border-color:#E2DBD0;">
+              ← Back
+            </button>
+            <button onclick="placeOrder()"
+                    class="btn-checkout flex-1">
+              Place Order →
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══ RIGHT COLUMN — ORDER SUMMARY ══ -->
+      <aside class="mt-10 lg:mt-0 lg:sticky lg:top-24">
+        <div class="section-card">
+          <h2 class="font-serif text-xl font-light text-charcoal mb-6">Order Summary</h2>
+
+          <!-- Item list (populated by JS) -->
+          <div id="summaryItems" class="space-y-4 mb-6"></div>
+
+          <!-- Promo code -->
+          <div class="flex gap-2 mb-6">
+            <input type="text" class="field-input flex-1" placeholder="Promo code" id="promoInput" />
+            <button onclick="applyPromo()"
+                    class="px-4 font-sans text-xs tracking-widest uppercase border transition-all"
+                    style="border-color:#4A5E3A;color:#4A5E3A;"
+                    onmouseover="this.style.background='#4A5E3A';this.style.color='#F8F4EE';"
+                    onmouseout="this.style.background='transparent';this.style.color='#4A5E3A';">
+              Apply
+            </button>
+          </div>
+          <p id="promoMsg" class="font-sans text-xs mb-4" style="display:none;color:#4A5E3A;"></p>
+
+          <!-- Totals -->
+          <div class="space-y-2 border-t pt-5" style="border-color:#E2DBD0;">
+            <div class="flex justify-between">
+              <span class="font-sans text-sm text-warm-gray">Subtotal</span>
+              <span class="font-sans text-sm text-charcoal" id="summarySubtotal">€ 0,00</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-sans text-sm text-warm-gray">Shipping</span>
+              <span class="font-sans text-sm text-charcoal" id="summaryShipping">€ 4,90</span>
+            </div>
+            <div class="flex justify-between" id="discountRow" style="display:none!important;">
+              <span class="font-sans text-sm" style="color:#4A5E3A;">Discount</span>
+              <span class="font-sans text-sm" style="color:#4A5E3A;" id="summaryDiscount">−€ 0,00</span>
+            </div>
+            <div class="flex justify-between pt-4 border-t mt-4" style="border-color:#E2DBD0;">
+              <span class="font-serif text-lg font-light text-charcoal">Total</span>
+              <span class="font-serif text-lg font-light text-charcoal" id="summaryTotal">€ 0,00</span>
+            </div>
+            <p class="font-sans text-[10px] text-warm-gray mt-1">Incl. VAT where applicable</p>
+          </div>
+        </div>
+
+        <!-- Delivery estimate -->
+        <div class="section-card mt-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-olive flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <div>
+              <p class="font-sans text-sm text-charcoal font-medium" id="deliveryLabel">Estimated delivery: 3–5 business days</p>
+              <p class="font-sans text-xs text-warm-gray mt-0.5">Orders placed before 12:00 ship same day</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════ SUCCESS OVERLAY ══ -->
+  <div id="successOverlay">
+    <div class="text-center max-w-md px-8">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-8" style="background:#4A5E3A;">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2 class="font-serif text-4xl font-light text-charcoal mb-4">Order Confirmed</h2>
+      <p class="font-sans text-sm text-warm-gray mb-2">
+        Thank you, <span id="confirmName" class="text-charcoal font-medium"></span>!
+      </p>
+      <p class="font-sans text-sm text-warm-gray mb-8">
+        A confirmation email has been sent to <span id="confirmEmail" class="text-charcoal"></span>.
+        Your handcrafted pieces will ship within 1–2 business days.
+      </p>
+      <p class="font-sans text-xs tracking-widest uppercase text-warm-gray mb-8">
+        Order #<span id="confirmOrder"></span>
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="shop.html"
+           class="px-8 py-3.5 font-sans text-sm tracking-wide border text-olive transition-colors"
+           style="border-color:#4A5E3A;"
+           onmouseover="this.style.background='#4A5E3A';this.style.color='#F8F4EE';"
+           onmouseout="this.style.background='transparent';this.style.color='#4A5E3A';">
+          Continue Shopping
+        </a>
+        <a href="index.html"
+           class="px-8 py-3.5 font-sans text-sm tracking-wide text-white"
+           style="background:#6B1F3A;"
+           onmouseover="this.style.background='#4E1628';"
+           onmouseout="this.style.background='#6B1F3A';">
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ─── cart data from CART module or fallback dummy ─── */
+    const DUMMY = [
+      { id:1, name:'Large Serving Board',   variant:'L · Natural',         price:68, qty:1, img:'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=120&q=80' },
+      { id:2, name:'Stoneware Dinner Plate', variant:'Ø 27 cm · Chalk White', price:42, qty:2, img:'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=120&q=80' },
+    ];
+
+    function getItems() {
+      return (typeof CART !== 'undefined') ? CART.items : DUMMY;
+    }
+
+    /* ─── totals ─── */
+    let shippingCost = 4.90;
+    let discountAmt  = 0;
+
+    function subtotal() {
+      return getItems().reduce((s, it) => s + it.price * it.qty, 0);
+    }
+    function fmt(n) { return '€ ' + n.toFixed(2).replace('.', ','); }
+
+    function updateSummary() {
+      const items = getItems();
+      const el = document.getElementById('summaryItems');
+      el.innerHTML = items.map(it => `
+        <div class="order-item">
+          <div class="relative flex-shrink-0">
+            <img src="${it.img}" class="order-item-img rounded" alt="${it.name}" />
+            <span class="order-item-badge">${it.qty}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-sans text-sm text-charcoal font-medium leading-snug">${it.name}</p>
+            <p class="font-sans text-xs text-warm-gray mt-0.5">${it.variant}</p>
+          </div>
+          <p class="font-sans text-sm text-charcoal font-medium flex-shrink-0">${fmt(it.price * it.qty)}</p>
+        </div>
+      `).join('');
+
+      const sub = subtotal();
+      document.getElementById('summarySubtotal').textContent = fmt(sub);
+      document.getElementById('summaryShipping').textContent = fmt(shippingCost);
+      document.getElementById('summaryTotal').textContent    = fmt(sub + shippingCost - discountAmt);
+
+      if (discountAmt > 0) {
+        document.getElementById('discountRow').style.removeProperty('display');
+        document.getElementById('summaryDiscount').textContent = '−' + fmt(discountAmt);
+      }
+    }
+
+    /* ─── shipping selection ─── */
+    const shipCosts = { std: 4.90, exp: 9.90, free: 0 };
+    const shipLabels = {
+      std:  'Estimated delivery: 3–5 business days',
+      exp:  'Estimated delivery: 1–2 business days',
+      free: 'Estimated delivery: 5–8 business days',
+    };
+
+    function selectShipping(el, key) {
+      document.querySelectorAll('.pay-option[id^="ship-"]').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      shippingCost = shipCosts[key];
+      document.getElementById('deliveryLabel').textContent = shipLabels[key];
+      updateSummary();
+    }
+
+    /* ─── payment selection ─── */
+    function selectPayment(el, key) {
+      document.querySelectorAll('.pay-option[id^="pay-"]').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('cardFields').style.display  = (key === 'card')   ? 'grid' : 'none';
+      document.getElementById('paypalInfo').style.display  = (key === 'paypal') ? 'block': 'none';
+      document.getElementById('bankInfo').style.display    = (key === 'bank')   ? 'block': 'none';
+    }
+
+    /* ─── card input formatters ─── */
+    function formatCard(input) {
+      let v = input.value.replace(/\D/g,'').slice(0,16);
+      input.value = v.replace(/(.{4})/g,'$1 ').trim();
+    }
+    function formatExpiry(input) {
+      let v = input.value.replace(/\D/g,'').slice(0,4);
+      if (v.length > 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+      input.value = v;
+    }
+
+    /* ─── promo code ─── */
+    function applyPromo() {
+      const code = document.getElementById('promoInput').value.trim().toUpperCase();
+      const msg  = document.getElementById('promoMsg');
+      msg.style.display = 'block';
+      if (code === 'NABEA10') {
+        discountAmt = subtotal() * 0.10;
+        msg.style.color = '#4A5E3A';
+        msg.textContent = '10% discount applied!';
+      } else if (code === 'WELCOME') {
+        discountAmt = 5;
+        msg.style.color = '#4A5E3A';
+        msg.textContent = '€ 5,00 discount applied!';
+      } else {
+        discountAmt = 0;
+        msg.style.color = '#C4714A';
+        msg.textContent = 'Code not recognised.';
+      }
+      updateSummary();
+    }
+
+    /* ─── step navigation ─── */
+    function goToStep(n) {
+      [1,2,3].forEach(i => {
+        document.getElementById('step' + i).style.display = (i === n) ? 'block' : 'none';
+        const dot   = document.getElementById('dot'   + i);
+        const label = document.getElementById('label' + i);
+        if (i < n) {
+          dot.className = 'step-dot done';
+          dot.innerHTML = '✓';
+        } else if (i === n) {
+          dot.className = 'step-dot active';
+          dot.textContent = i;
+          if (label) label.style.color = '#2C2A27';
+        } else {
+          dot.className = 'step-dot inactive';
+          dot.textContent = i;
+          if (label) label.style.color = '#8C8680';
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ─── place order ─── */
+    function placeOrder() {
+      const name  = (document.getElementById('firstName').value || 'Customer').trim();
+      const email = (document.getElementById('email').value     || 'your email').trim();
+      const orderNum = Math.floor(100000 + Math.random() * 900000);
+
+      document.getElementById('confirmName').textContent  = name;
+      document.getElementById('confirmEmail').textContent = email;
+      document.getElementById('confirmOrder').textContent = orderNum;
+
+      if (typeof CART !== 'undefined') CART.items = [];
+
+      const overlay = document.getElementById('successOverlay');
+      overlay.classList.add('show');
+    }
+
+    /* ─── init ─── */
+    document.addEventListener('DOMContentLoaded', updateSummary);
+  </script>
+
+</body>
+</html>

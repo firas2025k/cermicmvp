@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Large Serving Board — Nabea</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            linen:     '#F8F4EE',
+            olive:     '#4A5E3A',
+            'olive-light': '#6B7F5A',
+            terra:     '#C4714A',
+            'terra-dark': '#A85A38',
+            charcoal:  '#2C2A27',
+            'warm-gray': '#8C8680',
+            'warm-border': '#E2DBD0',
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans:  ['DM Sans', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background-color: #F8F4EE; color: #2C2A27; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; }
+
+    /* NAV helpers (unchanged) */
+    .nav-link { position:relative; padding-bottom:2px; }
+    .nav-link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:#4A5E3A; transition:width 0.3s ease; }
+    .nav-link:hover::after { width:100%; }
+    .nav-bg  { background: rgba(248,244,238,0.92); backdrop-filter: blur(8px); }
+    #cartBadge { background: #6B1F3A; }
+
+    /* LAYOUT */
+    .pd-wrap { max-width:1280px; margin:0 auto; padding:0 40px; }
+
+    /* BREADCRUMB */
+    .breadcrumb { padding:20px 0 0; display:flex; align-items:center; gap:8px; font-family:'DM Sans',sans-serif; font-size:0.7rem; color:#8C8680; }
+    .breadcrumb a { color:#8C8680; transition:color 0.15s; }
+    .breadcrumb a:hover { color:#2C2A27; }
+    .breadcrumb .sep { color:#E2DBD0; }
+
+    /* PRODUCT GRID */
+    .product-layout { display:grid; grid-template-columns:1fr 1fr; gap:56px; padding:32px 0 80px; align-items:start; }
+
+    /* GALLERY */
+    .gallery { display:flex; gap:14px; position:sticky; top:84px; }
+    .thumbs { display:flex; flex-direction:column; gap:8px; width:84px; flex-shrink:0; }
+    .thumb { width:84px; height:84px; overflow:hidden; border:2px solid transparent; cursor:pointer; background:#EDE8DD; transition:border-color 0.2s; flex-shrink:0; }
+    .thumb.active { border-color:#2C2A27; }
+    .thumb img { width:100%; height:100%; object-fit:cover; }
+    .main-img { flex:1; aspect-ratio:1; overflow:hidden; background:#EDE8DD; position:relative; }
+    .main-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s ease; }
+    .main-img:hover img { transform:scale(1.03); }
+    .zoom-hint { position:absolute; bottom:12px; right:12px; background:rgba(248,244,238,0.92); font-family:'DM Sans',sans-serif; font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:6px 10px; color:#2C2A27; }
+
+    /* PRODUCT INFO */
+    .product-info { padding-top:4px; }
+    .pi-brand { font-family:'DM Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#8C8680; margin-bottom:8px; }
+    .pi-name { font-family:'Cormorant Garamond',serif; font-size:clamp(1.9rem,2.8vw,2.8rem); font-weight:300; letter-spacing:-0.01em; line-height:1.1; margin-bottom:14px; }
+    .pi-rating { display:flex; align-items:center; gap:8px; margin-bottom:18px; }
+    .stars { color:#C4714A; font-size:0.9rem; letter-spacing:1px; }
+    .pi-rating span { font-family:'DM Sans',sans-serif; font-size:0.75rem; color:#8C8680; }
+    .pi-rating a { font-family:'DM Sans',sans-serif; font-size:0.75rem; color:#2C2A27; text-decoration:underline; text-underline-offset:2px; }
+    .pi-price { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:400; color:#2C2A27; }
+    .pi-vat { font-family:'DM Sans',sans-serif; font-size:0.7rem; color:#8C8680; margin-top:4px; margin-bottom:24px; }
+    .pi-divider { border:none; border-top:1px solid #E2DBD0; margin:20px 0; }
+
+    /* VARIANT SELECTORS */
+    .variant-label { font-family:'DM Sans',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#2C2A27; margin-bottom:10px; }
+    .variant-label span { font-weight:400; color:#8C8680; margin-left:6px; text-transform:none; letter-spacing:0; }
+    .size-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:22px; }
+    .size-btn {
+      height:38px; min-width:52px; padding:0 14px;
+      border:1px solid #E2DBD0; background:#F8F4EE;
+      font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:600;
+      cursor:pointer; transition:all 0.15s; color:#2C2A27;
+    }
+    .size-btn:hover { border-color:#4A5E3A; color:#4A5E3A; }
+    .size-btn.active { background:#2C2A27; color:#F8F4EE; border-color:#2C2A27; }
+    .size-btn.oos { color:#E2DBD0; cursor:not-allowed; position:relative; overflow:hidden; }
+    .size-btn.oos::after { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:#E2DBD0; transform:rotate(-15deg); }
+
+    /* COLOUR SWATCHES */
+    .color-grid { display:flex; gap:8px; margin-bottom:22px; }
+    .color-swatch { width:32px; height:32px; border:2px solid transparent; cursor:pointer; outline-offset:3px; transition:outline 0.15s, border-color 0.15s; }
+    .color-swatch:hover { border-color:#8C8680; }
+    .color-swatch.active { border-color:#2C2A27; outline:2px solid #2C2A27; }
+
+    /* QTY + CTA */
+    .cta-row { display:flex; gap:10px; margin-bottom:18px; }
+    .qty-picker { display:flex; align-items:center; border:1px solid #E2DBD0; flex-shrink:0; }
+    .qty-btn { width:42px; height:50px; background:none; border:none; font-size:1.2rem; cursor:pointer; color:#2C2A27; transition:background 0.15s; font-family:'DM Sans',sans-serif; }
+    .qty-btn:hover { background:#EDE8DD; }
+    .qty-val { width:40px; text-align:center; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; }
+    .btn-addcart {
+      flex:1; height:50px; background:#C4714A; color:#F8F4EE;
+      border:none; font-family:'DM Sans',sans-serif;
+      font-size:0.75rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+      cursor:pointer; transition:background 0.2s;
+    }
+    .btn-addcart:hover { background:#A85A38; }
+    .btn-wishlist {
+      width:50px; height:50px; border:1px solid #E2DBD0; background:#F8F4EE;
+      display:flex; align-items:center; justify-content:center; cursor:pointer;
+      transition:color 0.15s, border-color 0.15s; flex-shrink:0; color:#8C8680;
+    }
+    .btn-wishlist:hover { color:#C4714A; border-color:#C4714A; }
+
+    /* TRUST */
+    .trust-row { display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+    .trust-item { display:flex; align-items:center; gap:10px; font-family:'DM Sans',sans-serif; font-size:0.78rem; color:#8C8680; }
+    .trust-item svg { flex-shrink:0; color:#4A5E3A; }
+
+    /* ACCORDION */
+    .accordion-item { border-top:1px solid #E2DBD0; }
+    .accordion-item:last-child { border-bottom:1px solid #E2DBD0; }
+    .accordion-btn {
+      width:100%; display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0; background:none; border:none; cursor:pointer;
+      font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase; color:#2C2A27;
+      transition:color 0.2s;
+    }
+    .accordion-btn:hover { color:#4A5E3A; }
+    .accordion-btn .chevron { transition:transform 0.25s; font-size:1rem; color:#8C8680; }
+    .accordion-item.open .chevron { transform:rotate(180deg); }
+    .accordion-body { display:none; padding-bottom:18px; font-family:'DM Sans',sans-serif; font-size:0.82rem; color:#8C8680; line-height:1.75; }
+    .accordion-item.open .accordion-body { display:block; }
+
+    /* YOU MAY ALSO LIKE */
+    .also-like { padding:64px 0; border-top:2px solid #2C2A27; }
+    .also-like-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; }
+    .also-like-head h2 { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; }
+    .also-like-head a { font-family:'DM Sans',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; color:#2C2A27; transition:color 0.2s; }
+    .also-like-head a:hover { color:#4A5E3A; }
+    .also-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#E2DBD0; }
+    .product-tile { background:#F8F4EE; position:relative; overflow:hidden; cursor:pointer; }
+    .product-tile-img { position:relative; overflow:hidden; aspect-ratio:3/4; background:#EDE8DD; }
+    .product-tile-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.45s ease; }
+    .product-tile:hover .product-tile-img img { transform:scale(1.05); }
+    .product-tile-quick { position:absolute; bottom:0; left:0; right:0; background:rgba(248,244,238,0.96); padding:10px; transform:translateY(100%); transition:transform 0.22s ease; }
+    .product-tile:hover .product-tile-quick { transform:translateY(0); }
+    .product-tile-quick button { width:100%; height:38px; background:#2C2A27; color:#F8F4EE; font-family:'DM Sans',sans-serif; font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; border:none; cursor:pointer; transition:background 0.15s; }
+    .product-tile-quick button:hover { background:#C4714A; }
+    .pt-info { padding:12px 12px 16px; }
+    .pt-info .br { font-family:'DM Sans',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#8C8680; margin-bottom:3px; }
+    .pt-info .nm { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; margin-bottom:5px; line-height:1.3; }
+    .pt-info .nm a { color:#2C2A27; transition:color 0.2s; }
+    .pt-info .nm a:hover { color:#4A5E3A; }
+    .pt-info .pr { font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:700; color:#2C2A27; }
+
+    @media(max-width:900px) { .product-layout{grid-template-columns:1fr;} .gallery{position:static;} .also-grid{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:640px) { .nav-links{display:none;} .gallery{flex-direction:column-reverse;} .thumbs{flex-direction:row;width:auto;} .pd-wrap{padding:0 20px;} }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ═══════════════════════════════════════ NAVIGATION ══ -->
+  <header class="fixed top-0 left-0 right-0 z-50 nav-bg border-b" style="border-color:#E2DBD0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
+      <a href="index.html" class="font-serif text-2xl font-light tracking-widest text-charcoal">
+        Nabea
+      </a>
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="index.html"  class="nav-link font-sans text-sm tracking-wide text-charcoal">Home</a>
+        <a href="shop.html"   class="nav-link font-sans text-sm tracking-wide text-charcoal">Shop</a>
+        <a href="index.html#story" class="nav-link font-sans text-sm tracking-wide text-charcoal">Our Story</a>
+        <a href="index.html#contact" class="nav-link font-sans text-sm tracking-wide text-charcoal">Contact</a>
+      </nav>
+      <div class="flex items-center gap-5">
+        <button class="text-xs font-sans tracking-widest text-warm-gray hover:text-olive transition-colors">DE&nbsp;|&nbsp;<span class="text-olive font-medium">EN</span></button>
+        <button aria-label="Search" class="text-charcoal hover:text-olive transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+        <button onclick="CART.open()" aria-label="Cart" class="relative text-charcoal hover:text-olive transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span id="cartBadge" class="absolute -top-1.5 -right-1.5 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-sans font-medium">2</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pd-wrap">
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb" style="padding-top:84px;">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="shop.html">Olive Wood</a><span class="sep">/</span>
+      <span style="color:#2C2A27;">Large Serving Board</span>
+    </nav>
+
+    <!-- PRODUCT -->
+    <div class="product-layout">
+
+      <!-- GALLERY -->
+      <div class="gallery">
+        <div class="thumbs">
+          <div class="thumb active" onclick="setImg(this,'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=900&q=80')">
+            <img src="https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=200&q=80" alt="" />
+          </div>
+          <div class="thumb" onclick="setImg(this,'https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=900&q=80')">
+            <img src="https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=200&q=80" alt="" />
+          </div>
+          <div class="thumb" onclick="setImg(this,'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=900&q=80')">
+            <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=200&q=80" alt="" />
+          </div>
+          <div class="thumb" onclick="setImg(this,'https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=900&q=80')">
+            <img src="https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=200&q=80" alt="" />
+          </div>
+        </div>
+        <div class="main-img">
+          <img id="mainImg" src="https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=900&q=80" alt="Large Serving Board" />
+          <div class="zoom-hint">Hover to zoom</div>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="product-info">
+        <p class="pi-brand">Olive Wood · Nabea</p>
+        <h1 class="pi-name">Large Serving Board</h1>
+        <div class="pi-rating">
+          <span class="stars">★★★★★</span>
+          <span>4.9</span>
+          <a href="#">(42 reviews)</a>
+        </div>
+
+        <p class="pi-price" id="productPrice">€ 68,00</p>
+        <p class="pi-vat">Incl. VAT · Free shipping over € 50</p>
+
+        <hr class="pi-divider" />
+
+        <!-- SIZE -->
+        <p class="variant-label">Size <span id="sizeLabel">L</span></p>
+        <div class="size-grid" id="sizeGroup">
+          <button class="size-btn" onclick="pickSize(this,'S',52)" data-price="52">S</button>
+          <button class="size-btn" onclick="pickSize(this,'M',60)" data-price="60">M</button>
+          <button class="size-btn active" onclick="pickSize(this,'L',68)" data-price="68">L</button>
+          <button class="size-btn" onclick="pickSize(this,'XL',85)" data-price="85">XL</button>
+        </div>
+
+        <!-- FINISH -->
+        <p class="variant-label">Finish <span id="finishLabel">Natural</span></p>
+        <div class="color-grid" id="finishGroup">
+          <div class="color-swatch active" style="background:#C8A97A;" title="Natural" onclick="pickFinish(this,'Natural')"></div>
+          <div class="color-swatch" style="background:#6B4F2E;" title="Dark Oiled" onclick="pickFinish(this,'Dark Oiled')"></div>
+          <div class="color-swatch" style="background:#E8DDD0;" title="Bleached" onclick="pickFinish(this,'Bleached')"></div>
+        </div>
+
+        <hr class="pi-divider" />
+
+        <!-- QTY + CTA -->
+        <div class="cta-row">
+          <div class="qty-picker">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-val" id="qty">1</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+          <button class="btn-addcart" onclick="addToCart()">Add to Cart</button>
+          <button class="btn-wishlist">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </button>
+        </div>
+
+        <!-- TRUST -->
+        <div class="trust-row">
+          <div class="trust-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Free shipping on orders over € 50</div>
+          <div class="trust-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>30-day hassle-free returns</div>
+          <div class="trust-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Secure SSL checkout</div>
+          <div class="trust-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Ships within 1–2 business days from Vienna</div>
+        </div>
+
+        <!-- ACCORDIONS -->
+        <div class="accordion-item open">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <span>Description</span><span class="chevron">▾</span>
+          </button>
+          <div class="accordion-body">
+            Each serving board is hand-turned from a single piece of olive wood — no two boards are the same. The natural grain patterns vary with every tree. Ideal for charcuterie, bread, and cheese. Food-safe and finished with organic linseed oil.
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <span>Dimensions &amp; Care</span><span class="chevron">▾</span>
+          </button>
+          <div class="accordion-body">
+            <strong style="color:#2C2A27;">S</strong> — 28 × 18 cm · 0.6 kg<br/>
+            <strong style="color:#2C2A27;">M</strong> — 35 × 22 cm · 0.9 kg<br/>
+            <strong style="color:#2C2A27;">L</strong> — 42 × 26 cm · 1.2 kg<br/>
+            <strong style="color:#2C2A27;">XL</strong> — 50 × 30 cm · 1.6 kg<br/><br/>
+            Hand wash only — do not soak or dishwash. Re-oil periodically with food-safe mineral oil.
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <span>Shipping &amp; Returns</span><span class="chevron">▾</span>
+          </button>
+          <div class="accordion-body">
+            Ships within 1–2 business days from Vienna, Austria. Free standard shipping on orders over € 50. Returns accepted within 30 days for unused items in original packaging.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- YOU MAY ALSO LIKE -->
+  <div class="pd-wrap">
+    <div class="also-like">
+      <div class="also-like-head">
+        <h2>You May Also Like</h2>
+        <a href="shop.html">View All →</a>
+      </div>
+      <div class="also-grid">
+        <div class="product-tile">
+          <div class="product-tile-img">
+            <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80" alt="Cheese Board" />
+            <div class="product-tile-quick"><button onclick="CART.add('Cheese Board with Handle','Natural',55,'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=120&q=80')">Add to Cart</button></div>
+          </div>
+          <div class="pt-info"><p class="br">Olive Wood</p><p class="nm"><a href="product.html">Cheese Board with Handle</a></p><p class="pr">€ 55,00</p></div>
+        </div>
+        <div class="product-tile">
+          <div class="product-tile-img">
+            <img src="https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=600&q=80" alt="Salad Bowl" />
+            <div class="product-tile-quick"><button onclick="CART.add('Turned Salad Bowl','M · Natural',85,'https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=120&q=80')">Add to Cart</button></div>
+          </div>
+          <div class="pt-info"><p class="br">Olive Wood</p><p class="nm"><a href="product.html">Turned Salad Bowl</a></p><p class="pr">€ 85,00</p></div>
+        </div>
+        <div class="product-tile">
+          <div class="product-tile-img">
+            <img src="https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600&q=80" alt="Spoon Set" />
+            <div class="product-tile-quick"><button onclick="CART.add('Cooking Spoon Set','Set of 3',38,'https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=120&q=80')">Add to Cart</button></div>
+          </div>
+          <div class="pt-info"><p class="br">Olive Wood</p><p class="nm"><a href="product.html">Cooking Spoon Set</a></p><p class="pr">€ 38,00</p></div>
+        </div>
+        <div class="product-tile">
+          <div class="product-tile-img">
+            <img src="https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=600&q=80" alt="Mortar" />
+            <div class="product-tile-quick"><button onclick="CART.add('Mortar & Pestle','L · Natural',72,'https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=120&q=80')">Add to Cart</button></div>
+          </div>
+          <div class="pt-info"><p class="br">Olive Wood</p><p class="nm"><a href="product.html">Mortar &amp; Pestle</a></p><p class="pr">€ 72,00</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="background:#2C2A27; color:#F8F4EE;">
+    <div class="pd-wrap">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding:56px 0 40px;border-bottom:1px solid rgba(248,244,238,0.1);">
+        <div>
+          <a href="index.html" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;letter-spacing:0.1em;color:#F8F4EE;">Nabea</a>
+          <p style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.45);line-height:1.7;max-width:220px;margin-top:12px;">Handcrafted olive wood and ceramic pieces, made with care in Austria.</p>
+        </div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(248,244,238,0.35);margin-bottom:16px;">Shop</p>
+          <ul style="list-style:none;">
+            <li style="margin-bottom:9px;"><a href="shop.html" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Olive Wood</a></li>
+            <li style="margin-bottom:9px;"><a href="shop.html" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Ceramics</a></li>
+            <li style="margin-bottom:9px;"><a href="shop.html" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Gift Sets</a></li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(248,244,238,0.35);margin-bottom:16px;">Help</p>
+          <ul style="list-style:none;">
+            <li style="margin-bottom:9px;"><a href="#" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Shipping &amp; Returns</a></li>
+            <li style="margin-bottom:9px;"><a href="#" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Care Guide</a></li>
+            <li style="margin-bottom:9px;"><a href="#" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">FAQs</a></li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(248,244,238,0.35);margin-bottom:16px;">Contact</p>
+          <ul style="list-style:none;">
+            <li style="margin-bottom:9px;font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">Wien, Österreich</li>
+            <li style="margin-bottom:9px;"><a href="mailto:hello@nabea.at" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:rgba(248,244,238,0.6);">hello@nabea.at</a></li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0;font-family:'DM Sans',sans-serif;font-size:0.7rem;color:rgba(248,244,238,0.25);">
+        <span>© 2025 Nabea. All rights reserved.</span>
+        <span>Wien, Austria · hello@nabea.at</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function setImg(thumb, src) {
+      document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      document.getElementById('mainImg').src = src;
+    }
+    function pickSize(btn, label, price) {
+      document.querySelectorAll('#sizeGroup .size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sizeLabel').textContent = label;
+      document.getElementById('productPrice').textContent = '€ ' + price.toFixed(2).replace('.', ',');
+    }
+    function pickFinish(el, label) {
+      document.querySelectorAll('#finishGroup .color-swatch').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('finishLabel').textContent = label;
+    }
+    function changeQty(d) {
+      const el = document.getElementById('qty');
+      el.textContent = Math.max(1, parseInt(el.textContent) + d);
+    }
+    function toggleAcc(btn) {
+      btn.closest('.accordion-item').classList.toggle('open');
+    }
+    function addToCart() {
+      const size   = document.querySelector('#sizeGroup .size-btn.active');
+      const finish = document.querySelector('#finishGroup .color-swatch.active');
+      const qty    = parseInt(document.getElementById('qty').textContent);
+      const price  = size ? parseFloat(size.dataset.price) : 68;
+      const variant = (size ? size.textContent.trim() : 'L') + ' · ' + (finish ? finish.getAttribute('title') : 'Natural');
+      for (let i = 0; i < qty; i++) {
+        CART.add('Large Serving Board', variant, price, 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=120&q=80');
+      }
+    }
+  </script>
+  <script src="cart.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Nabea</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            linen:     '#F8F4EE',
+            olive:     '#4A5E3A',
+            'olive-light': '#6B7F5A',
+            terra:     '#C4714A',
+            'terra-dark': '#A85A38',
+            charcoal:  '#2C2A27',
+            'warm-gray': '#8C8680',
+            'warm-border': '#E2DBD0',
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans:  ['DM Sans', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    body { background-color: #F8F4EE; color: #2C2A27; }
+    .nav-link {
+      position: relative;
+      padding-bottom: 2px;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: #4A5E3A;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active::after { width: 100%; }
+    .product-card:hover .product-img { transform: scale(1.04); }
+    .product-img { transition: transform 0.5s ease; }
+    .btn-terra {
+      background: #C4714A;
+      color: white;
+      transition: background 0.2s ease;
+    }
+    .btn-terra:hover { background: #A85A38; }
+    .filter-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid #E2DBD0;
+      background: transparent;
+      color: #8C8680;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: #4A5E3A;
+      background: #4A5E3A;
+      color: #F8F4EE;
+    }
+    .sort-select {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      background: transparent;
+      border: 1px solid #E2DBD0;
+      padding: 0.5rem 2rem 0.5rem 0.75rem;
+      color: #2C2A27;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    /* opacity-on-custom-colour replacements */
+    .nav-bg  { background: rgba(248,244,238,0.92); backdrop-filter: blur(8px); }
+    .img-bg  { background: rgba(226,219,208,0.35); }
+    #cartBadge { background: #6B1F3A; }
+    /* subcategory row */
+    .subcat-bar {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      border-top: 0px solid #E2DBD0;
+    }
+    .subcat-bar.open {
+      max-height: 60px;
+      padding: 10px 0;
+      border-top-width: 1px;
+    }
+    .subcat-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 1rem;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #8C8680;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      border-radius: 0;
+    }
+    .subcat-btn:hover { color: #4A5E3A; border-color: #4A5E3A; }
+    .subcat-btn.active {
+      border-color: #4A5E3A;
+      color: #4A5E3A;
+      font-weight: 500;
+    }
+    .subcat-sep { color: #E2DBD0; font-size: 0.7rem; user-select: none; }
+    /* card variant pills */
+    .vpill {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      border: 1px solid #E2DBD0;
+      color: #8C8680;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1.4;
+    }
+    .vpill:hover, .vpill.active {
+      border-color: #4A5E3A;
+      background: #4A5E3A;
+      color: #F8F4EE;
+    }
+    /* quick-add button */
+    .quick-add {
+      width: 100%;
+      padding: 0.55rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid #E2DBD0;
+      background: transparent;
+      color: #8C8680;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.75rem;
+    }
+    .quick-add:hover {
+      background: #6B1F3A;
+      border-color: #6B1F3A;
+      color: #F8F4EE;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ═══════════════════════════════════════ NAVIGATION ══ -->
+  <header class="fixed top-0 left-0 right-0 z-50 nav-bg border-b" style="border-color:#E2DBD0;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-16">
+      <a href="index.html" class="font-serif text-2xl font-light tracking-widest text-charcoal">
+        Nabea
+      </a>
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="index.html"  class="nav-link font-sans text-sm tracking-wide text-charcoal">Home</a>
+        <a href="shop.html"   class="nav-link active font-sans text-sm tracking-wide text-olive font-medium">Shop</a>
+        <a href="index.html#story" class="nav-link font-sans text-sm tracking-wide text-charcoal">Our Story</a>
+        <a href="index.html#contact" class="nav-link font-sans text-sm tracking-wide text-charcoal">Contact</a>
+      </nav>
+      <div class="flex items-center gap-5">
+        <button class="text-xs font-sans tracking-widest text-warm-gray hover:text-olive transition-colors">DE&nbsp;|&nbsp;<span class="text-olive font-medium">EN</span></button>
+        <button aria-label="Search" class="text-charcoal hover:text-olive transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+        <button onclick="CART.open()" aria-label="Cart" class="relative text-charcoal hover:text-olive transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span id="cartBadge" class="absolute -top-1.5 -right-1.5 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-sans font-medium">2</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════ PAGE HEADER ══ -->
+  <section class="pt-32 pb-12 max-w-7xl mx-auto px-6 lg:px-10">
+    <p class="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">Browse</p>
+    <h1 class="font-serif text-5xl lg:text-6xl font-light text-charcoal">The Shop</h1>
+  </section>
+
+  <!-- ════════════════════════════════════ FILTER BAR ══ -->
+  <section class="bg-white sticky top-16 z-40" style="border-top:1px solid #E2DBD0;border-bottom:1px solid #E2DBD0;">
+    <!-- Row 1: categories + sort -->
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex flex-wrap gap-2" id="catGroup">
+        <button class="filter-btn active" data-cat="all" onclick="selectCat(this)">All</button>
+        <button class="filter-btn" data-cat="olive-wood" onclick="selectCat(this)">Olive Wood</button>
+        <button class="filter-btn" data-cat="ceramics" onclick="selectCat(this)">Ceramics</button>
+        <button class="filter-btn" data-cat="gift-sets" onclick="selectCat(this)">Gift Sets</button>
+      </div>
+      <div class="flex items-center gap-6">
+        <span class="font-sans text-xs text-warm-gray" id="productCount">12 products</span>
+        <div class="relative">
+          <select class="sort-select pr-8">
+            <option>Sort: Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest</option>
+          </select>
+          <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-warm-gray pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+    <!-- Row 2: subcategories (slides in) -->
+    <div class="subcat-bar" id="subcatBar">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 flex flex-wrap items-center gap-1" id="subcatGroup"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ PRODUCT GRID ══ -->
+  <main class="max-w-7xl mx-auto px-6 lg:px-10 py-14">
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+
+      <!-- Product 1 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=600&q=80"
+                 alt="Large Serving Board" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Large Serving Board</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">S</button>
+          <button class="vpill" onclick="setCardVariant(this)">M</button>
+          <button class="vpill" onclick="setCardVariant(this)">L</button>
+          <button class="vpill" onclick="setCardVariant(this)">XL</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 68,00</p>
+        <button class="quick-add" onclick="CART.add('Large Serving Board','L · Natural',68,'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80"
+                 alt="Stoneware Dinner Plate" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Ceramics</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Stoneware Dinner Plate</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Ø 22</button>
+          <button class="vpill" onclick="setCardVariant(this)">Ø 27</button>
+          <button class="vpill" onclick="setCardVariant(this)">Ø 31</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 42,00</p>
+        <button class="quick-add" onclick="CART.add('Stoneware Dinner Plate','Ø 27 cm · Chalk White',42,'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=600&q=80"
+                 alt="Turned Salad Bowl" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Turned Salad Bowl</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">S</button>
+          <button class="vpill" onclick="setCardVariant(this)">M</button>
+          <button class="vpill" onclick="setCardVariant(this)">L</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 85,00</p>
+        <button class="quick-add" onclick="CART.add('Turned Salad Bowl','M · Natural',85,'https://images.unsplash.com/photo-1445620466293-d6316372ab59?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&q=80"
+                 alt="Table Essentials Set" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Gift Sets</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Table Essentials Set</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">2 pcs</button>
+          <button class="vpill" onclick="setCardVariant(this)">4 pcs</button>
+          <button class="vpill" onclick="setCardVariant(this)">6 pcs</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 120,00</p>
+        <button class="quick-add" onclick="CART.add('Table Essentials Set','4 pcs',120,'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80"
+                 alt="Cheese Board" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Cheese Board with Handle</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Natural</button>
+          <button class="vpill" onclick="setCardVariant(this)">Dark Oiled</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 55,00</p>
+        <button class="quick-add" onclick="CART.add('Cheese Board with Handle','Natural',55,'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4 relative">
+            <img src="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?w=600&q=80"
+                 alt="Ceramic Bowl Set" class="product-img w-full h-full object-cover" />
+            <span class="absolute top-3 left-3 font-sans text-[10px] tracking-widest uppercase px-2.5 py-1 text-white" style="background:#6B1F3A;">New</span>
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Ceramics</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Ceramic Bowl Set of 4</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Set of 2</button>
+          <button class="vpill" onclick="setCardVariant(this)">Set of 4</button>
+          <button class="vpill" onclick="setCardVariant(this)">Set of 6</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 96,00</p>
+        <button class="quick-add" onclick="CART.add('Ceramic Bowl Set','Set of 4 · Stone Grey',96,'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 7 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600&q=80"
+                 alt="Olive Wood Spoon Set" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Cooking Spoon Set</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Set of 3</button>
+          <button class="vpill" onclick="setCardVariant(this)">Set of 5</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 38,00</p>
+        <button class="quick-add" onclick="CART.add('Cooking Spoon Set','Set of 3',38,'https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 8 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4 relative">
+            <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&q=80"
+                 alt="Linen & Ceramic Gift Box" class="product-img w-full h-full object-cover" />
+            <span class="absolute top-3 left-3 font-sans text-[10px] tracking-widest uppercase px-2.5 py-1 text-white" style="background:#4A5E3A;">Bestseller</span>
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Gift Sets</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Linen &amp; Ceramic Gift Box</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Small</button>
+          <button class="vpill" onclick="setCardVariant(this)">Large</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 145,00</p>
+        <button class="quick-add" onclick="CART.add('Linen &amp; Ceramic Gift Box','Large',145,'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 9 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=600&q=80"
+                 alt="Small Tray" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Small Oval Tray</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Natural</button>
+          <button class="vpill" onclick="setCardVariant(this)">Dark Oiled</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 29,00</p>
+        <button class="quick-add" onclick="CART.add('Small Oval Tray','Natural',29,'https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 10 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&q=80"
+                 alt="Mug" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Ceramics</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Handthrown Mug</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Chalk White</button>
+          <button class="vpill" onclick="setCardVariant(this)">Stone Grey</button>
+          <button class="vpill" onclick="setCardVariant(this)">Terracotta</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 34,00</p>
+        <button class="quick-add" onclick="CART.add('Handthrown Mug','Chalk White',34,'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 11 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=600&q=80"
+                 alt="Mortar and Pestle" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Olive Wood</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Mortar &amp; Pestle</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">S</button>
+          <button class="vpill" onclick="setCardVariant(this)">L</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 72,00</p>
+        <button class="quick-add" onclick="CART.add('Mortar &amp; Pestle','L · Natural',72,'https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+      <!-- Product 12 -->
+      <div class="product-card group">
+        <a href="product.html" class="block">
+          <div class="overflow-hidden aspect-square img-bg mb-4">
+            <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80"
+                 alt="Ceramic Vase" class="product-img w-full h-full object-cover" />
+          </div>
+          <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray mb-1">Ceramics</p>
+          <h3 class="font-serif text-lg font-light text-charcoal mb-1 group-hover:text-olive transition-colors">Earthen Vase</h3>
+        </a>
+        <div class="flex flex-wrap gap-1 mb-2">
+          <button class="vpill active" onclick="setCardVariant(this)">Small</button>
+          <button class="vpill" onclick="setCardVariant(this)">Medium</button>
+          <button class="vpill" onclick="setCardVariant(this)">Tall</button>
+        </div>
+        <p class="font-sans text-sm text-charcoal font-medium mb-1">€ 58,00</p>
+        <button class="quick-add" onclick="CART.add('Earthen Vase','Medium · Stone Grey',58,'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=120&q=80')">+ Add to Cart</button>
+      </div>
+
+    </div>
+
+    <!-- Load More -->
+    <div class="text-center mt-16">
+      <button class="font-sans text-sm tracking-[0.2em] uppercase border border-warm-border px-10 py-4 text-charcoal hover:border-olive hover:text-olive transition-colors">
+        Load More
+      </button>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════ FOOTER ══ -->
+  <footer class="mt-16" style="background:#2C2A27; color:#F8F4EE;">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
+        <div class="md:col-span-2">
+          <a href="index.html" class="font-serif text-2xl font-light tracking-widest text-linen">
+            Nabea
+          </a>
+          <p class="font-sans text-sm font-light mt-4 max-w-xs leading-relaxed" style="color:rgba(248,244,238,0.5);">
+            Handcrafted olive wood and ceramic pieces, made with care in Austria.
+          </p>
+        </div>
+        <div>
+          <p class="font-sans text-xs tracking-[0.2em] uppercase mb-4" style="color:rgba(248,244,238,0.4);">Navigate</p>
+          <ul class="space-y-2.5">
+            <li><a href="shop.html"    class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Shop</a></li>
+            <li><a href="index.html#story" class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Our Story</a></li>
+            <li><a href="#"            class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Shipping &amp; Returns</a></li>
+            <li><a href="#"            class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Care Instructions</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-sans text-xs tracking-[0.2em] uppercase mb-4" style="color:rgba(248,244,238,0.4);">Contact</p>
+          <ul class="space-y-2.5">
+            <li class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Wien, Österreich</li>
+            <li><a href="mailto:hello@nabea.at" class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">hello@nabea.at</a></li>
+            <li><a href="#" class="font-sans text-sm" style="color:rgba(248,244,238,0.7);">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top:1px solid rgba(248,244,238,0.1);">
+        <p class="font-sans text-xs" style="color:rgba(248,244,238,0.3);">© 2025 Nabea. All rights reserved.</p>
+        <p class="font-sans text-xs" style="color:rgba(248,244,238,0.3);">Handmade with care · Wien, Austria</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUBCATS = {
+      'olive-wood': ['Boards', 'Bowls', 'Utensils', 'Trays', 'Mortars'],
+      'ceramics':   ['Plates', 'Bowls', 'Mugs', 'Vases', 'Serving Ware'],
+      'gift-sets':  ['For Two', 'Family Sets', 'Kitchen Bundles', 'Seasonal Gifts'],
+    };
+
+    function selectCat(btn) {
+      document.querySelectorAll('#catGroup .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      const bar  = document.getElementById('subcatBar');
+      const group = document.getElementById('subcatGroup');
+      if (cat === 'all') {
+        bar.classList.remove('open');
+        group.innerHTML = '';
+      } else {
+        const subs = SUBCATS[cat] || [];
+        group.innerHTML = subs.map((s, i) =>
+          (i > 0 ? '<span class="subcat-sep">·</span>' : '') +
+          `<button class="subcat-btn${i === 0 ? ' active' : ''}" onclick="selectSubcat(this)">${s}</button>`
+        ).join('');
+        bar.classList.add('open');
+      }
+    }
+
+    function selectSubcat(btn) {
+      document.querySelectorAll('#subcatGroup .subcat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function setCardVariant(btn) {
+      const group = btn.closest('.flex');
+      group.querySelectorAll('.vpill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+  <script src="cart.js"></script>
+</body>
+</html>

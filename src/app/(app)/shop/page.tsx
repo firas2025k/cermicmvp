@@ -1,4 +1,3 @@
-import { Grid } from '@/components/Grid'
 import { ProductGridItem } from '@/components/ProductGridItem'
 import { ShopFilterBar } from '@/components/ShopFilterBar'
 import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
@@ -128,73 +127,75 @@ export default async function ShopPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-linen">
+      {/* Page header */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
+        <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">Browse</p>
+        <h1 className="font-serif text-5xl lg:text-6xl font-light text-charcoal">The Shop</h1>
+      </section>
+
       {/* Sticky filter bar */}
-      <Suspense fallback={<div className="h-[52px] border-b border-neutral-100 bg-white" />}>
+      <Suspense fallback={<div className="h-[57px] border-y border-[#E2DBD0] bg-white" />}>
         <ShopFilterBar
           topLevel={topLevel}
           byParent={byParent}
           activeCategory={activeCategory}
           activeSort={activeSort}
+          productCount={orderedDocs.length}
         />
       </Suspense>
 
       {/* Product grid */}
-      <section className="container py-8">
-        {/* Result count + search feedback */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            {searchValue ? (
-              <>
-                {orderedDocs.length === 0 ? 'Keine' : orderedDocs.length}{' '}
-                {orderedDocs.length === 1 ? 'Ergebnis' : 'Ergebnisse'} für{' '}
-                <span className="font-semibold text-neutral-800 dark:text-neutral-100">
-                  &quot;{searchValue}&quot;
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="font-semibold text-neutral-800 dark:text-neutral-100">
-                  {orderedDocs.length}
-                </span>{' '}
-                {orderedDocs.length === 1 ? 'Produkt' : 'Produkte'}
-              </>
-            )}
-          </p>
-
-          {searchValue && orderedDocs.length === 0 && (
-            <a
-              href="/shop"
-              className="text-sm font-medium text-amber-700 underline-offset-2 hover:underline dark:text-amber-400"
-            >
-              Alle anzeigen
-            </a>
-          )}
-        </div>
-
-        {/* Empty states */}
-        {orderedDocs.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-white py-24 text-center dark:border-neutral-800 dark:bg-neutral-900">
-            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-              Keine Produkte gefunden
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-14">
+        {/* Search feedback */}
+        {searchValue && (
+          <div className="mb-8 flex items-center justify-between">
+            <p className="font-sans text-sm text-warm-gray">
+              {orderedDocs.length === 0 ? 'No results' : orderedDocs.length}{' '}
+              {orderedDocs.length === 1 ? 'result' : 'results'} for{' '}
+              <span className="font-medium text-charcoal">&ldquo;{searchValue}&rdquo;</span>
             </p>
-            <p className="mt-1 text-sm text-neutral-500">
+            {orderedDocs.length === 0 && (
+              <a
+                href="/shop"
+                className="font-sans text-sm text-olive underline-offset-2 hover:underline"
+              >
+                Clear search
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {orderedDocs.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <p className="font-serif text-2xl font-light text-charcoal">No products found</p>
+            <p className="mt-2 font-sans text-sm text-warm-gray">
               {searchValue
-                ? 'Versuche einen anderen Suchbegriff.'
-                : 'Schau bald wieder vorbei für neue Kollektionen.'}
+                ? 'Try a different search term.'
+                : 'Check back soon for new collections.'}
             </p>
           </div>
         )}
 
-        {/* 4-column product grid */}
+        {/* 4-column grid */}
         {orderedDocs.length > 0 && (
-          <Grid className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
             {orderedDocs.map((product) => (
               <ProductGridItem key={product.id} product={product} />
             ))}
-          </Grid>
+          </div>
         )}
-      </section>
+
+        {/* Load more CTA */}
+        {orderedDocs.length > 0 && products.totalDocs > orderedDocs.length && (
+          <div className="mt-16 text-center">
+            <button className="border border-warm-border px-10 py-4 font-sans text-sm tracking-[0.2em] uppercase text-charcoal transition-colors hover:border-olive hover:text-olive">
+              Load More
+            </button>
+          </div>
+        )}
+      </main>
     </div>
   )
 }

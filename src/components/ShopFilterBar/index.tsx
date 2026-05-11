@@ -5,14 +5,28 @@ import { cn } from '@/utilities/cn'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 
+const SORT_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: 'title', label: 'Sort: Featured' },
+  { value: 'priceInEUR', label: 'Price: Low to High' },
+  { value: '-priceInEUR', label: 'Price: High to Low' },
+  { value: '-createdAt', label: 'Newest' },
+]
+
 type Props = {
   topLevel: Category[]
   byParent: Record<string | number, Category[]>
   activeCategory: string | null
   activeSort?: string | null
+  productCount: number
 }
 
-export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
+export function ShopFilterBar({
+  topLevel,
+  byParent,
+  activeCategory,
+  activeSort,
+  productCount,
+}: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -30,6 +44,7 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
     [pathname, router, searchParams],
   )
 
+  // Which top-level category is active (either directly selected or parent of selected sub)
   const activeParentCategory = useMemo(() => {
     if (!activeCategory) return null
     const direct = topLevel.find((p) => p.slug === activeCategory)
@@ -46,94 +61,106 @@ export function ShopFilterBar({ topLevel, byParent, activeCategory }: Props) {
   }
 
   const handleSubClick = (sub: Category) => {
-    setParam('category', activeCategory === sub.slug ? (activeParentCategory?.slug ?? null) : sub.slug)
+    setParam(
+      'category',
+      activeCategory === sub.slug ? (activeParentCategory?.slug ?? null) : sub.slug,
+    )
   }
 
+  const filterBtnClass = (isActive: boolean) =>
+    cn(
+      'cursor-pointer border px-5 py-2 text-[11px] tracking-[0.15em] uppercase transition-all duration-200 font-sans',
+      isActive
+        ? 'border-olive bg-olive text-linen'
+        : 'border-warm-border text-warm-gray hover:border-olive hover:bg-olive hover:text-linen',
+    )
+
   return (
-    <div className="sticky top-0 z-30 bg-white/98 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-md dark:bg-neutral-950/98 dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)]">
-      <div className="container">
-
-        {/* Parent category row */}
-        <div className="flex items-center gap-1.5 overflow-x-auto py-3 scrollbar-none">
-
-          {/* "Alle" pill */}
-          <button
-            onClick={() => setParam('category', null)}
-            className={cn(
-              'shrink-0 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-150',
-              !activeCategory
-                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
-                : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200',
-            )}
-          >
-            Alle
-          </button>
-
-          {/* Divider */}
-          <div className="mx-1 h-4 w-px shrink-0 bg-neutral-200 dark:bg-neutral-700" />
-
-          {topLevel.map((parent) => {
-            const isActive = activeParentCategory?.slug === parent.slug
-            const hasSubs = (byParent[parent.id] ?? []).length > 0
-            return (
+    <section className="sticky top-[72px] z-20 border-y border-warm-border bg-white">
+      {/* Row 1: categories + sort */}
+      <div className="container py-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Category filter buttons */}
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setParam('category', null)} className={filterBtnClass(!activeCategory)}>
+              All
+            </button>
+            {topLevel.map((parent) => (
               <button
                 key={parent.id}
                 onClick={() => handleParentClick(parent)}
-                className={cn(
-                  'group shrink-0 flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-150',
-                  isActive
-                    ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200',
-                )}
+                className={filterBtnClass(activeParentCategory?.slug === parent.slug)}
               >
                 {parent.title}
-                {hasSubs && (
-                  <svg
-                    className={cn(
-                      'h-3 w-3 transition-transform duration-200',
-                      isActive ? 'rotate-180 text-amber-600' : 'text-neutral-400',
-                    )}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
               </button>
-            )
-          })}
+            ))}
+          </div>
+
+          {/* Right side: product count + sort */}
+          <div className="flex items-center gap-6">
+            <span className="font-sans text-xs text-warm-gray">
+              {productCount} {productCount === 1 ? 'product' : 'products'}
+            </span>
+
+            <div className="relative">
+              <select
+                value={activeSort ?? 'title'}
+                onChange={(e) => setParam('sort', e.target.value)}
+                className="cursor-pointer appearance-none border border-warm-border bg-transparent py-2 pr-8 pl-3 font-sans text-xs text-charcoal outline-none"
+                aria-label="Sort products"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-warm-gray"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
         </div>
 
-        {/* Subcategory row — slides in when a parent is active */}
-        {activeSubs.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto border-t border-neutral-100 py-2.5 scrollbar-none dark:border-neutral-800">
-            <span className="shrink-0 text-[0.65rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 pr-1">
-              {activeParentCategory?.title}
-            </span>
-            <div className="h-3 w-px shrink-0 bg-neutral-200 dark:bg-neutral-700" />
-            {activeSubs.map((sub) => {
+        {/* Row 2: subcategory pills — slides in when a parent is active */}
+        <div
+          className={cn(
+            'overflow-hidden transition-all duration-300',
+            activeSubs.length > 0 ? 'mt-3 max-h-16 border-t border-warm-border pt-3' : 'max-h-0',
+          )}
+        >
+          <div className="flex flex-wrap items-center gap-1">
+            {activeSubs.map((sub, index) => {
               const isActive = activeCategory === sub.slug
               return (
-                <button
-                  key={sub.id}
-                  onClick={() => handleSubClick(sub)}
-                  className={cn(
-                    'shrink-0 rounded-md px-3 py-1 text-xs font-medium transition-all duration-150',
-                    isActive
-                      ? 'bg-amber-500 text-white shadow-sm'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-amber-50 hover:text-amber-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-amber-950/40 dark:hover:text-amber-300',
-                  )}
-                >
-                  {sub.title}
-                </button>
+                <React.Fragment key={sub.id}>
+                  {index > 0 ? (
+                    <span className="select-none text-[11px] text-warm-border">·</span>
+                  ) : null}
+                  <button
+                    onClick={() => handleSubClick(sub)}
+                    className={cn(
+                      'cursor-pointer border px-3 py-1 font-sans text-[11px] tracking-[0.1em] uppercase transition-all duration-150',
+                      isActive
+                        ? 'border-olive font-medium text-olive'
+                        : 'border-transparent text-warm-gray hover:border-olive hover:text-olive',
+                    )}
+                  >
+                    {sub.title}
+                  </button>
+                </React.Fragment>
               )
             })}
           </div>
-        )}
-
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

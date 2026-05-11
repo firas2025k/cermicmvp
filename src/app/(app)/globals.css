@@ -3,6 +3,22 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
+/* ── Nabea storefront design tokens ─────────────────────────────────── */
+@theme inline {
+  /* Palette */
+  --color-linen:        #F8F4EE;
+  --color-olive:        #4A5E3A;
+  --color-olive-light:  #6B7F5A;
+  --color-terra:        #C4714A;
+  --color-terra-dark:   #A85A38;
+  --color-charcoal:     #2C2A27;
+  --color-warm-gray:    #8C8680;
+  --color-warm-border:  #E2DBD0;
+
+  /* Typography */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+}
+
 @custom-variant dark (&:is([data-theme='dark'] *));
 
 /*

@@ -2,12 +2,10 @@
 
 import type { Media, Product, VariantType } from '@/payload-types'
 import { cn } from '@/utilities/cn'
-import { Price } from '@/components/Price'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useCallback, useState } from 'react'
 
-// Extend VariantOption with the color field we added via collection override
 type VariantOptionWithColor = {
   id: number
   label: string
@@ -36,13 +34,25 @@ function getPopulatedVariantTypes(product: Partial<Product>): VariantType[] {
   )
 }
 
+/** Returns the first populated category title for the label above the product name */
+function getCategoryLabel(product: Partial<Product>): string | null {
+  const cats = product.categories
+  if (!cats || !Array.isArray(cats) || cats.length === 0) return null
+  const first = cats[0]
+  if (typeof first === 'object' && first !== null && 'title' in first) {
+    return (first as { title?: string | null }).title ?? null
+  }
+  return null
+}
+
 export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const { priceInEUR, title, inventory } = product
 
   const gallery = getPopulatedGallery(product)
   const variantTypes = getPopulatedVariantTypes(product)
+  const categoryLabel = getCategoryLabel(product)
 
-  // Build a map: variantOptionId → gallery index
+  // Map variantOptionId → gallery index so hovering a pill swaps the image
   const optionImageMap = new Map<number, number>()
   gallery.forEach((item, idx) => {
     if (item.variantOption && typeof item.variantOption === 'object') {
@@ -60,129 +70,130 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const activeImage = gallery[activeImageIndex]?.image as Media | undefined
   const isOutOfStock = inventory == null || Number(inventory) <= 0
 
-  const handleOptionClick = useCallback((e: React.MouseEvent, optionId: number) => {
+  const handlePillClick = useCallback((e: React.MouseEvent, optionId: number) => {
     e.preventDefault()
     e.stopPropagation()
     setSelectedOptionId((prev) => (prev === optionId ? null : optionId))
   }, [])
 
   return (
-    <Link
-      href={`/products/${product.slug}`}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
-    >
+    <div className="product-card group">
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-neutral-50 dark:bg-neutral-950">
-        {activeImage?.url ? (
-          <Image
-            src={activeImage.url}
-            alt={activeImage.alt ?? title ?? ''}
-            fill
-            className="object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-stone-100 dark:from-amber-950/20 dark:to-neutral-900" />
+      <Link href={`/products/${product.slug}`} className="block">
+        <div className="relative mb-4 aspect-square overflow-hidden bg-[rgba(226,219,208,0.35)]">
+          {activeImage?.url ? (
+            <Image
+              src={activeImage.url}
+              alt={activeImage.alt ?? title ?? ''}
+              fill
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-[#E2DBD0]/40" />
+          )}
+
+          {/* "New" or "Bestseller" badge — driven by product tags if available */}
+          {isOutOfStock && (
+            <span className="absolute left-3 top-3 bg-charcoal/80 px-2.5 py-1 font-sans text-[10px] tracking-widest uppercase text-white">
+              Sold Out
+            </span>
+          )}
+        </div>
+
+        {/* Category label */}
+        {categoryLabel && (
+          <p className="mb-1 font-sans text-[10px] tracking-[0.25em] uppercase text-warm-gray">
+            {categoryLabel}
+          </p>
         )}
 
-        {isOutOfStock && (
-          <div className="absolute left-0 top-3">
-            <span className="sr-only">Nicht vorrätig</span>
-            <div
-              aria-hidden
-              className="rounded-r-full bg-neutral-700/90 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white backdrop-blur-sm"
-            >
-              Ausverkauft
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-1 flex-col items-center gap-3 p-4 text-center">
-        {/* Title */}
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-neutral-800 transition-colors group-hover:text-amber-700 dark:text-neutral-100 dark:group-hover:text-amber-400">
+        {/* Product title */}
+        <h3 className="mb-1 font-serif text-lg font-light text-charcoal transition-colors group-hover:text-olive">
           {title}
         </h3>
+      </Link>
 
-        {/* Variant rows — one row per variant type */}
-        {variantTypes.length > 0 && (
-          <div
-            className="flex w-full flex-col items-center gap-2"
-            onClick={(e) => e.preventDefault()}
-          >
-            {variantTypes.map((vt) => {
-              const opts = (vt.options?.docs ?? []).filter(
-                (opt): opt is VariantOptionWithColor =>
-                  typeof opt === 'object' && opt !== null,
-              )
-              if (!opts.length) return null
+      {/* Variant pills — clicking doesn't navigate, just selects */}
+      {variantTypes.length > 0 && (
+        <div
+          className="mb-2 flex flex-wrap gap-1"
+          onClick={(e) => e.preventDefault()}
+        >
+          {variantTypes.map((vt) => {
+            const opts = (vt.options?.docs ?? []).filter(
+              (opt): opt is VariantOptionWithColor =>
+                typeof opt === 'object' && opt !== null,
+            )
+            if (!opts.length) return null
 
-              const isColorRow = opts.some((o) => Boolean(o.color))
+            return opts.map((opt) => {
+              const isSelected = selectedOptionId === opt.id
+              const hasColor = Boolean(opt.color)
+
+              if (hasColor && opt.color) {
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={(e) => handlePillClick(e, opt.id)}
+                    title={opt.label}
+                    className={cn(
+                      'h-5 w-5 rounded-full transition-all duration-150',
+                      isSelected
+                        ? 'ring-2 ring-[#4A5E3A] ring-offset-1 scale-110'
+                        : 'ring-1 ring-[#E2DBD0] hover:ring-[#4A5E3A] hover:scale-110',
+                    )}
+                    style={{ backgroundColor: opt.color }}
+                    aria-label={opt.label}
+                  />
+                )
+              }
 
               return (
-                <div key={vt.id} className="flex flex-col items-center gap-1.5">
-                  {/* Type label */}
-                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
-                    {vt.label}
-                  </span>
-
-                  {/* Options */}
-                  <div className="flex flex-wrap items-center justify-center gap-1.5">
-                    {opts.map((opt) => {
-                      const isSelected = selectedOptionId === opt.id
-
-                      if (isColorRow && opt.color) {
-                        return (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={(e) => handleOptionClick(e, opt.id)}
-                            title={opt.label}
-                            className={cn(
-                              'h-5 w-5 rounded-full transition-all duration-150',
-                              isSelected
-                                ? 'ring-2 ring-amber-500 ring-offset-1 scale-110'
-                                : 'ring-1 ring-neutral-300 hover:ring-amber-400 hover:scale-110 dark:ring-neutral-600',
-                            )}
-                            style={{ backgroundColor: opt.color }}
-                          />
-                        )
-                      }
-
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={(e) => handleOptionClick(e, opt.id)}
-                          title={opt.label}
-                          className={cn(
-                            'rounded-md border px-2 py-0.5 text-[0.65rem] font-medium transition-all duration-150',
-                            isSelected
-                              ? 'border-amber-500 bg-amber-500 text-white'
-                              : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-amber-400 hover:text-amber-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
-                          )}
-                        >
-                          {opt.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={(e) => handlePillClick(e, opt.id)}
+                  className={cn(
+                    'border px-[0.55rem] py-[0.2rem] font-sans text-[11px] tracking-[0.06em] transition-all duration-150 leading-snug',
+                    isSelected
+                      ? 'border-olive bg-olive text-linen'
+                      : 'border-warm-border text-warm-gray hover:border-olive hover:bg-olive hover:text-linen',
+                  )}
+                >
+                  {opt.label}
+                </button>
               )
-            })}
-          </div>
-        )}
+            })
+          })}
+        </div>
+      )}
 
-        {/* Price — pushed to bottom */}
-        {typeof priceInEUR === 'number' && (
-          <div className="mt-auto pt-1 text-center">
-            <span className="text-base font-bold tabular-nums text-neutral-900 dark:text-neutral-50">
-              <Price amount={priceInEUR} currencyCode="EUR" />
-            </span>
-          </div>
+      {/* Price */}
+      {typeof priceInEUR === 'number' && (
+        <p className="mb-1 font-sans text-sm font-medium text-charcoal">
+          € {priceInEUR.toFixed(2).replace('.', ',')}
+        </p>
+      )}
+
+      {/* Quick-add to cart button — links to product page with selected variant pre-filled */}
+      <Link
+        href={
+          product.slug
+            ? `/products/${product.slug}${selectedOptionId ? `?option=${selectedOptionId}` : ''}`
+            : '#'
+        }
+        className={cn(
+          'mt-3 block w-full border border-warm-border py-[0.55rem] text-center font-sans text-[11px] tracking-[0.12em] uppercase text-warm-gray transition-all duration-200',
+          'hover:border-terra hover:bg-terra hover:text-linen',
+          isOutOfStock && 'pointer-events-none opacity-40',
         )}
-      </div>
-    </Link>
+        aria-disabled={isOutOfStock}
+        tabIndex={isOutOfStock ? -1 : undefined}
+      >
+        {isOutOfStock ? 'Sold Out' : '+ Add to Cart'}
+      </Link>
+    </div>
   )
 }
