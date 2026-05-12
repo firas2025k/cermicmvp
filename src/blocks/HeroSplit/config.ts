@@ -59,5 +59,26 @@ export const HeroSplitBlock: Block = {
       label: 'Right Panel',
       fields: panelFields,
     },
+    // ── Marquee strip lives directly below the hero ──────────────────────
+    {
+      name: 'marqueeItems',
+      type: 'array',
+      label: 'Marquee Strip (scrolling bar below hero)',
+      labels: { singular: 'Item', plural: 'Items' },
+      admin: {
+        description:
+          'Text items that scroll across the dark bar. Separated by ✦ dots automatically.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'text',
+          type: 'text',
+          required: true,
+          label: 'Text',
+          admin: { placeholder: 'e.g. Free Shipping over €50' },
+        },
+      ],
+    },
   ],
 }

@@ -2022,6 +2022,7 @@ export interface Footer {
 export interface Homepage {
   id: number;
   layout: (
+    | HeroSplitBlock
     | HeroCarouselBlock
     | ProductCarouselBlock
     | CategoryBannerBlock
@@ -2036,6 +2037,50 @@ export interface Homepage {
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroSplitBlock".
+ */
+export interface HeroSplitBlock {
+  leftPanel: {
+    image: number | Media;
+    /**
+     * Small uppercase label above the title, e.g. "New Collection"
+     */
+    eyebrow?: string | null;
+    /**
+     * Main heading, e.g. "Olive Wood Essentials"
+     */
+    title: string;
+    buttonText?: string | null;
+    buttonLink?: string | null;
+  };
+  rightPanel: {
+    image: number | Media;
+    /**
+     * Small uppercase label above the title, e.g. "New Collection"
+     */
+    eyebrow?: string | null;
+    /**
+     * Main heading, e.g. "Olive Wood Essentials"
+     */
+    title: string;
+    buttonText?: string | null;
+    buttonLink?: string | null;
+  };
+  /**
+   * Text items that scroll across the dark bar. Separated by ✦ dots automatically.
+   */
+  marqueeItems?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heroSplit';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2338,6 +2383,7 @@ export interface HomepageSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        heroSplit?: T | HeroSplitBlockSelect<T>;
         heroCarousel?: T | HeroCarouselBlockSelect<T>;
         productCarousel?: T | ProductCarouselBlockSelect<T>;
         categoryBanner?: T | CategoryBannerBlockSelect<T>;
@@ -2353,6 +2399,38 @@ export interface HomepageSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroSplitBlock_select".
+ */
+export interface HeroSplitBlockSelect<T extends boolean = true> {
+  leftPanel?:
+    | T
+    | {
+        image?: T;
+        eyebrow?: T;
+        title?: T;
+        buttonText?: T;
+        buttonLink?: T;
+      };
+  rightPanel?:
+    | T
+    | {
+        image?: T;
+        eyebrow?: T;
+        title?: T;
+        buttonText?: T;
+        buttonLink?: T;
+      };
+  marqueeItems?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

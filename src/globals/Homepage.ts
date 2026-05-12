@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
 import { HeroSplitBlock } from '@/blocks/HeroSplit/config'
-import { MarqueeStripBlock } from '@/blocks/MarqueeStrip/config'
 import { HeroCarouselBlock } from '@/blocks/HeroCarousel/config'
 import { ProductCarouselBlock } from '@/blocks/ProductCarousel/config'
 import { CategoryBannerBlock } from '@/blocks/CategoryBanner/config'
@@ -34,7 +33,6 @@ export const Homepage: GlobalConfig = {
       type: 'blocks',
       blocks: [
         HeroSplitBlock,
-        MarqueeStripBlock,
         HeroCarouselBlock,
         ProductCarouselBlock,
         CategoryBannerBlock,
