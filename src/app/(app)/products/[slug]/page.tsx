@@ -195,15 +195,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
           </Link>
         </div>
 
-        <ul
-          className={[
-            'grid gap-6',
-            products.length === 1 ? 'grid-cols-1 max-w-xs' : '',
-            products.length === 2 ? 'grid-cols-2' : '',
-            products.length === 3 ? 'grid-cols-2 lg:grid-cols-3' : '',
-            products.length >= 4 ? 'grid-cols-2 lg:grid-cols-4' : '',
-          ].join(' ')}
-        >
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {products.slice(0, 4).map((product) => {
             const galleryImage =
               product.gallery?.[0]?.image && typeof product.gallery[0].image === 'object'
@@ -221,7 +213,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
               )?.title ?? null
 
             return (
-              <li key={product.id} className="group">
+              <li key={product.id} className="group bg-linen">
                 <Link href={`/products/${product.slug}`} className="block">
                   {/* 3:4 image */}
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE8DD]">
