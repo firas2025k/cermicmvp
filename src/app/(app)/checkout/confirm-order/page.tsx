@@ -16,8 +16,16 @@ export default async function ConfirmOrderPage({
   const paymentIntent = searchParams.paymentId
 
   return (
-    <div className="container min-h-[90vh] flex py-12">
-      <Suspense fallback={<div className="w-full text-center text-muted-foreground">Loading…</div>}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8F4EE' }}>
+      <Suspense
+        fallback={
+          <div className="text-center">
+            <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
+              Confirming your order…
+            </p>
+          </div>
+        }
+      >
         <ConfirmOrder />
       </Suspense>
     </div>

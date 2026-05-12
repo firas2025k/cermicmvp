@@ -44,10 +44,28 @@ export const ConfirmOrder: React.FC = () => {
   }, [cart, searchParams])
 
   return (
-    <div className="text-center w-full flex flex-col items-center justify-start gap-4">
-      <h1 className="text-2xl">Confirming Order</h1>
-
-      <LoadingSpinner className="w-12 h-6" />
+    <div className="text-center flex flex-col items-center gap-6">
+      <div
+        className="w-14 h-14 rounded-full flex items-center justify-center"
+        style={{ background: '#4A5E3A' }}
+      >
+        <svg
+          className="w-7 h-7 text-white"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <h1 className="font-serif text-3xl font-light" style={{ color: '#2C2A27' }}>
+        Confirming Your Order
+      </h1>
+      <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
+        Please wait while we confirm your payment…
+      </p>
+      <LoadingSpinner className="w-8 h-8" />
     </div>
   )
 }
