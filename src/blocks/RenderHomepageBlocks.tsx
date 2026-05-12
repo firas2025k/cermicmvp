@@ -1,3 +1,5 @@
+import { HeroSplitBlockComponent } from '@/blocks/HeroSplit/Component'
+import { MarqueeStripBlockComponent } from '@/blocks/MarqueeStrip/Component'
 import { HeroCarouselBlockComponent } from '@/blocks/HeroCarousel/Component'
 import { ProductCarouselBlockComponent } from '@/blocks/ProductCarousel/Component'
 import { CategoryBannerBlockComponent } from '@/blocks/CategoryBanner/Component'
@@ -14,6 +16,8 @@ import React, { Fragment } from 'react'
 import type { Homepage } from '../payload-types'
 
 const blockComponents = {
+  heroSplit: HeroSplitBlockComponent,
+  marqueeStrip: MarqueeStripBlockComponent,
   heroCarousel: HeroCarouselBlockComponent,
   productCarousel: ProductCarouselBlockComponent,
   categoryBanner: CategoryBannerBlockComponent,
