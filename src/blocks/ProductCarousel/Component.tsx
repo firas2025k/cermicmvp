@@ -6,9 +6,9 @@ import React from 'react'
 import Link from 'next/link'
 
 import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
-import { ProductGridItem } from '@/components/ProductGridItem'
+import { ProductCarousel } from '@/components/ProductCarousel'
 
-// ── Data fetching helpers (unchanged) ────────────────────────────────────────
+// ── Data fetching ─────────────────────────────────────────────────────────────
 
 async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[]> {
   const { categories, limit = 8, populateBy, selectedDocs, sort = '-createdAt' } = props
@@ -124,27 +124,6 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
   const { title, limit = 8 } = props
   const products = await fetchProducts(props)
 
-  if (!products.length) {
-    return (
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">
-            Handpicked
-          </p>
-          <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal mb-4">
-            {title || 'Featured Pieces'}
-          </h2>
-          <p className="font-sans text-sm text-warm-gray">
-            No products to display. Add products in the admin or adjust this block&apos;s
-            configuration.
-          </p>
-        </div>
-      </section>
-    )
-  }
-
-  const displayedProducts = products.slice(0, limit || 8)
-
   return (
     <section className="bg-white py-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -167,12 +146,15 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
           </Link>
         </div>
 
-        {/* Product grid — 2 cols on mobile, 4 on desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayedProducts.map((product) => (
-            <ProductGridItem key={product.id} product={product} />
-          ))}
-        </div>
+        {/* Carousel or empty state */}
+        {products.length === 0 ? (
+          <p className="font-sans text-sm text-warm-gray">
+            No products to display. Add products in the admin or adjust this block&apos;s
+            configuration.
+          </p>
+        ) : (
+          <ProductCarousel products={products} limit={limit || 8} />
+        )}
 
       </div>
     </section>
