@@ -67,15 +67,6 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props) {
                       role="menu"
                       aria-label={label}
                     >
-                      <li role="none">
-                        <Link
-                          role="menuitem"
-                          href={href}
-                          className="block px-4 py-2 font-sans text-sm text-warm-gray transition-colors hover:bg-linen hover:text-olive"
-                        >
-                          Alle {parentCat.title}
-                        </Link>
-                      </li>
                       {subs.map((sub) => (
                         <li key={sub.id} role="none">
                           <Link
