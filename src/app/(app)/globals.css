@@ -6,7 +6,8 @@
 /* ── Nabea storefront design tokens ─────────────────────────────────── */
 @theme inline {
   /* Palette */
-  --color-linen:        #F8F4EE;
+  /* Page/surface linen — lighter than product image bg (#F7F3EE) for contrast */
+  --color-linen:        #FCFAF5;
   --color-olive:        #4A5E3A;
   --color-olive-light:  #6B7F5A;
   --color-terra:        #C4714A;
