@@ -1,6 +1,7 @@
 'use client'
 
-import type { Media, Product, VariantType } from '@/payload-types'
+import type { Media, Product, VariantOption, VariantType } from '@/payload-types'
+import { filterOptionsForProduct } from '@/lib/productVariants'
 import { cn } from '@/utilities/cn'
 import { Price } from '@/components/Price'
 import Image from 'next/image'
@@ -122,7 +123,12 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           onClick={(e) => e.preventDefault()}
         >
           {variantTypes.map((vt) => {
-            const opts = (vt.options?.docs ?? []).filter(
+            const globalOpts = vt.options?.docs ?? []
+            const opts = filterOptionsForProduct(
+              product as Product,
+              vt,
+              globalOpts as (number | VariantOption)[],
+            ).filter(
               (opt): opt is VariantOptionWithColor =>
                 typeof opt === 'object' && opt !== null,
             )

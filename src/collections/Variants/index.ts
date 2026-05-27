@@ -22,6 +22,18 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
     },
     fields: [
       {
+        name: 'deleteAction',
+        type: 'ui',
+        label: 'Delete',
+        admin: {
+          disableBulkEdit: true,
+          disableListFilter: true,
+          components: {
+            Cell: '@/components/admin/VariantDeleteCell#VariantDeleteCell',
+          },
+        },
+      },
+      {
         name: 'sku',
         type: 'text',
         index: true,

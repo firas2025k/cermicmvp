@@ -1,6 +1,12 @@
 'use client'
 
-import type { Product } from '@/payload-types'
+import type { Product, VariantType } from '@/payload-types'
+import {
+  filterOptionsForProduct,
+  findMatchingProductVariant,
+  getPopulatedProductVariants,
+  getSelectedVariantOptionIds,
+} from '@/lib/productVariants'
 import { cn } from '@/utilities/cn'
 import { createUrl } from '@/utilities/createUrl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -10,9 +16,9 @@ export function VariantSelector({ product }: { product: Product }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const variants = product.variants?.docs
-  const variantTypes = product.variantTypes
-  const hasVariantTypes = Boolean(product.enableVariants && variantTypes?.length)
+  const productVariants = getPopulatedProductVariants(product)
+  const variantTypes = product.variantTypes ?? []
+  const hasVariantTypes = Boolean(product.enableVariants && variantTypes.length)
 
   if (!hasVariantTypes) return null
 
@@ -20,21 +26,22 @@ export function VariantSelector({ product }: { product: Product }) {
     <div className="space-y-5">
       {(variantTypes ?? []).map((type) => {
         if (!type || typeof type !== 'object') return null
-        const options = type.options?.docs
-        if (!options || !Array.isArray(options) || !options.length) return null
+
+        const variantType = type as VariantType
+        const globalOptions = variantType.options?.docs
+        if (!globalOptions?.length) return null
+
+        const options = filterOptionsForProduct(product, variantType, globalOptions)
+        if (!options.length) return null
 
         return (
-          <div key={type.id}>
-            {/* Label row: "SIZE  · L" */}
+          <div key={variantType.id}>
             <p className="mb-2.5 font-sans text-[11px] font-bold tracking-[0.1em] uppercase text-charcoal">
-              {type.label}
-              {/* Show selected option label inline */}
+              {variantType.label}
               {(() => {
-                const selectedId = searchParams.get(type.name)
-                const selected = options.find(
-                  (o) => typeof o === 'object' && String(o.id) === selectedId,
-                )
-                return selected && typeof selected === 'object' ? (
+                const selectedId = searchParams.get(variantType.name)
+                const selected = options.find((o) => String(o.id) === selectedId)
+                return selected ? (
                   <span className="ml-1.5 font-normal normal-case tracking-normal text-warm-gray">
                     {selected.label}
                   </span>
@@ -44,10 +51,8 @@ export function VariantSelector({ product }: { product: Product }) {
 
             <div className="flex flex-wrap gap-1.5">
               {options.map((option) => {
-                if (!option || typeof option !== 'object') return null
-
                 const optionID = option.id
-                const optionKey = type.name
+                const optionKey = variantType.name
                 const isColorSwatch = Boolean(option.color)
 
                 const optionSearchParams = new URLSearchParams(searchParams.toString())
@@ -55,32 +60,26 @@ export function VariantSelector({ product }: { product: Product }) {
                 optionSearchParams.delete('image')
                 optionSearchParams.set(optionKey, String(optionID))
 
-                const currentOptions = Array.from(optionSearchParams.values())
-                let isAvailableForSale = true
+                const nextSelection = getSelectedVariantOptionIds(
+                  optionSearchParams,
+                  variantTypes,
+                )
+                const matchingVariant = findMatchingProductVariant(
+                  productVariants,
+                  nextSelection,
+                )
 
-                if (variants) {
-                  const matchingVariant = variants
-                    .filter((v): v is NonNullable<typeof v> & object => typeof v === 'object')
-                    .find((v) => {
-                      if (!v.options || !Array.isArray(v.options)) return false
-                      return v.options.every((vo) => {
-                        if (typeof vo !== 'object') return currentOptions.includes(String(vo))
-                        return currentOptions.includes(String(vo.id))
-                      })
-                    })
-
-                  if (matchingVariant) {
-                    optionSearchParams.set('variant', String(matchingVariant.id))
-                    isAvailableForSale = Boolean(
-                      matchingVariant.inventory && matchingVariant.inventory > 0,
-                    )
-                  }
+                let isAvailableForSale = false
+                if (matchingVariant) {
+                  optionSearchParams.set('variant', String(matchingVariant.id))
+                  isAvailableForSale = Boolean(
+                    matchingVariant.inventory && matchingVariant.inventory > 0,
+                  )
                 }
 
                 const optionUrl = createUrl(pathname, optionSearchParams)
                 const isActive =
-                  isAvailableForSale &&
-                  searchParams.get(optionKey) === String(optionID)
+                  isAvailableForSale && searchParams.get(optionKey) === String(optionID)
 
                 if (isColorSwatch && option.color) {
                   return (
@@ -97,7 +96,7 @@ export function VariantSelector({ product }: { product: Product }) {
                         isActive
                           ? 'border-charcoal outline outline-2 outline-charcoal'
                           : 'border-transparent hover:border-warm-gray',
-                        !isAvailableForSale && 'opacity-30 cursor-not-allowed',
+                        !isAvailableForSale && 'cursor-not-allowed opacity-30',
                       )}
                       style={{ backgroundColor: option.color }}
                     />
@@ -118,7 +117,7 @@ export function VariantSelector({ product }: { product: Product }) {
                         ? 'border-charcoal bg-charcoal text-linen'
                         : 'border-warm-border bg-linen text-charcoal hover:border-olive hover:text-olive',
                       !isAvailableForSale &&
-                        'border-warm-border text-warm-border cursor-not-allowed line-through',
+                        'cursor-not-allowed border-warm-border text-warm-border line-through',
                     )}
                   >
                     {option.label}

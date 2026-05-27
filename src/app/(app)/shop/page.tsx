@@ -84,6 +84,7 @@ export default async function ShopPage({ searchParams }: Props) {
       inventory: true,
       enableVariants: true,
       variantTypes: true,
+      variants: true,
     },
     populate: {
       variantTypes: {
@@ -91,7 +92,10 @@ export default async function ShopPage({ searchParams }: Props) {
         name: true,
         options: true,
       },
-    },
+      variants: {
+        options: true,
+      },
+    } as Record<string, unknown>,
     sort: activeSort ?? 'title',
     where: { and: whereConditions },
   })
