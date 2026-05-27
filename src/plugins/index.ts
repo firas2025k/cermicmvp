@@ -15,6 +15,7 @@ import { CartsCollection } from '@/collections/Carts'
 import { ProductsCollection } from '@/collections/Products'
 import { VariantsCollection } from '@/collections/Variants'
 import { VariantOptionsCollection } from '@/collections/VariantOptions'
+import { VariantTypesCollection } from '@/collections/VariantTypes'
 import { Page, Product } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
@@ -87,6 +88,7 @@ export const plugins: Plugin[] = [
         variants: {
           variantsCollectionOverride: VariantsCollection,
           variantOptionsCollectionOverride: VariantOptionsCollection,
+          variantTypesCollectionOverride: VariantTypesCollection,
         },
     },
     carts: {
