@@ -26,6 +26,20 @@ import { DefaultDocumentIDType, slugField, Where } from 'payload'
  */
 function patchEcommerceProductDetailFields(fields: Field[]): Field[] {
   return fields.map((field) => {
+    if ('name' in field && field.name === 'variantTypes') {
+      const prevAdmin =
+        field.admin && typeof field.admin === 'object' ? { ...field.admin } : {}
+      return {
+        ...field,
+        label: 'Global Variants',
+        admin: {
+          ...prevAdmin,
+          position: 'sidebar',
+          description:
+            'Variant types shared across the shop (e.g. Size). Add options on each type — then pick which combinations this product sells under Product Variants.',
+        },
+      } as Field
+    }
     if ('name' in field && field.name === 'inventory') {
       const prevAdmin =
         field.admin && typeof field.admin === 'object' ? { ...field.admin } : {}
@@ -45,9 +59,13 @@ function patchEcommerceProductDetailFields(fields: Field[]): Field[] {
         field.admin && typeof field.admin === 'object' ? { ...field.admin } : {}
       return {
         ...field,
+        label: 'Product Variants',
         admin: {
           ...prevAdmin,
           disableRowTypes: false,
+          defaultColumns: ['title', 'options', 'inventory', '_status', 'deleteAction'],
+          description:
+            'Combinations sold on this product only. These are what customers see on the product page — not every option from Global Variants.',
         },
       } as Field
     }
