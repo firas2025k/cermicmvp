@@ -10,8 +10,6 @@ import { HeaderSearch } from './HeaderSearch'
 import type { Header } from 'src/payload-types'
 import type { Category } from '@/payload-types'
 
-import { LogoIcon } from '@/components/icons/logo'
-
 type Props = {
   header: Header
   categories?: Category[]
@@ -25,7 +23,6 @@ type Props = {
 export function HeaderClient({ header, categories = [] }: Props) {
   const menu = header?.navItems || []
 
-  const logoImage = (header as { logo?: { image?: { url?: string; alt?: string } } })?.logo?.image
   const rawLogoLabel = (header as { logo?: { label?: string | null } })?.logo?.label
   const logoLabel =
     rawLogoLabel === '' ? '' : rawLogoLabel ?? process.env.NEXT_PUBLIC_SITE_NAME ?? 'Nabea'
@@ -61,17 +58,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
                 <ExpandableMenu menu={menu} categories={categories} />
               </Suspense>
             </div>
-            <Link href="/" className="flex min-w-0 items-center gap-3 py-1">
-              {logoImage?.url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={logoImage.url}
-                  alt={logoImage.alt || logoLabel}
-                  className="h-8 w-auto max-h-9 object-contain md:h-9 md:max-h-10"
-                />
-              ) : (
-                <LogoIcon className="h-8 w-8 shrink-0 fill-olive md:h-9 md:w-9" />
-              )}
+            <Link href="/" className="flex min-w-0 items-center py-1">
               {logoLabel ? (
                 <span className="truncate font-serif text-xl font-light tracking-[0.12em] text-charcoal md:text-2xl md:tracking-[0.15em]">
                   {logoLabel}

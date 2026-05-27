@@ -51,18 +51,20 @@ export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ i
               key={index}
               href={href}
               // Hide the 3rd tile on md (2-col) only — visible on sm (1-col) and lg (3-col)
-              className={`relative overflow-hidden group block bg-[#E2DBD0]${index === 2 ? ' hidden md:hidden lg:block' : ''}`}
+              className={`relative overflow-hidden group block bg-[#F7F3EE]${index === 2 ? ' hidden md:hidden lg:block' : ''}`}
               style={{ aspectRatio: '4/5' }}
             >
-              {/* Background image with hover zoom */}
+              {/* Full product frame visible (images use #F7F3EE padding — avoid object-cover crop) */}
               {image?.url ? (
-                <Image
-                  src={image.url}
-                  alt={image.alt || item.title}
-                  fill
-                  className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.04]"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
+                <div className="absolute inset-6 md:inset-8 lg:inset-10">
+                  <Image
+                    src={image.url}
+                    alt={image.alt || item.title}
+                    fill
+                    className="object-contain transition-transform duration-500 ease-in-out group-hover:scale-[1.03]"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
               ) : (
                 <div className="absolute inset-0 bg-[#E2DBD0]" />
               )}
