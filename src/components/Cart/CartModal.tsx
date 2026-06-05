@@ -136,14 +136,14 @@ export function CartModal() {
               if (isVariant) {
                 price = variant?.priceInEUR
 
-                const imageVariant = product.gallery?.find((galleryItem) => {
+                const imageVariant = product.gallery?.find((galleryItem: NonNullable<NonNullable<typeof product.gallery>[number]>) => {
                   if (!galleryItem.variantOption) return false
                   const variantOptionID =
                     typeof galleryItem.variantOption === 'object'
                       ? galleryItem.variantOption.id
                       : galleryItem.variantOption
 
-                  return variant?.options?.some((option) => {
+                  return variant?.options?.some((option: NonNullable<typeof variant.options>[number]) => {
                     if (typeof option === 'object') return option.id === variantOptionID
                     return option === variantOptionID
                   })
@@ -157,7 +157,7 @@ export function CartModal() {
               const variantLabel =
                 isVariant && variant
                   ? variant.options
-                      ?.map((option) => (typeof option === 'object' ? option.label : null))
+                      ?.map((option: NonNullable<typeof variant.options>[number]) => (typeof option === 'object' ? option.label : null))
                       .filter(Boolean)
                       .join(', ')
                   : null
@@ -217,6 +217,7 @@ export function CartModal() {
                         {linePriceCents !== null && (
                           <Price
                             amount={linePriceCents}
+                            currencyCode="EUR"
                             className="font-sans text-sm font-medium text-charcoal"
                           />
                         )}
@@ -260,6 +261,7 @@ export function CartModal() {
               {subtotalCents > 0 && (
                 <Price
                   amount={subtotalCents}
+                  currencyCode="EUR"
                   className="font-serif text-xl font-light text-charcoal"
                 />
               )}

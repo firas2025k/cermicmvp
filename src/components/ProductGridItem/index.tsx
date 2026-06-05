@@ -1,12 +1,12 @@
 'use client'
 
-import type { Media, Product, VariantOption, VariantType } from '@/payload-types'
-import { filterOptionsForProduct } from '@/lib/productVariants'
-import { cn } from '@/utilities/cn'
 import { Price } from '@/components/Price'
+import { filterOptionsForProduct } from '@/lib/productVariants'
+import type { Media, Product, VariantOption, VariantType } from '@/payload-types'
+import { cn } from '@/utilities/cn'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 type VariantOptionWithColor = {
   id: number
@@ -19,14 +19,16 @@ type Props = {
   product: Partial<Product>
 }
 
-function getPopulatedGallery(product: Partial<Product>) {
+type PopulatedGalleryItem = {
+  image: Media
+  variantOption?: VariantOptionWithColor | null | number
+  id?: string | null
+}
+
+function getPopulatedGallery(product: Partial<Product>): PopulatedGalleryItem[] {
   return (product.gallery ?? []).filter(
-    (item): item is {
-      image: Media
-      variantOption?: VariantOptionWithColor | null | number
-      id?: string | null
-    } => typeof item.image === 'object' && item.image !== null,
-  )
+    (item) => typeof item.image === 'object' && item.image !== null,
+  ) as PopulatedGalleryItem[]
 }
 
 function getPopulatedVariantTypes(product: Partial<Product>): VariantType[] {
@@ -63,6 +65,22 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   })
 
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
+
+  const findVariantByOptionId = useCallback((optionId: number) => {
+    const docs = (product.variants as any)?.docs ?? []
+    return docs.find((v: any) =>
+      Array.isArray(v.options) &&
+      v.options.some((opt: any) => (typeof opt === 'object' ? opt.id : opt) === optionId),
+    )
+  }, [product.variants])
+
+  const displayedPrice = useMemo(() => {
+    if (selectedOptionId !== null) {
+      const variant = findVariantByOptionId(selectedOptionId)
+      if (variant && typeof variant.priceInEUR === 'number') return variant.priceInEUR
+    }
+    return priceInEUR
+  }, [selectedOptionId, findVariantByOptionId, priceInEUR])
 
   const activeImageIndex =
     selectedOptionId !== null && optionImageMap.has(selectedOptionId)
@@ -129,9 +147,8 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
               vt,
               globalOpts as (number | VariantOption)[],
             ).filter(
-              (opt): opt is VariantOptionWithColor =>
-                typeof opt === 'object' && opt !== null,
-            )
+              (opt) => typeof opt === 'object' && opt !== null,
+            ) as VariantOptionWithColor[]
             if (!opts.length) return null
 
             return opts.map((opt) => {
@@ -178,10 +195,10 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       )}
 
       {/* Price */}
-      {typeof priceInEUR === 'number' && (
+      {typeof displayedPrice === 'number' && (
         <Price
           as="p"
-          amount={priceInEUR}
+          amount={displayedPrice}
           currencyCode="EUR"
           className="mb-1 font-sans text-sm font-medium text-charcoal"
         />

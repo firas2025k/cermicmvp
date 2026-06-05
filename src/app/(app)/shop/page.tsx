@@ -94,6 +94,7 @@ export default async function ShopPage({ searchParams }: Props) {
       },
       variants: {
         options: true,
+        priceInEUR: true,
       },
     } as Record<string, unknown>,
     sort: activeSort ?? 'title',

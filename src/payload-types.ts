@@ -294,13 +294,38 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Short trust statements shown below the Add to Cart button (e.g. "Free shipping on orders over € 50"). Leave empty to use the site-wide defaults.
+   */
+  trustBullets?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Frequently asked questions shown in the accordion below the Add to Cart button. Leave empty to use the site-wide defaults.
+   */
+  faqItems?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
   layout?: (CallToActionBlock | ContentBlock | MediaBlock)[] | null;
   /**
    * Product-level stock. Each variant can also have its own inventory below.
    */
   inventory?: number | null;
   enableVariants?: boolean | null;
+  /**
+   * Variant types shared across the shop (e.g. Size). Add options on each type — then pick which combinations this product sells under Product Variants.
+   */
   variantTypes?: (number | VariantType)[] | null;
+  /**
+   * Combinations sold on this product only. These are what customers see on the product page — not every option from Global Variants.
+   */
   variants?: {
     docs?: (number | Variant)[];
     hasNextPage?: boolean;
@@ -309,19 +334,6 @@ export interface Product {
   priceInEUREnabled?: boolean | null;
   priceInEUR?: number | null;
   relatedProducts?: (number | Product)[] | null;
-  trustBullets?:
-    | {
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  faqItems?:
-    | {
-        question?: string | null;
-        answer?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   meta?: {
     title?: string | null;
     /**
@@ -1776,6 +1788,19 @@ export interface ProductsSelect<T extends boolean = true> {
     | {
         image?: T;
         variantOption?: T;
+        id?: T;
+      };
+  trustBullets?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  faqItems?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
         id?: T;
       };
   layout?:

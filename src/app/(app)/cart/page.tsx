@@ -170,6 +170,7 @@ export default function CartPage() {
                           {linePriceCents !== null && (
                             <Price
                               amount={linePriceCents}
+                              currencyCode="EUR"
                               className="font-sans text-sm font-medium"
                             />
                           )}
@@ -228,6 +229,7 @@ export default function CartPage() {
                   {subtotalCents > 0 && (
                     <Price
                       amount={subtotalCents}
+                      currencyCode="EUR"
                       className="font-serif text-xl font-light"
                     />
                   )}
