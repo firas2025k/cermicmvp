@@ -315,6 +315,13 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  faqItems?:
+    | {
+        question?: string | null;
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   meta?: {
     title?: string | null;
     /**

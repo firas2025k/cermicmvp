@@ -106,6 +106,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
     inventory: true,
     meta: true,
     trustBullets: true,
+    faqItems: true,
   },
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -200,6 +201,29 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
                   type: 'text',
                   required: true,
                   label: 'Text',
+                },
+              ],
+            },
+            {
+              name: 'faqItems',
+              type: 'array',
+              label: 'FAQ',
+              admin: {
+                description:
+                  'Frequently asked questions shown in the accordion below the Add to Cart button. Leave empty to use the site-wide defaults.',
+              },
+              fields: [
+                {
+                  name: 'question',
+                  type: 'text',
+                  required: true,
+                  label: 'Question',
+                },
+                {
+                  name: 'answer',
+                  type: 'textarea',
+                  required: true,
+                  label: 'Answer',
                 },
               ],
             },

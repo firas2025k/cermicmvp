@@ -152,8 +152,13 @@ export function ProductDescription({ product, categoryLabel }: Props) {
   // Price display — use Price component so cents→euros conversion is handled correctly
 
   // ── Accordion items ─────────────────────────────────────────────────
-  // Description panel rendered separately using RichText; the rest are static
-  const extraAccordionItems: AccordionItem[] = STATIC_CARE_AND_SHIPPING
+  // Use CMS faqItems when set, otherwise fall back to static defaults
+  const extraAccordionItems: AccordionItem[] =
+    product.faqItems && product.faqItems.length > 0
+      ? product.faqItems
+          .filter((item) => item.question && item.answer)
+          .map((item) => ({ title: item.question!, body: item.answer! }))
+      : STATIC_CARE_AND_SHIPPING
 
   return (
     <div className="flex flex-col gap-0">
