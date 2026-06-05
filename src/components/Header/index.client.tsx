@@ -2,13 +2,13 @@
 import { Cart } from '@/components/Cart'
 import { OpenCartButton } from '@/components/Cart/OpenCart'
 import Link from 'next/link'
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 
+import type { Category } from '@/payload-types'
+import type { Header } from 'src/payload-types'
 import { ExpandableMenu } from './ExpandableMenu'
 import { HeaderDesktopNav } from './HeaderDesktopNav'
 import { HeaderSearch } from './HeaderSearch'
-import type { Header } from 'src/payload-types'
-import type { Category } from '@/payload-types'
 
 type Props = {
   header: Header
@@ -60,7 +60,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
             </div>
             <Link href="/" className="flex min-w-0 items-center py-1">
               {logoLabel ? (
-                <span className="truncate font-serif text-xl font-light tracking-[0.12em] text-charcoal md:text-2xl md:tracking-[0.15em]">
+                <span className="truncate font-serif text-2xl font-light tracking-[0.12em] text-charcoal md:text-3xl md:tracking-[0.15em]">
                   {logoLabel}
                 </span>
               ) : null}
