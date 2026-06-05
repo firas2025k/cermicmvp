@@ -1,16 +1,16 @@
 'use client'
 
-import type { Product, Variant } from '@/payload-types'
 import { AddToCart } from '@/components/Cart/AddToCart'
 import { Price } from '@/components/Price'
 import { RichText } from '@/components/RichText'
+import type { Product, Variant } from '@/payload-types'
 import { cn } from '@/utilities/cn'
-import { useCurrency, EUR } from '@payloadcms/plugin-ecommerce/client/react'
+import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
 import { useSearchParams } from 'next/navigation'
-import React, { Suspense, useCallback, useMemo, useState } from 'react'
+import { Suspense, useState } from 'react'
 
-import { VariantSelector } from './VariantSelector'
 import { StockIndicator } from './StockIndicator'
+import { VariantSelector } from './VariantSelector'
 import { STATIC_CARE_AND_SHIPPING, type AccordionItem } from './staticFaq'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -217,23 +217,39 @@ export function ProductDescription({ product, categoryLabel }: Props) {
         </Suspense>
       </div>
 
-      {/* Trust bullets */}
+      {/* Trust bullets — use CMS data if set, otherwise fall back to static defaults */}
       <div className="mb-5 flex flex-col gap-2.5">
-        {TRUST_ITEMS.map((item) => (
-          <div key={item.label} className="flex items-center gap-2.5">
-            <svg
-              className="h-4 w-4 flex-shrink-0 text-olive"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              {item.icon}
-            </svg>
-            <span className="font-sans text-sm text-warm-gray">{item.label}</span>
-          </div>
-        ))}
+        {product.trustBullets && product.trustBullets.length > 0
+          ? product.trustBullets.map((item) => (
+              <div key={item.id ?? item.label} className="flex items-center gap-2.5">
+                <svg
+                  className="h-4 w-4 flex-shrink-0 text-olive"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="font-sans text-sm text-warm-gray">{item.label}</span>
+              </div>
+            ))
+          : TRUST_ITEMS.map((item) => (
+              <div key={item.label} className="flex items-center gap-2.5">
+                <svg
+                  className="h-4 w-4 flex-shrink-0 text-olive"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  {item.icon}
+                </svg>
+                <span className="font-sans text-sm text-warm-gray">{item.label}</span>
+              </div>
+            ))}
       </div>
 
       {/* Accordions */}

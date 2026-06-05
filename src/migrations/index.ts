@@ -60,4 +60,9 @@ export const migrations = [
     down: migration_20260509_000002_variant_option_color.down,
     name: '20260509_000002_variant_option_color',
   },
+  {
+    up: migration_20260605_000001_add_product_trust_bullets.up,
+    down: migration_20260605_000001_add_product_trust_bullets.down,
+    name: '20260605_000001_add_product_trust_bullets',
+  },
 ];

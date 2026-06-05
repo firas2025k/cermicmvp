@@ -105,6 +105,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
     priceInEUR: true,
     inventory: true,
     meta: true,
+    trustBullets: true,
   },
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -185,6 +186,23 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               ],
             },
 
+            {
+              name: 'trustBullets',
+              type: 'array',
+              label: 'Trust Badges',
+              admin: {
+                description:
+                  'Short trust statements shown below the Add to Cart button (e.g. "Free shipping on orders over € 50"). Leave empty to use the site-wide defaults.',
+              },
+              fields: [
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  label: 'Text',
+                },
+              ],
+            },
             {
               name: 'layout',
               type: 'blocks',

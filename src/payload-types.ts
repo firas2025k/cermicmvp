@@ -309,6 +309,12 @@ export interface Product {
   priceInEUREnabled?: boolean | null;
   priceInEUR?: number | null;
   relatedProducts?: (number | Product)[] | null;
+  trustBullets?:
+    | {
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   meta?: {
     title?: string | null;
     /**
