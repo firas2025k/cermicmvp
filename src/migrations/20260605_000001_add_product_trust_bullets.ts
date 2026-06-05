@@ -6,7 +6,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       "id" serial PRIMARY KEY,
       "_order" integer NOT NULL,
       "_parent_id" integer NOT NULL REFERENCES "products"("id") ON DELETE CASCADE,
-      "label" varchar
+      "label" varchar,
+      "_uuid" varchar
     );
     CREATE INDEX IF NOT EXISTS "products_trust_bullets_order_idx"
       ON "products_trust_bullets" ("_order");
@@ -19,7 +20,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       "id" serial PRIMARY KEY,
       "_order" integer NOT NULL,
       "_parent_id" integer NOT NULL REFERENCES "_products_v"("id") ON DELETE CASCADE,
-      "label" varchar
+      "label" varchar,
+      "_uuid" varchar
     );
     CREATE INDEX IF NOT EXISTS "_products_v_version_trust_bullets_order_idx"
       ON "_products_v_version_trust_bullets" ("_order");

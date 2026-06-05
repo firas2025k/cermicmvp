@@ -15,5 +15,7 @@ export const adminOrCustomerOwner: Access = ({ req: { user } }) => {
     }
   }
 
-  return false
+  // Allow unauthenticated guests to create/update their own cart.
+  // Cart IDs are UUIDs so ID-based security is sufficient for guest carts.
+  return true
 }
