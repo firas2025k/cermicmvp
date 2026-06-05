@@ -285,6 +285,8 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
       layout: true,
       relatedProducts: true,
       categories: true,
+      trustBullets: true,
+      faqItems: true,
     },
     where: {
       and: [

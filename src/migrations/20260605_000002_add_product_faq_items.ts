@@ -22,7 +22,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS "_products_v_version_faq_items" (
-      "id" varchar PRIMARY KEY,
+      "id" serial PRIMARY KEY,
       "_order" integer NOT NULL,
       "_parent_id" integer NOT NULL REFERENCES "_products_v"("id") ON DELETE CASCADE,
       "question" varchar,
