@@ -20,6 +20,7 @@ import { Categories } from '@/collections/Categories'
 import { CategoryProductOrder } from '@/collections/CategoryProductOrder'
 import { Media } from '@/collections/Media'
 import { Pages } from '@/collections/Pages'
+import { StockNotifications } from '@/collections/StockNotifications'
 import { Users } from '@/collections/Users'
 import { Footer } from '@/globals/Footer'
 import { Header } from '@/globals/Header'
@@ -41,7 +42,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Pages, Categories, CategoryProductOrder, Media],
+  collections: [Users, Pages, Categories, CategoryProductOrder, Media, StockNotifications],
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',

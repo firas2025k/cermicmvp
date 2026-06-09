@@ -74,6 +74,19 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     )
   }, [product.variants])
 
+  const variantDocs = useMemo(() => {
+    const docs = (product.variants as any)?.docs ?? []
+    return docs.filter((v: any) => typeof v === 'object' && typeof v.priceInEUR === 'number')
+  }, [product.variants])
+
+  const lowestVariantPrice = useMemo(() => {
+    if (!variantDocs.length) return null
+    const prices: number[] = variantDocs.map((v: any) => v.priceInEUR as number)
+    return Math.min(...prices)
+  }, [variantDocs])
+
+  const hasVariantPrices = variantDocs.length > 0
+
   const displayedPrice = useMemo(() => {
     if (selectedOptionId !== null) {
       const variant = findVariantByOptionId(selectedOptionId)
@@ -195,14 +208,23 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       )}
 
       {/* Price */}
-      {typeof displayedPrice === 'number' && (
+      {hasVariantPrices && selectedOptionId === null && lowestVariantPrice !== null ? (
+        <Price
+          as="p"
+          lowestAmount={lowestVariantPrice}
+          highestAmount={lowestVariantPrice + 1}
+          showFrom
+          currencyCode="EUR"
+          className="mb-1 font-sans text-sm font-medium text-charcoal"
+        />
+      ) : typeof displayedPrice === 'number' ? (
         <Price
           as="p"
           amount={displayedPrice}
           currencyCode="EUR"
           className="mb-1 font-sans text-sm font-medium text-charcoal"
         />
-      )}
+      ) : null}
 
       {/* Quick-add to cart button — links to product page with selected variant pre-filled */}
       <Link

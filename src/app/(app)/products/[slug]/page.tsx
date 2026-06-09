@@ -175,9 +175,9 @@ function RelatedProducts({ products }: { products: Product[] }) {
   if (!products.length) return null
 
   // Prices are stored in cents — divide by 100 for display
-  const formatEUR = (cents?: number | null) =>
+  const formatEURLocal = (cents?: number | null) =>
     typeof cents === 'number'
-      ? `€ ${(cents / 100).toFixed(2).replace('.', ',')}`
+      ? `${(cents / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
       : ''
 
   return (
@@ -243,7 +243,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
                       {product.title}
                     </p>
                     <p className="font-sans text-sm font-bold text-charcoal">
-                      {formatEUR(product.priceInEUR)}
+                      {formatEURLocal(product.priceInEUR)}
                     </p>
                   </div>
                 </Link>

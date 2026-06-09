@@ -1,11 +1,12 @@
 'use client'
-import { useCurrency, EUR } from '@payloadcms/plugin-ecommerce/client/react'
-import React, { useMemo } from 'react'
+import { formatEUR } from '@/utilities/formatEUR'
+import React from 'react'
 
 type BaseProps = {
   className?: string
   currencyCodeClassName?: string
   as?: 'span' | 'p'
+  showFrom?: boolean
 }
 
 type PriceFixed = {
@@ -29,29 +30,15 @@ export const Price = ({
   className,
   highestAmount,
   lowestAmount,
-  currencyCode: currencyCodeFromProps,
+  showFrom,
   as = 'p',
 }: Props & React.ComponentProps<'p'>) => {
-  const { formatCurrency, supportedCurrencies } = useCurrency()
-
   const Element = as
-
-  const currencyToUse = useMemo(() => {
-    if (currencyCodeFromProps) {
-      // If EUR is explicitly requested, use it directly
-      if (currencyCodeFromProps === 'EUR') {
-        return EUR
-      }
-      // Otherwise, try to find it in supported currencies
-      return supportedCurrencies.find((currency) => currency.code === currencyCodeFromProps) || EUR
-    }
-    return undefined
-  }, [currencyCodeFromProps, supportedCurrencies])
 
   if (typeof amount === 'number') {
     return (
       <Element className={className} suppressHydrationWarning>
-        {formatCurrency(amount, { currency: currencyToUse })}
+        {formatEUR(amount)}
       </Element>
     )
   }
@@ -59,7 +46,9 @@ export const Price = ({
   if (highestAmount && highestAmount !== lowestAmount) {
     return (
       <Element className={className} suppressHydrationWarning>
-        {`${formatCurrency(lowestAmount, { currency: currencyToUse })} - ${formatCurrency(highestAmount, { currency: currencyToUse })}`}
+        {showFrom
+          ? `Ab ${formatEUR(lowestAmount)}`
+          : `${formatEUR(lowestAmount)} – ${formatEUR(highestAmount)}`}
       </Element>
     )
   }
@@ -67,7 +56,7 @@ export const Price = ({
   if (lowestAmount) {
     return (
       <Element className={className} suppressHydrationWarning>
-        {`${formatCurrency(lowestAmount, { currency: currencyToUse })}`}
+        {showFrom ? `Ab ${formatEUR(lowestAmount)}` : formatEUR(lowestAmount)}
       </Element>
     )
   }

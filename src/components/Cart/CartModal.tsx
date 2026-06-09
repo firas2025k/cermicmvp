@@ -12,11 +12,18 @@ import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
+import { CartSettings } from './index'
 import { OpenCartButton } from './OpenCart'
 
-const FREE_SHIPPING_THRESHOLD_CENTS = 8000 // € 80,00
+const DEFAULT_THRESHOLD_CENTS = 8000
+const DEFAULT_SHIPPING_TEXT = 'Kostenloser Versand ab'
+const DEFAULT_REACHED_TEXT = 'Kostenloser Versand!'
 
-export function CartModal() {
+export function CartModal({
+  freeShippingThresholdEuros,
+  freeShippingText,
+  freeShippingReachedText,
+}: CartSettings = {}) {
   const { cart } = useCart()
   const { isOpen, setOpen, closeCart } = useCartOpen()
   const pathname = usePathname()
@@ -50,6 +57,11 @@ export function CartModal() {
     return sum > 0 ? sum : undefined
   }, [cart])
 
+  const FREE_SHIPPING_THRESHOLD_CENTS =
+    freeShippingThresholdEuros != null ? freeShippingThresholdEuros * 100 : DEFAULT_THRESHOLD_CENTS
+  const shippingLabel = freeShippingText ?? DEFAULT_SHIPPING_TEXT
+  const reachedLabel = freeShippingReachedText ?? DEFAULT_REACHED_TEXT
+
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
   const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
   const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
@@ -71,7 +83,7 @@ export function CartModal() {
       {/* Drawer panel */}
       <aside
         aria-label="Shopping cart"
-        className={`fixed top-0 right-0 h-full w-full max-w-md z-[70] flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-full max-w-[min(100vw,28rem)] z-[70] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ background: '#F8F4EE', boxShadow: '-8px 0 40px rgba(44,42,39,0.15)' }}
@@ -237,14 +249,14 @@ export function CartModal() {
             {/* Free shipping progress */}
             <div className="mb-5">
               <div className="flex justify-between items-center mb-2">
-                <p className="font-sans text-xs text-warm-gray">Free shipping from € 80,00</p>
+                <p className="font-sans text-xs text-warm-gray">{shippingLabel} {(FREE_SHIPPING_THRESHOLD_CENTS / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</p>
                 <p
                   className="font-sans text-xs font-medium"
                   style={{ color: remainingCents <= 0 ? '#4A5E3A' : '#8C8680' }}
                 >
                   {remainingCents > 0
-                    ? `€ ${(remainingCents / 100).toFixed(2).replace('.', ',')} away`
-                    : 'Free shipping!'}
+                    ? `Noch ${(remainingCents / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+                    : reachedLabel}
                 </p>
               </div>
               <div className="h-px w-full bg-warm-border">

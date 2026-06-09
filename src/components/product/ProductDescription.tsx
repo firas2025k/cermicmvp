@@ -7,7 +7,8 @@ import type { Product, Variant } from '@/payload-types'
 import { cn } from '@/utilities/cn'
 import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useMemo, useState } from 'react'
+import { NotifyMeForm } from './NotifyMeForm'
 
 import { StockIndicator } from './StockIndicator'
 import { VariantSelector } from './VariantSelector'
@@ -151,6 +152,27 @@ export function ProductDescription({ product, categoryLabel }: Props) {
 
   // Price display — use Price component so cents→euros conversion is handled correctly
 
+  // ── Out of stock detection ─────────────────────────────────────────
+  const isOutOfStock = useMemo(() => {
+    if (product.enableVariants) {
+      if (!selectedVariantID) return false
+      const v = product.variants?.docs?.find(
+        (d) => typeof d === 'object' && String(d.id) === selectedVariantID,
+      ) as Variant | undefined
+      if (!v) return false
+      return (v.inventory ?? 0) === 0
+    }
+    return (product.inventory ?? 0) === 0
+  }, [product, selectedVariantID])
+
+  const selectedVariantTitle = useMemo(() => {
+    if (!selectedVariantID || !product.enableVariants) return null
+    const v = product.variants?.docs?.find(
+      (d) => typeof d === 'object' && String(d.id) === selectedVariantID,
+    ) as Variant | undefined
+    return v?.title ?? null
+  }, [product, selectedVariantID])
+
   // ── Accordion items ─────────────────────────────────────────────────
   // Use CMS faqItems when set, otherwise fall back to static defaults
   const extraAccordionItems: AccordionItem[] =
@@ -176,11 +198,12 @@ export function ProductDescription({ product, categoryLabel }: Props) {
 
       {/* Price */}
       {(amount > 0 || (lowestAmount > 0 && highestAmount > 0)) && (
-        hasVariantPrices && !selectedVariantID && highestAmount > lowestAmount ? (
+        hasVariantPrices && !selectedVariantID && lowestAmount > 0 ? (
           <Price
             as="p"
             lowestAmount={lowestAmount}
             highestAmount={highestAmount}
+            showFrom
             currencyCode="EUR"
             className="font-serif text-3xl font-normal text-charcoal"
           />
@@ -193,7 +216,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           />
         ) : null
       )}
-      <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">Incl. VAT · Free shipping over € 50</p>
+      <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">inkl. MwSt. · Kostenloser Versand ab 50,00\u00a0€</p>
 
       <hr className="border-warm-border" />
 
@@ -208,12 +231,21 @@ export function ProductDescription({ product, categoryLabel }: Props) {
 
       <hr className="border-warm-border mb-5" />
 
-      {/* QTY + Add to Cart */}
-      <div className="mb-4 flex items-stretch gap-2.5">
-        <Suspense fallback={null}>
-          <AddToCart product={product} />
-        </Suspense>
-      </div>
+      {/* QTY + Add to Cart / Notify Me */}
+      {isOutOfStock ? (
+        <NotifyMeForm
+          productId={product.id}
+          productTitle={product.title || ''}
+          variantId={selectedVariantID ? Number(selectedVariantID) : null}
+          variantTitle={selectedVariantTitle}
+        />
+      ) : (
+        <div className="mb-4 flex items-stretch gap-2.5">
+          <Suspense fallback={null}>
+            <AddToCart product={product} />
+          </Suspense>
+        </div>
+      )}
 
       {/* Stock indicator */}
       <div className="mb-5">

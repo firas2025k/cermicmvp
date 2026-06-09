@@ -77,6 +77,7 @@ export interface Config {
     categories: Category;
     'category-product-orders': CategoryProductOrder;
     media: Media;
+    'stock-notifications': StockNotification;
     forms: Form;
     'form-submissions': FormSubmission;
     addresses: Address;
@@ -114,6 +115,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'category-product-orders': CategoryProductOrdersSelect<false> | CategoryProductOrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'stock-notifications': StockNotificationsSelect<false> | StockNotificationsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
@@ -1179,6 +1181,32 @@ export interface Address {
   createdAt: string;
 }
 /**
+ * Customers who want to be notified when a product is back in stock.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-notifications".
+ */
+export interface StockNotification {
+  id: number;
+  email: string;
+  product: number | Product;
+  /**
+   * Captured at submission time for easy reading in the admin.
+   */
+  productTitle?: string | null;
+  /**
+   * The specific variant (size/option) the customer wants, if applicable.
+   */
+  variantId?: number | null;
+  variantTitle?: string | null;
+  /**
+   * Check when you have manually followed up with this customer.
+   */
+  notified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
@@ -1238,6 +1266,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'stock-notifications';
+        value: number | StockNotification;
       } | null)
     | ({
         relationTo: 'forms';
@@ -1563,6 +1595,20 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-notifications_select".
+ */
+export interface StockNotificationsSelect<T extends boolean = true> {
+  email?: T;
+  product?: T;
+  productTitle?: T;
+  variantId?: T;
+  variantTitle?: T;
+  notified?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2026,6 +2072,23 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Configure the free shipping bar shown in the cart drawer and cart page.
+   */
+  cartSettings?: {
+    /**
+     * Order value in euros required for free shipping.
+     */
+    freeShippingThreshold?: number | null;
+    /**
+     * Text shown before the threshold amount in the cart.
+     */
+    freeShippingText?: string | null;
+    /**
+     * Text shown when free shipping threshold is reached.
+     */
+    freeShippingReachedText?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2035,6 +2098,45 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  brand?: {
+    /**
+     * Short description shown below the logo in the footer.
+     */
+    tagline?: string | null;
+  };
+  contactInfo?: {
+    address?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  };
+  /**
+   * Add links to social media profiles.
+   */
+  socialLinks?:
+    | {
+        platform: 'instagram' | 'facebook' | 'tiktok' | 'pinterest' | 'youtube';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Links for Impressum, Datenschutz, AGB, etc.
+   */
+  legalLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  newsletter?: {
+    enabled?: boolean | null;
+    title?: string | null;
+    description?: string | null;
+  };
+  /**
+   * Links shown in the "Navigate" column of the footer.
+   */
   navItems?:
     | {
         link: {
@@ -2386,6 +2488,13 @@ export interface HeaderSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  cartSettings?:
+    | T
+    | {
+        freeShippingThreshold?: T;
+        freeShippingText?: T;
+        freeShippingReachedText?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -2395,6 +2504,39 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  brand?:
+    | T
+    | {
+        tagline?: T;
+      };
+  contactInfo?:
+    | T
+    | {
+        address?: T;
+        email?: T;
+        phone?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  legalLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  newsletter?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        description?: T;
+      };
   navItems?:
     | T
     | {

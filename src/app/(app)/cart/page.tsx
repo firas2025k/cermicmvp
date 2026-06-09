@@ -7,14 +7,34 @@ import { Product } from '@/payload-types'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+
+function useCartSettings() {
+  const [thresholdCents, setThresholdCents] = useState(8000)
+  const [shippingLabel, setShippingLabel] = useState('Kostenloser Versand ab')
+  const [reachedLabel, setReachedLabel] = useState('Kostenloser Versand!')
+
+  useEffect(() => {
+    fetch('/api/globals/header?depth=0')
+      .then((r) => r.json())
+      .then((data) => {
+        const cs = data?.cartSettings
+        if (cs?.freeShippingThreshold) setThresholdCents(cs.freeShippingThreshold * 100)
+        if (cs?.freeShippingText) setShippingLabel(cs.freeShippingText)
+        if (cs?.freeShippingReachedText) setReachedLabel(cs.freeShippingReachedText)
+      })
+      .catch(() => {})
+  }, [])
+
+  return { thresholdCents, shippingLabel, reachedLabel }
+}
 
 export default function CartPage() {
   const { cart } = useCart()
+  const { thresholdCents: FREE_SHIPPING_THRESHOLD_CENTS, shippingLabel, reachedLabel } = useCartSettings()
 
   const hasItems = (cart?.items?.length ?? 0) > 0
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const FREE_SHIPPING_THRESHOLD_CENTS = 8000
   const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
   const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
 
@@ -200,15 +220,15 @@ export default function CartPage() {
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <p className="font-sans text-xs" style={{ color: '#8C8680' }}>
-                      Free shipping from € 80,00
+                      {shippingLabel} {(FREE_SHIPPING_THRESHOLD_CENTS / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
                     </p>
                     <p
                       className="font-sans text-xs font-medium"
                       style={{ color: remainingCents <= 0 ? '#4A5E3A' : '#8C8680' }}
                     >
                       {remainingCents > 0
-                        ? `€ ${(remainingCents / 100).toFixed(2).replace('.', ',')} away`
-                        : 'Free shipping!'}
+                        ? `Noch ${(remainingCents / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+                        : reachedLabel}
                     </p>
                   </div>
                   <div className="h-px w-full" style={{ background: '#E2DBD0' }}>

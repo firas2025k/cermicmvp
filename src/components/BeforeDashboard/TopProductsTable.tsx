@@ -1,6 +1,3 @@
-import React from 'react'
-import Link from 'next/link'
-import type { Product } from '@/payload-types'
 import {
   Table,
   TableBody,
@@ -9,6 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import type { Product } from '@/payload-types'
+import Link from 'next/link'
+import React from 'react'
 import './TopProductsTable.scss'
 
 type TopProductsTableProps = {
@@ -26,9 +26,12 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
 
   const getProductImage = (product: Product) => {
     if (product.gallery && Array.isArray(product.gallery) && product.gallery.length > 0) {
-      const image = product.gallery[0]
-      if (typeof image === 'object' && image?.url) {
-        return image.url
+      const galleryItem = product.gallery[0]
+      if (typeof galleryItem === 'object' && galleryItem?.image) {
+        const media = galleryItem.image
+        if (typeof media === 'object' && media?.url) {
+          return media.url
+        }
       }
     }
     return null
@@ -97,7 +100,7 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
                     </TableCell>
                     <TableCell>{getCategory(product)}</TableCell>
                     <TableCell className="top-products-table__price">
-                      €{getPrice(product).toFixed(2)}
+                      {(getPrice(product) / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{'\u00A0€'}
                     </TableCell>
                     <TableCell>
                       <span

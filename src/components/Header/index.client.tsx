@@ -1,5 +1,5 @@
 'use client'
-import { Cart } from '@/components/Cart'
+import { Cart, CartSettings } from '@/components/Cart'
 import { OpenCartButton } from '@/components/Cart/OpenCart'
 import Link from 'next/link'
 import { Suspense } from 'react'
@@ -22,6 +22,12 @@ type Props = {
  */
 export function HeaderClient({ header, categories = [] }: Props) {
   const menu = header?.navItems || []
+
+  const cartSettings: CartSettings = {
+    freeShippingThresholdEuros: header?.cartSettings?.freeShippingThreshold ?? 80,
+    freeShippingText: header?.cartSettings?.freeShippingText ?? 'Kostenloser Versand ab',
+    freeShippingReachedText: header?.cartSettings?.freeShippingReachedText ?? 'Kostenloser Versand!',
+  }
 
   const rawLogoLabel = (header as { logo?: { label?: string | null } })?.logo?.label
   const logoLabel =
@@ -97,7 +103,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
               </svg>
             </Link>
             <Suspense fallback={<OpenCartButton />}>
-              <Cart />
+              <Cart {...cartSettings} />
             </Suspense>
           </div>
         </div>

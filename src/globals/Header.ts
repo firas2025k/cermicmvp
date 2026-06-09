@@ -95,5 +95,42 @@ export const Header: GlobalConfig = {
       ],
       maxRows: 6,
     },
+    {
+      name: 'cartSettings',
+      label: 'Cart Settings',
+      type: 'group',
+      admin: {
+        description: 'Configure the free shipping bar shown in the cart drawer and cart page.',
+      },
+      fields: [
+        {
+          name: 'freeShippingThreshold',
+          type: 'number',
+          label: 'Free Shipping Threshold (€)',
+          defaultValue: 80,
+          admin: {
+            description: 'Order value in euros required for free shipping.',
+          },
+        },
+        {
+          name: 'freeShippingText',
+          type: 'text',
+          label: 'Free Shipping Label',
+          defaultValue: 'Kostenloser Versand ab',
+          admin: {
+            description: 'Text shown before the threshold amount in the cart.',
+          },
+        },
+        {
+          name: 'freeShippingReachedText',
+          type: 'text',
+          label: 'Free Shipping Reached Text',
+          defaultValue: 'Kostenloser Versand!',
+          admin: {
+            description: 'Text shown when free shipping threshold is reached.',
+          },
+        },
+      ],
+    },
   ],
 }
