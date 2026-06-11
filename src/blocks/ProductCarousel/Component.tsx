@@ -82,7 +82,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         : {}),
     })
 
-    return result.docs as Product[]
+    return await applyDiscountsToProducts(result.docs as Product[], payload)
   }
 
   if (selectedDocs?.length) {
@@ -129,7 +129,8 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         })
         // Restore the admin-selected order
         const byId = new Map(found.docs.map((p) => [p.id, p]))
-        products = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)
+        const orderedProducts = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)
+        products = await applyDiscountsToProducts(orderedProducts, payload)
       }
     }
 

@@ -103,21 +103,6 @@ export function ProductDescription({ product, categoryLabel }: Props) {
   const { currency } = useCurrency()
   const searchParams = useSearchParams()
 
-  // DEBUG: Log pricing data
-  if (typeof window !== 'undefined') {
-    console.log('[DEBUG] Product pricing:', {
-      title: product.title,
-      priceInEUR: product.priceInEUR,
-      compareAtPriceInEUR: product.compareAtPriceInEUR,
-      variants: product.variants?.docs?.map((v: any) => ({
-        id: v.id,
-        title: v.title,
-        priceInEUR: v.priceInEUR,
-        compareAtPriceInEUR: v.compareAtPriceInEUR,
-      })),
-    })
-  }
-
   const currencyCode = currency?.code || 'EUR'
   const priceField = `priceIn${currencyCode}` as keyof Product
   const hasVariantTypes = product.enableVariants && Boolean(product.variantTypes?.length)
@@ -174,13 +159,11 @@ export function ProductDescription({ product, categoryLabel }: Props) {
 
   if (hasVariantPrices && selectedVariant) {
     const variantCompareAt = toNumber(selectedVariant.compareAtPriceInEUR)
-    console.log('[DEBUG] Variant compare-at:', variantCompareAt, 'amount:', amount, 'isOnSale:', variantCompareAt !== null && variantCompareAt > amount)
     if (variantCompareAt !== null && variantCompareAt > amount) {
       compareAtAmount = variantCompareAt
     }
   } else if (!hasVariantPrices) {
     const productCompareAt = toNumber(product.compareAtPriceInEUR)
-    console.log('[DEBUG] Product compare-at:', productCompareAt, 'amount:', amount, 'isOnSale:', productCompareAt !== null && productCompareAt > amount)
     if (productCompareAt !== null && productCompareAt > amount) {
       compareAtAmount = productCompareAt
     }

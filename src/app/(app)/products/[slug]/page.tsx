@@ -309,5 +309,14 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
     } as any,
   })
 
-  return result.docs?.[0] || null
+  const product = result.docs?.[0] || null
+  if (!product) return null
+
+  // Apply active discounts
+  const discounted = await applyDiscountsToProduct(product as Product, payload)
+
+  return {
+    ...product,
+    ...discounted,
+  } as Product
 }

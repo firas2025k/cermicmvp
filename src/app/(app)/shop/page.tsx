@@ -1,6 +1,8 @@
+import { applyDiscountsToProducts } from '@/collections/Products/applyDiscounts'
 import { ProductGridItem } from '@/components/ProductGridItem'
 import { ShopFilterBar } from '@/components/ShopFilterBar'
 import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
+import type { Product } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
@@ -103,9 +105,12 @@ export default async function ShopPage({ searchParams }: Props) {
     where: { and: whereConditions },
   })
 
+  // Apply active discounts to all products
+  const discountedDocs = await applyDiscountsToProducts(products.docs as Product[], payload)
+
   // Apply per-category custom ordering when a single specific category is selected
   // and the editor has set explicit positions for it.
-  let orderedDocs = products.docs
+  let orderedDocs = discountedDocs
   if (!activeSort && exactCategoryId !== null && categorySlugs.length === 1) {
     const orderResult = await payload.find({
       collection: 'category-product-orders',

@@ -2,15 +2,15 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import {
-    BoldFeature,
-    EXPERIMENTAL_TableFeature,
-    IndentFeature,
-    ItalicFeature,
-    LinkFeature,
-    OrderedListFeature,
-    UnderlineFeature,
-    UnorderedListFeature,
-    lexicalEditor,
+  BoldFeature,
+  EXPERIMENTAL_TableFeature,
+  IndentFeature,
+  ItalicFeature,
+  LinkFeature,
+  OrderedListFeature,
+  UnderlineFeature,
+  UnorderedListFeature,
+  lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -18,6 +18,7 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from '@/collections/Categories'
 import { CategoryProductOrder } from '@/collections/CategoryProductOrder'
+import { Discounts } from '@/collections/Discounts'
 import { Media } from '@/collections/Media'
 import { Pages } from '@/collections/Pages'
 import { StockNotifications } from '@/collections/StockNotifications'
@@ -42,7 +43,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Pages, Categories, CategoryProductOrder, Media, StockNotifications],
+  collections: [Users, Pages, Categories, CategoryProductOrder, Media, StockNotifications, Discounts],
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
