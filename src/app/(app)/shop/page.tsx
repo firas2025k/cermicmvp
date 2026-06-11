@@ -25,6 +25,7 @@ function normalizeSearchQuery(q: string | string[] | undefined): string {
 }
 
 export default async function ShopPage({ searchParams }: Props) {
+  console.log('🛒🛒🛒 SHOP PAGE LOADING - IF YOU SEE THIS, THE PAGE IS WORKING 🛒🛒🛒')
   console.log('🛒 Shop page executing with searchParams:', searchParams)
   const { q: rawQ, sort, category } = await searchParams
   const searchValue = normalizeSearchQuery(rawQ)
