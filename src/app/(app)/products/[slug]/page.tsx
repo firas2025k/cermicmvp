@@ -300,6 +300,7 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
         title: true,
         priceInEUR: true,
         priceInEUREnabled: true,
+        compareAtPriceInEUR: true,
         inventory: true,
         options: true,
       },

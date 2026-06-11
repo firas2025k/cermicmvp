@@ -59,6 +59,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         slug: true,
         gallery: true,
         priceInEUR: true,
+        compareAtPriceInEUR: true,
         categories: true,
         enableVariants: true,
       },
@@ -66,6 +67,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         variants: {
           title: true,
           priceInEUR: true,
+          compareAtPriceInEUR: true,
           inventory: true,
         },
       },
@@ -106,6 +108,24 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
           depth: 2,
           where: { id: { in: ids } },
           limit: ids.length,
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            gallery: true,
+            priceInEUR: true,
+            compareAtPriceInEUR: true,
+            categories: true,
+            enableVariants: true,
+          },
+          populate: {
+            variants: {
+              title: true,
+              priceInEUR: true,
+              compareAtPriceInEUR: true,
+              inventory: true,
+            },
+          },
         })
         // Restore the admin-selected order
         const byId = new Map(found.docs.map((p) => [p.id, p]))

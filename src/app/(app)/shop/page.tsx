@@ -81,6 +81,7 @@ export default async function ShopPage({ searchParams }: Props) {
       gallery: true,
       categories: true,
       priceInEUR: true,
+      compareAtPriceInEUR: true,
       inventory: true,
       enableVariants: true,
       variantTypes: true,
@@ -95,6 +96,7 @@ export default async function ShopPage({ searchParams }: Props) {
       variants: {
         options: true,
         priceInEUR: true,
+        compareAtPriceInEUR: true,
       },
     } as Record<string, unknown>,
     sort: activeSort ?? 'title',
