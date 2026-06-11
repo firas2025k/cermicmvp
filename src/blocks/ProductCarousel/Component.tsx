@@ -1,3 +1,4 @@
+import { applyDiscountsToProducts } from '@/collections/Products/applyDiscounts'
 import type { Product, ProductCarouselBlock as ProductCarouselBlockProps } from '@/payload-types'
 import configPromise from '@payload-config'
 import Link from 'next/link'
