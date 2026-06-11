@@ -25,6 +25,7 @@ function normalizeSearchQuery(q: string | string[] | undefined): string {
 }
 
 export default async function ShopPage({ searchParams }: Props) {
+  console.log('🛒 Shop page executing with searchParams:', searchParams)
   const { q: rawQ, sort, category } = await searchParams
   const searchValue = normalizeSearchQuery(rawQ)
   const activeSort = typeof sort === 'string' ? sort : null
@@ -106,6 +107,7 @@ export default async function ShopPage({ searchParams }: Props) {
   })
 
   // Apply active discounts to all products
+  console.log('🔍 About to apply discounts to', products.docs.length, 'products')
   const discountedDocs = await applyDiscountsToProducts(products.docs as Product[], payload)
 
   // Apply per-category custom ordering when a single specific category is selected
