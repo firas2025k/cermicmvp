@@ -22,6 +22,7 @@ export async function Footer() {
   const menu = footer.navItems || []
   const currentYear = new Date().getFullYear()
 
+  const logoName = footer.brand?.logoName || SITE_NAME
   const tagline =
     footer.brand?.tagline || 'Handcrafted olive wood and ceramic pieces, made with care in Austria.'
   const address = footer.contactInfo?.address || 'Wien, Österreich'
@@ -53,7 +54,7 @@ export async function Footer() {
               className="font-serif text-2xl font-light tracking-widest"
               style={{ color: '#F8F4EE' }}
             >
-              {SITE_NAME}
+              {logoName}
             </Link>
             <p
               className="font-sans text-sm font-light mt-4 max-w-xs leading-relaxed"

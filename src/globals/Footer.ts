@@ -14,6 +14,14 @@ export const Footer: GlobalConfig = {
       type: 'group',
       fields: [
         {
+          name: 'logoName',
+          type: 'text',
+          label: 'Logo Name',
+          admin: {
+            description: 'Brand name shown as the footer logo. Leave blank to use the site default.',
+          },
+        },
+        {
           name: 'tagline',
           type: 'text',
           label: 'Tagline',

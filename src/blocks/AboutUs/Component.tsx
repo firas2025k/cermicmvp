@@ -1,14 +1,15 @@
-import type { AboutUsBlock as AboutUsBlockProps } from '@/payload-types'
-import type { Media as MediaType } from '@/payload-types'
-import React from 'react'
+import { RichText } from '@/components/RichText'
+import type { AboutUsBlock as AboutUsBlockProps, Media as MediaType } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
-import { RichText } from '@/components/RichText'
+import React from 'react'
 
 export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
   title,
   image,
   content,
+  learnMoreLabel,
+  learnMoreUrl,
 }) => {
   if (!content) return null
 
@@ -58,12 +59,14 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
             <RichText data={content} enableGutter={false} />
           </div>
 
-          <Link
-            href="/shop"
-            className="inline-block px-8 py-3.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
-          >
-            Learn More
-          </Link>
+          {learnMoreLabel && (
+            <Link
+              href={learnMoreUrl || '/shop'}
+              className="inline-block px-8 py-3.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
+            >
+              {learnMoreLabel}
+            </Link>
+          )}
         </div>
 
       </div>

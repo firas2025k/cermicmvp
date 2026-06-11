@@ -1,12 +1,11 @@
-import type { ProductCarouselBlock as ProductCarouselBlockProps } from '@/payload-types'
-import type { Product } from '@/payload-types'
+import type { Product, ProductCarouselBlock as ProductCarouselBlockProps } from '@/payload-types'
 import configPromise from '@payload-config'
+import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
-import Link from 'next/link'
 
-import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
 import { ProductCarousel } from '@/components/ProductCarousel'
+import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
@@ -108,7 +107,9 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
           where: { id: { in: ids } },
           limit: ids.length,
         })
-        products = found.docs as Product[]
+        // Restore the admin-selected order
+        const byId = new Map(found.docs.map((p) => [p.id, p]))
+        products = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)
       }
     }
 

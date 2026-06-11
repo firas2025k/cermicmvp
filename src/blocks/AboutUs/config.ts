@@ -1,8 +1,8 @@
 import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
+    FixedToolbarFeature,
+    HeadingFeature,
+    InlineToolbarFeature,
+    lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
 
@@ -27,6 +27,25 @@ export const AboutUsBlock: Block = {
       type: 'text',
       label: 'Image Caption',
       defaultValue: 'Unser Team',
+    },
+    {
+      name: 'learnMoreLabel',
+      type: 'text',
+      label: '"Learn More" Button Label',
+      defaultValue: 'Learn More',
+      admin: {
+        description: 'Text shown on the button. Leave empty to hide the button.',
+      },
+    },
+    {
+      name: 'learnMoreUrl',
+      type: 'text',
+      label: '"Learn More" Button URL',
+      defaultValue: '/shop',
+      admin: {
+        description: 'Where the button links to, e.g. /ueber-uns or /shop.',
+        condition: (_, siblingData) => Boolean(siblingData?.learnMoreLabel),
+      },
     },
     {
       name: 'content',

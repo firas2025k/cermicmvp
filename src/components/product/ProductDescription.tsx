@@ -216,7 +216,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           />
         ) : null
       )}
-      <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">inkl. MwSt. · Kostenloser Versand ab 50,00\u00a0€</p>
+      <p className="mb-5 mt-1 font-sans text-xs text-warm-gray">inkl. MwSt</p>
 
       <hr className="border-warm-border" />
 

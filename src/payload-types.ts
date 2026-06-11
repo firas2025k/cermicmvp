@@ -2100,6 +2100,10 @@ export interface Footer {
   id: number;
   brand?: {
     /**
+     * Brand name shown as the footer logo. Leave blank to use the site default.
+     */
+    logoName?: string | null;
+    /**
      * Short description shown below the logo in the footer.
      */
     tagline?: string | null;
@@ -2435,6 +2439,14 @@ export interface AboutUsBlock {
   title?: string | null;
   image?: (number | null) | Media;
   imageCaption?: string | null;
+  /**
+   * Text shown on the button. Leave empty to hide the button.
+   */
+  learnMoreLabel?: string | null;
+  /**
+   * Where the button links to, e.g. /ueber-uns or /shop.
+   */
+  learnMoreUrl?: string | null;
   content: {
     root: {
       type: string;
@@ -2507,6 +2519,7 @@ export interface FooterSelect<T extends boolean = true> {
   brand?:
     | T
     | {
+        logoName?: T;
         tagline?: T;
       };
   contactInfo?:
@@ -2782,6 +2795,8 @@ export interface AboutUsBlockSelect<T extends boolean = true> {
   title?: T;
   image?: T;
   imageCaption?: T;
+  learnMoreLabel?: T;
+  learnMoreUrl?: T;
   content?: T;
   id?: T;
   blockName?: T;
