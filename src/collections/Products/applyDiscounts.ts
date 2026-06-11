@@ -109,9 +109,36 @@ export async function applyDiscountsToProduct(
     ? product.compareAtPriceInEUR
     : originalPrice
 
+  // Apply discounts to variants too
+  const discountedVariants = product.variants?.docs?.map((variant) => {
+    if (typeof variant !== 'object' || !variant) return variant
+    const variantPrice = variant.priceInEUR
+    if (!variantPrice || variantPrice <= 0) return variant
+
+    const discountedVariantPrice = Math.round(variantPrice * discountMultiplier)
+    const finalVariantPrice = Math.max(discountedVariantPrice, 1)
+
+    // Preserve manual compareAt price on variant if higher
+    const finalVariantCompareAt = variant.compareAtPriceInEUR && variant.compareAtPriceInEUR > variantPrice
+      ? variant.compareAtPriceInEUR
+      : variantPrice
+
+    return {
+      ...variant,
+      priceInEUR: finalVariantPrice,
+      compareAtPriceInEUR: finalVariantCompareAt,
+    }
+  })
+
   return {
     priceInEUR: finalPrice,
     compareAtPriceInEUR: finalCompareAt,
+    variants: product.variants
+      ? {
+          ...product.variants,
+          docs: discountedVariants,
+        }
+      : undefined,
   }
 }
 
