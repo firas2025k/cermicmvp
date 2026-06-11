@@ -141,6 +141,17 @@ export default async function ShopPage({ searchParams }: Props) {
     }
   }
 
+  // Debug: Log first product data to client
+  if (orderedDocs.length > 0) {
+    const firstProduct = orderedDocs[0]
+    console.log('🔍 CLIENT DEBUG - First product:', {
+      title: firstProduct.title,
+      price: firstProduct.priceInEUR,
+      compareAtPrice: firstProduct.compareAtPriceInEUR,
+      hasDiscount: !!firstProduct.compareAtPriceInEUR && firstProduct.compareAtPriceInEUR > firstProduct.priceInEUR,
+    })
+  }
+
   return (
     <div className="min-h-screen bg-linen">
       {/* Page header */}
