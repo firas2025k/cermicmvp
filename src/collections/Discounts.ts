@@ -16,9 +16,9 @@ export const Discounts: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) => req.user?.role === 'admin',
-    update: ({ req }) => req.user?.role === 'admin',
-    delete: ({ req }) => req.user?.role === 'admin',
+    create: ({ req }) => req.user?.roles?.includes('admin') || false,
+    update: ({ req }) => req.user?.roles?.includes('admin') || false,
+    delete: ({ req }) => req.user?.roles?.includes('admin') || false,
   },
   fields: [
     {
