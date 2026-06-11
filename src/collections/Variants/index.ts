@@ -55,8 +55,19 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
         name: 'compareAtPriceInEUR',
         type: 'number',
         label: 'Compare-at Price (EUR)',
+        hooks: {
+          beforeChange: [
+            ({ value }) => {
+              // Convert euros to cents if value is less than 100 (likely in euros)
+              if (typeof value === 'number' && value > 0 && value < 100) {
+                return Math.round(value * 100)
+              }
+              return value
+            },
+          ],
+        },
         admin: {
-          description: 'Original price shown as strikethrough when higher than regular price. Used for sales.',
+          description: 'Original price shown as strikethrough. Enter value in euros (e.g., 30 for €30.00).',
           step: 0.01,
         },
       },

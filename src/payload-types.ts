@@ -78,6 +78,7 @@ export interface Config {
     'category-product-orders': CategoryProductOrder;
     media: Media;
     'stock-notifications': StockNotification;
+    discounts: Discount;
     forms: Form;
     'form-submissions': FormSubmission;
     addresses: Address;
@@ -116,6 +117,7 @@ export interface Config {
     'category-product-orders': CategoryProductOrdersSelect<false> | CategoryProductOrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'stock-notifications': StockNotificationsSelect<false> | StockNotificationsSelect<true>;
+    discounts: DiscountsSelect<false> | DiscountsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
@@ -337,7 +339,7 @@ export interface Product {
   priceInEUR?: number | null;
   relatedProducts?: (number | Product)[] | null;
   /**
-   * Original price shown as strikethrough when higher than regular price. Used for sales.
+   * Original price shown as strikethrough. Enter value in euros (e.g., 30 for €30.00).
    */
   compareAtPriceInEUR?: number | null;
   meta?: {
@@ -1045,7 +1047,7 @@ export interface Variant {
    */
   sku?: string | null;
   /**
-   * Original price shown as strikethrough when higher than regular price. Used for sales.
+   * Original price shown as strikethrough. Enter value in euros (e.g., 30 for €30.00).
    */
   compareAtPriceInEUR?: number | null;
   /**
@@ -1215,6 +1217,49 @@ export interface StockNotification {
   createdAt: string;
 }
 /**
+ * Create and manage sales, promotions, and percentage-based discounts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts".
+ */
+export interface Discount {
+  id: number;
+  /**
+   * Internal name for this discount, e.g., "Summer Sale 2024"
+   */
+  name: string;
+  /**
+   * Percentage off regular price, e.g., 20 for 20% off
+   */
+  discountPercent: number;
+  /**
+   * Choose which products this discount applies to.
+   */
+  applyTo: 'all' | 'products' | 'categories';
+  /**
+   * Choose specific products for this discount.
+   */
+  products?: (number | Product)[] | null;
+  /**
+   * All products in these categories will be discounted.
+   */
+  categories?: (number | Category)[] | null;
+  /**
+   * When this discount becomes active.
+   */
+  startDate: string;
+  /**
+   * When this discount ends. Leave blank for ongoing discounts.
+   */
+  endDate?: string | null;
+  /**
+   * Turn on/off without deleting the discount.
+   */
+  enabled?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
@@ -1278,6 +1323,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'stock-notifications';
         value: number | StockNotification;
+      } | null)
+    | ({
+        relationTo: 'discounts';
+        value: number | Discount;
       } | null)
     | ({
         relationTo: 'forms';
@@ -1615,6 +1664,22 @@ export interface StockNotificationsSelect<T extends boolean = true> {
   variantId?: T;
   variantTitle?: T;
   notified?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts_select".
+ */
+export interface DiscountsSelect<T extends boolean = true> {
+  name?: T;
+  discountPercent?: T;
+  applyTo?: T;
+  products?: T;
+  categories?: T;
+  startDate?: T;
+  endDate?: T;
+  enabled?: T;
   updatedAt?: T;
   createdAt?: T;
 }
