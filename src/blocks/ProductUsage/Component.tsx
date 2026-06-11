@@ -1,8 +1,7 @@
-import type { ProductUsageBlock as ProductUsageBlockProps } from '@/payload-types'
-import React from 'react'
-import Link from 'next/link'
+import type { Media as MediaType, ProductUsageBlock as ProductUsageBlockProps } from '@/payload-types'
 import Image from 'next/image'
-import type { Media as MediaType } from '@/payload-types'
+import Link from 'next/link'
+import React from 'react'
 
 function getItemHref(item: NonNullable<ProductUsageBlockProps['items']>[number]): string {
   if (item.linkType === 'product' && item.product) {
@@ -51,7 +50,7 @@ export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ i
               key={index}
               href={href}
               // Hide the 3rd tile on md (2-col) only — visible on sm (1-col) and lg (3-col)
-              className={`relative overflow-hidden group block bg-[#F7F3EE]${index === 2 ? ' hidden md:hidden lg:block' : ''}`}
+              className={`relative overflow-hidden group block bg-[#F7F3EE]${index === 2 ? ' md:hidden lg:block' : ''}`}
               style={{ aspectRatio: '4/5' }}
             >
               {/* Full product frame visible (images use #F7F3EE padding — avoid object-cover crop) */}

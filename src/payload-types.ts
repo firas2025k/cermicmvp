@@ -336,6 +336,10 @@ export interface Product {
   priceInEUREnabled?: boolean | null;
   priceInEUR?: number | null;
   relatedProducts?: (number | Product)[] | null;
+  /**
+   * Original price shown as strikethrough when higher than regular price. Used for sales.
+   */
+  compareAtPriceInEUR?: number | null;
   meta?: {
     title?: string | null;
     /**
@@ -1040,6 +1044,10 @@ export interface Variant {
    * Optional. Leave blank to auto-generate from product slug + variant option values (unique). You can still set a custom code.
    */
   sku?: string | null;
+  /**
+   * Original price shown as strikethrough when higher than regular price. Used for sales.
+   */
+  compareAtPriceInEUR?: number | null;
   /**
    * Used for administrative purposes, not shown to customers. This is populated by default.
    */
@@ -1785,6 +1793,7 @@ export interface AddressesSelect<T extends boolean = true> {
  */
 export interface VariantsSelect<T extends boolean = true> {
   sku?: T;
+  compareAtPriceInEUR?: T;
   title?: T;
   product?: T;
   options?: T;
@@ -1863,6 +1872,7 @@ export interface ProductsSelect<T extends boolean = true> {
   priceInEUREnabled?: T;
   priceInEUR?: T;
   relatedProducts?: T;
+  compareAtPriceInEUR?: T;
   meta?:
     | T
     | {

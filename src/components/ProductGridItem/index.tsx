@@ -50,7 +50,7 @@ function getCategoryLabel(product: Partial<Product>): string | null {
 }
 
 export const ProductGridItem: React.FC<Props> = ({ product }) => {
-  const { priceInEUR, title, inventory } = product
+  const { priceInEUR, compareAtPriceInEUR, title, inventory } = product
 
   const gallery = getPopulatedGallery(product)
   const variantTypes = getPopulatedVariantTypes(product)
@@ -85,6 +85,14 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     return Math.min(...prices)
   }, [variantDocs])
 
+  const lowestVariantCompareAt = useMemo(() => {
+    if (!variantDocs.length) return null
+    const comparePrices: number[] = variantDocs
+      .map((v: any) => v.compareAtPriceInEUR as number)
+      .filter((p: number) => typeof p === 'number' && p > 0)
+    return comparePrices.length > 0 ? Math.min(...comparePrices) : null
+  }, [variantDocs])
+
   const hasVariantPrices = variantDocs.length > 0
 
   const displayedPrice = useMemo(() => {
@@ -94,6 +102,16 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     }
     return priceInEUR
   }, [selectedOptionId, findVariantByOptionId, priceInEUR])
+
+  const displayedCompareAt = useMemo(() => {
+    if (selectedOptionId !== null) {
+      const variant = findVariantByOptionId(selectedOptionId)
+      if (variant && typeof variant.compareAtPriceInEUR === 'number' && variant.compareAtPriceInEUR > variant.priceInEUR) {
+        return variant.compareAtPriceInEUR
+      }
+    }
+    return compareAtPriceInEUR
+  }, [selectedOptionId, findVariantByOptionId, compareAtPriceInEUR])
 
   const activeImageIndex =
     selectedOptionId !== null && optionImageMap.has(selectedOptionId)
@@ -125,6 +143,22 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           ) : (
             <div className="absolute inset-0 bg-[#E2DBD0]/40" />
           )}
+
+          {/* Sale badge - shown when compareAtPrice > price */}
+          {(() => {
+            const isVariantOnSale = selectedOptionId !== null && displayedCompareAt && displayedPrice && displayedCompareAt > displayedPrice
+            const isProductOnSale = !selectedOptionId && typeof compareAtPriceInEUR === 'number' && compareAtPriceInEUR > (priceInEUR ?? 0)
+            const isOnSale = isVariantOnSale || isProductOnSale
+            if (!isOnSale) return null
+            const comparePrice = displayedCompareAt || compareAtPriceInEUR
+            const salePrice = displayedPrice || priceInEUR
+            const discount = comparePrice && salePrice ? Math.round(((comparePrice - salePrice) / comparePrice) * 100) : 0
+            return (
+              <span className="absolute left-3 top-3 bg-olive px-2.5 py-1 font-sans text-[10px] tracking-widest uppercase text-white">
+                -{discount}%
+              </span>
+            )
+          })()}
 
           {/* "New" or "Bestseller" badge — driven by product tags if available */}
           {isOutOfStock && (
@@ -221,6 +255,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         <Price
           as="p"
           amount={displayedPrice}
+          compareAtAmount={displayedCompareAt ?? undefined}
           currencyCode="EUR"
           className="mb-1 font-sans text-sm font-medium text-charcoal"
         />

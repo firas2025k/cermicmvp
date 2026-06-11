@@ -43,6 +43,15 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
             'Optional. Leave blank to auto-generate from product slug + variant option values (unique). You can still set a custom code.',
         },
       },
+      {
+        name: 'compareAtPriceInEUR',
+        type: 'number',
+        label: 'Compare-at Price (EUR)',
+        admin: {
+          description: 'Original price shown as strikethrough when higher than regular price. Used for sales.',
+          step: 0.01,
+        },
+      },
       ...defaultCollection.fields,
     ],
   }

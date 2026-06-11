@@ -260,6 +260,15 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               hasMany: true,
               relationTo: 'products',
             },
+            {
+              name: 'compareAtPriceInEUR',
+              type: 'number',
+              label: 'Compare-at Price (EUR)',
+              admin: {
+                description: 'Original price shown as strikethrough when higher than regular price. Used for sales.',
+                step: 0.01,
+              },
+            },
           ],
           label: 'Product Details',
         },

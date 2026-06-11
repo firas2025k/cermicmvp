@@ -115,12 +115,14 @@ export function ProductDescription({ product, categoryLabel }: Props) {
   let lowestAmount = 0
   let highestAmount = 0
 
-  if (hasVariantPrices) {
-    const selectedVariant = product.variants?.docs?.find((v) => {
-      if (typeof v !== 'object') return false
-      return String(v.id) === selectedVariantID
-    }) as Variant | undefined
+  const selectedVariant = hasVariantPrices
+    ? product.variants?.docs?.find((v) => {
+        if (typeof v !== 'object') return false
+        return String(v.id) === selectedVariantID
+      }) as Variant | undefined
+    : undefined
 
+  if (hasVariantPrices) {
     if (selectedVariant) {
       const selectedVariantPrice = toNumber(selectedVariant.priceInEUR)
       if (selectedVariantPrice !== null && selectedVariantPrice > 0) {
@@ -151,6 +153,21 @@ export function ProductDescription({ product, categoryLabel }: Props) {
   }
 
   // Price display — use Price component so cents→euros conversion is handled correctly
+
+  // ── Compare-at price (sale) calculation ────────────────────────────
+  let compareAtAmount: number | null = null
+
+  if (hasVariantPrices && selectedVariant) {
+    const variantCompareAt = toNumber(selectedVariant.compareAtPriceInEUR)
+    if (variantCompareAt !== null && variantCompareAt > amount) {
+      compareAtAmount = variantCompareAt
+    }
+  } else if (!hasVariantPrices) {
+    const productCompareAt = toNumber(product.compareAtPriceInEUR)
+    if (productCompareAt !== null && productCompareAt > amount) {
+      compareAtAmount = productCompareAt
+    }
+  }
 
   // ── Out of stock detection ─────────────────────────────────────────
   const isOutOfStock = useMemo(() => {
@@ -211,6 +228,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           <Price
             as="p"
             amount={amount}
+            compareAtAmount={compareAtAmount ?? undefined}
             currencyCode="EUR"
             className="font-serif text-3xl font-normal text-charcoal"
           />

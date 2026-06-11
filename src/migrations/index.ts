@@ -12,6 +12,7 @@ import * as migration_20260605_000001_add_product_trust_bullets from './20260605
 import * as migration_20260605_000002_add_product_faq_items from './20260605_000002_add_product_faq_items';
 import * as migration_20260609_084813 from './20260609_084813';
 import * as migration_20260611_091033 from './20260611_091033';
+import * as migration_20260611_092541 from './20260611_092541';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20260611_091033.up,
     down: migration_20260611_091033.down,
-    name: '20260611_091033'
+    name: '20260611_091033',
+  },
+  {
+    up: migration_20260611_092541.up,
+    down: migration_20260611_092541.down,
+    name: '20260611_092541'
   },
 ];
