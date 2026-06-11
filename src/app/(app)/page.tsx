@@ -1,5 +1,4 @@
 import { RenderHomepageBlocks } from '@/blocks/RenderHomepageBlocks'
-import { applyDiscountsToProducts } from '@/collections/Products/applyDiscounts'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { Media } from '@/components/Media'
 import { ProductCarousel } from '@/components/ProductCarousel'
@@ -156,10 +155,9 @@ export default async function HomePage() {
     }),
   ])
 
-  // Apply active discounts to all fetched products
-  const newArrivals = await applyDiscountsToProducts(newArrivalsResult.docs as Product[], payload)
-  const bestsellers = await applyDiscountsToProducts(bestsellersResult.docs as Product[], payload)
-  const topProducts = await applyDiscountsToProducts(topProductsResult.docs as Product[], payload)
+  const newArrivals = newArrivalsResult.docs as Partial<Product>[]
+  const bestsellers = bestsellersResult.docs as Partial<Product>[]
+  const topProducts = topProductsResult.docs as Partial<Product>[]
 
   // Create hero slides using high-quality 4K images from public/media
   const heroSlides = [
