@@ -16,6 +16,14 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
       ...defaultCollection.admin,
       defaultColumns: ['title', 'sku', 'inventory', '_status'],
     },
+    defaultPopulate: {
+      ...defaultCollection?.defaultPopulate,
+      title: true,
+      priceInEUR: true,
+      compareAtPriceInEUR: true,
+      inventory: true,
+      options: true,
+    },
     hooks: {
       ...defaultCollection.hooks,
       beforeChange: beforeChangeChain,

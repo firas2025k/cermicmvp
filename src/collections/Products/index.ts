@@ -103,6 +103,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
     enableVariants: true,
     gallery: true,
     priceInEUR: true,
+    compareAtPriceInEUR: true,
     inventory: true,
     meta: true,
     trustBullets: true,
