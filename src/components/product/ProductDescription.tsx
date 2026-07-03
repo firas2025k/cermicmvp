@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense, useMemo } from 'react'
 import { NotifyMeForm } from './NotifyMeForm'
 
+import Image from 'next/image'
 import { StockIndicator } from './StockIndicator'
 import { VariantSelector } from './VariantSelector'
 
@@ -25,12 +26,12 @@ function toNumber(v: unknown): number | null {
 // ── Payment methods ──────────────────────────────────────────────────────────
 
 const PAYMENT_METHODS = [
-  { id: 'paypal', label: 'PayPal' },
-  { id: 'mastercard', label: 'Mastercard' },
-  { id: 'visa', label: 'VISA' },
-  { id: 'amex', label: 'Amex' },
-  { id: 'klarna', label: 'Klarna' },
-  { id: 'applepay', label: 'Apple Pay' },
+  { id: 'paypal', label: 'PayPal', src: '/payment-logos/apm/paypal.svg' },
+  { id: 'mastercard', label: 'Mastercard', src: '/payment-logos/cards/mastercard.svg' },
+  { id: 'visa', label: 'VISA', src: '/payment-logos/cards/visa.svg' },
+  { id: 'amex', label: 'American Express', src: '/payment-logos/cards/american-express.svg' },
+  { id: 'klarna', label: 'Klarna', src: '/payment-logos/apm/klarna.svg' },
+  { id: 'applepay', label: 'Apple Pay', src: '/payment-logos/wallets/apple-pay.svg' },
 ]
 
 // ── Trust bullets ─────────────────────────────────────────────────────────────
@@ -262,13 +263,14 @@ export function ProductDescription({ product, categoryLabel }: Props) {
         <p className="mb-3 font-sans text-xs text-charcoal">
           <span className="text-olive">•</span>{' '}Lieferzeit: In 3–5 Werktagen bei Dir
         </p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           {PAYMENT_METHODS.map((pm) => (
             <span
               key={pm.id}
-              className="inline-flex items-center rounded border border-warm-border px-2 py-1 font-sans text-[10px] font-semibold tracking-wide text-charcoal"
+              className="inline-flex h-7 w-12 items-center justify-center rounded border border-warm-border bg-white px-1.5 py-1"
+              title={pm.label}
             >
-              {pm.label}
+              <Image src={pm.src} alt={pm.label} width={40} height={18} className="h-auto max-h-4 w-full object-contain" />
             </span>
           ))}
         </div>

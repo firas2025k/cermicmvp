@@ -56,7 +56,7 @@ function AccordionRow({
 }
 
 function DescriptionRow({ product }: { product: Product }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   return (
     <div className="border-b border-warm-border">
       <button
