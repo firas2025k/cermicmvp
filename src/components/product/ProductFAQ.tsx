@@ -113,7 +113,7 @@ export function ProductFAQ({ product }: { product: Product }) {
   return (
     <section className="border-t border-warm-border bg-linen">
       <div className="container py-10 lg:py-14">
-        <div className="mx-auto max-w-3xl border-t border-warm-border">
+        <div className="border-t border-warm-border">
           {product.description && <DescriptionRow product={product} />}
           {items.map((item, i) => (
             <AccordionRow
