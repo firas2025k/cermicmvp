@@ -4,6 +4,7 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { applyDiscountsToProduct } from '@/collections/Products/applyDiscounts'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
+import { ProductFAQ } from '@/components/product/ProductFAQ'
 import configPromise from '@payload-config'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
@@ -157,6 +158,9 @@ export default async function ProductPage({ params }: Args) {
             </div>
           </div>
         </section>
+
+        {/* ── FAQ / Description accordion — full-width below gallery ── */}
+        <ProductFAQ product={product} />
 
         {/* ── Extra content blocks (CTA / content / media from CMS) ── */}
         {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
