@@ -222,9 +222,16 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
                 },
                 {
                   name: 'answer',
-                  type: 'textarea',
+                  type: 'richText',
                   required: true,
                   label: 'Answer',
+                  editor: lexicalEditor({
+                    features: ({ rootFeatures }) => [
+                      ...rootFeatures,
+                      FixedToolbarFeature(),
+                      InlineToolbarFeature(),
+                    ],
+                  }),
                 },
               ],
             },

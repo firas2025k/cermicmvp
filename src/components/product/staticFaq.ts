@@ -8,7 +8,7 @@
 
 export type AccordionItem = {
   title: string
-  body: string
+  body: string | Record<string, unknown>
 }
 
 export const STATIC_CARE_AND_SHIPPING: AccordionItem[] = [

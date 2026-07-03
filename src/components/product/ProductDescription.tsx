@@ -54,7 +54,17 @@ function Accordion({ item, defaultOpen = false }: { item: AccordionItem; default
         </svg>
       </button>
       {open && (
-        <div className="pb-4 font-sans text-sm leading-relaxed text-warm-gray whitespace-pre-line">{item.body}</div>
+        <div className="pb-4 font-sans text-sm leading-relaxed text-warm-gray">
+          {typeof item.body === 'string' ? (
+            <span className="whitespace-pre-line">{item.body}</span>
+          ) : (
+            <RichText
+              className="prose prose-sm max-w-none text-warm-gray"
+              data={item.body as Parameters<typeof RichText>[0]['data']}
+              enableGutter={false}
+            />
+          )}
+        </div>
       )}
     </div>
   )
