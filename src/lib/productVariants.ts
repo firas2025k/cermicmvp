@@ -43,6 +43,35 @@ export function filterOptionsForProduct(
   )
 }
 
+/**
+ * Collect options directly from the product's populated variants for a given variant type.
+ * This avoids relying on variantType.options.docs which can be truncated by the JOIN field page limit.
+ */
+export function getOptionsForProductByType(
+  product: Product,
+  variantTypeId: number,
+): VariantOption[] {
+  const seen = new Set<number>()
+  const opts: VariantOption[] = []
+
+  for (const variant of getPopulatedProductVariants(product)) {
+    for (const opt of variant.options ?? []) {
+      if (typeof opt !== 'object' || opt === null) continue
+      const typeId =
+        typeof opt.variantType === 'object' && opt.variantType !== null
+          ? (opt.variantType as VariantType).id
+          : (opt.variantType as number)
+      if (typeId !== variantTypeId) continue
+      if (!seen.has(opt.id)) {
+        seen.add(opt.id)
+        opts.push(opt as VariantOption)
+      }
+    }
+  }
+
+  return opts
+}
+
 /** Reads selected variant option IDs from URL params (one per variant type name). */
 export function getSelectedVariantOptionIds(
   searchParams: URLSearchParams,

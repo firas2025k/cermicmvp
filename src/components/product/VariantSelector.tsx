@@ -1,16 +1,15 @@
 'use client'
 
-import type { Product, VariantType } from '@/payload-types'
 import {
-  filterOptionsForProduct,
-  findMatchingProductVariant,
-  getPopulatedProductVariants,
-  getSelectedVariantOptionIds,
+    findMatchingProductVariant,
+    getOptionsForProductByType,
+    getPopulatedProductVariants,
+    getSelectedVariantOptionIds,
 } from '@/lib/productVariants'
+import type { Product, VariantType } from '@/payload-types'
 import { cn } from '@/utilities/cn'
 import { createUrl } from '@/utilities/createUrl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React from 'react'
 
 export function VariantSelector({ product }: { product: Product }) {
   const router = useRouter()
@@ -28,10 +27,7 @@ export function VariantSelector({ product }: { product: Product }) {
         if (!type || typeof type !== 'object') return null
 
         const variantType = type as VariantType
-        const globalOptions = variantType.options?.docs
-        if (!globalOptions?.length) return null
-
-        const options = filterOptionsForProduct(product, variantType, globalOptions)
+        const options = getOptionsForProductByType(product, variantType.id)
         if (!options.length) return null
 
         return (
