@@ -222,8 +222,6 @@ export function ProductDescription({ product, categoryLabel }: Props) {
             ))}
       </div>
 
-      <hr className="border-warm-border" />
-
       {/* Variant selector */}
       {hasVariantTypes && (
         <div className="mt-5 mb-5">
@@ -232,8 +230,6 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           </Suspense>
         </div>
       )}
-
-      <hr className="border-warm-border mb-5" />
 
       {/* QTY + Add to Cart / Notify Me */}
       {isOutOfStock ? (
@@ -267,10 +263,10 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           {PAYMENT_METHODS.map((pm) => (
             <span
               key={pm.id}
-              className="inline-flex h-7 w-12 items-center justify-center rounded border border-warm-border bg-white px-1.5 py-1"
+              className="inline-flex h-8 w-14 items-center justify-center rounded border border-warm-border bg-white px-1.5 py-1"
               title={pm.label}
             >
-              <Image src={pm.src} alt={pm.label} width={40} height={18} className="h-auto max-h-4 w-full object-contain" />
+              <Image src={pm.src} alt={pm.label} width={40} height={18} className="h-auto max-h-5 w-full object-contain" />
             </span>
           ))}
         </div>
