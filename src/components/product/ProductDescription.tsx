@@ -318,27 +318,61 @@ export function ProductDescription({ product, categoryLabel }: Props) {
             ))}
       </div>
 
-      {/* Description — always visible, not collapsible */}
-      {product.description ? (
-        <div className="mb-5 border-t border-warm-border pt-5">
-          <p className="mb-3 font-sans text-xs font-bold tracking-[0.08em] uppercase text-charcoal">
-            Description
-          </p>
-          <RichText
-            className="prose prose-sm max-w-none text-warm-gray"
-            data={product.description as Parameters<typeof RichText>[0]['data']}
-            enableGutter={false}
-          />
-        </div>
-      ) : null}
-
-      {/* FAQ accordions */}
+      {/* Accordions */}
       <div className="border-b border-warm-border">
+        {/* Description — from CMS if present */}
+        {product.description ? (
+          <div className="border-t border-warm-border">
+            <DescriptionAccordion product={product} />
+          </div>
+        ) : null}
+
+        {/* Static care, shipping & FAQ panels */}
         {extraAccordionItems.map((item, i) => (
-          <Accordion key={item.title} item={item} defaultOpen={i === 0} />
+          <Accordion key={item.title} item={item} defaultOpen={i === 0 && !product.description} />
         ))}
       </div>
     </div>
   )
 }
 
+// ── Description accordion (needs RichText, keeps CMS content as-is) ──────────
+
+function DescriptionAccordion({ product }: { product: Product }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between py-4 text-left transition-colors hover:text-olive"
+      >
+        <span className="font-sans text-xs font-bold tracking-[0.08em] uppercase text-charcoal">
+          Description
+        </span>
+        <svg
+          className={cn(
+            'h-4 w-4 flex-shrink-0 text-warm-gray transition-transform duration-250',
+            open && 'rotate-180',
+          )}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="pb-4">
+          <RichText
+            className="prose prose-sm max-w-none font-sans text-warm-gray"
+            data={product.description!}
+            enableGutter={false}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
