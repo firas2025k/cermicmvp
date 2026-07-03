@@ -54,7 +54,7 @@ function Accordion({ item, defaultOpen = false }: { item: AccordionItem; default
         </svg>
       </button>
       {open && (
-        <div className="pb-4 font-sans text-sm leading-relaxed text-warm-gray">{item.body}</div>
+        <div className="pb-4 font-sans text-sm leading-relaxed text-warm-gray whitespace-pre-line">{item.body}</div>
       )}
     </div>
   )
@@ -196,6 +196,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
     product.faqItems && product.faqItems.length > 0
       ? product.faqItems
           .filter((item) => item.question && item.answer)
+          .filter((item) => !product.description || item.question.trim().toLowerCase() !== 'description')
           .map((item) => ({ title: item.question!, body: item.answer! }))
       : STATIC_CARE_AND_SHIPPING
 
