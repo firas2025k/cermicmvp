@@ -81,15 +81,15 @@ export function ShopFilterBar({
       <div className="container py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Category filter buttons */}
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => setParam('category', null)} className={filterBtnClass(!activeCategory)}>
+          <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
+            <button onClick={() => setParam('category', null)} className={cn(filterBtnClass(!activeCategory), 'flex-shrink-0')}>
               All
             </button>
             {topLevel.map((parent) => (
               <button
                 key={parent.id}
                 onClick={() => handleParentClick(parent)}
-                className={filterBtnClass(activeParentCategory?.slug === parent.slug)}
+                className={cn(filterBtnClass(activeParentCategory?.slug === parent.slug), 'flex-shrink-0')}
               >
                 {parent.title}
               </button>
@@ -133,10 +133,10 @@ export function ShopFilterBar({
         <div
           className={cn(
             'overflow-hidden transition-all duration-300',
-            activeSubs.length > 0 ? 'mt-3 max-h-16 border-t border-warm-border pt-3' : 'max-h-0',
+            activeSubs.length > 0 ? 'mt-3 max-h-40 border-t border-warm-border pt-3' : 'max-h-0',
           )}
         >
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
             {activeSubs.map((sub, index) => {
               const isActive = activeCategory === sub.slug
               return (
@@ -147,7 +147,7 @@ export function ShopFilterBar({
                   <button
                     onClick={() => handleSubClick(sub)}
                     className={cn(
-                      'cursor-pointer border px-3 py-1 font-sans text-[11px] tracking-[0.1em] uppercase transition-all duration-150',
+                      'flex-shrink-0 cursor-pointer border px-3 py-1 font-sans text-[11px] tracking-[0.1em] uppercase transition-all duration-150',
                       isActive
                         ? 'border-olive font-medium text-olive'
                         : 'border-transparent text-warm-gray hover:border-olive hover:text-olive',
