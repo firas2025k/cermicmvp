@@ -173,28 +173,13 @@ export async function applyDiscountsToProducts(
 
   const discounts = (discountsResult.docs || []) as unknown as DiscountDoc[]
 
-  console.log('🔍 DEBUG: applyDiscountsToProducts', {
-    now,
-    foundDiscounts: discounts.length,
-    discounts: discounts.map(d => ({
-      name: d.name,
-      percent: d.discountPercent,
-      applyTo: d.applyTo,
-      enabled: d.enabled,
-      startDate: d.startDate,
-      endDate: d.endDate,
-    }))
-  })
-
   if (discounts.length === 0) {
-    console.log('❌ No active discounts found')
     return products
   }
 
   return products.map((product) => {
     const originalPrice = product.priceInEUR
     if (!originalPrice || originalPrice <= 0) {
-      console.log(`❌ Product "${product.title}" has no valid price: ${originalPrice}`)
       return product
     }
 
@@ -230,7 +215,6 @@ export async function applyDiscountsToProducts(
     }
 
     if (applicableDiscounts.length === 0) {
-      console.log(`❌ No discounts applicable to product "${product.title}"`)
       return product
     }
 
@@ -242,14 +226,6 @@ export async function applyDiscountsToProducts(
     const finalCompareAt = product.compareAtPriceInEUR && product.compareAtPriceInEUR > originalPrice
       ? product.compareAtPriceInEUR
       : originalPrice
-
-    console.log(`✅ Applied ${maxDiscount}% discount to "${product.title}":`, {
-      originalPrice,
-      discountedPrice,
-      finalPrice,
-      finalCompareAt,
-      hadManualCompareAt: !!product.compareAtPriceInEUR,
-    })
 
     return {
       ...product,

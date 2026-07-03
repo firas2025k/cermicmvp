@@ -197,7 +197,7 @@ export default async function HomePage() {
 
       {/* Products You Will Love */}
       {topProducts.length > 0 && (
-        <ProductCarousel products={topProducts} title="PRODUKTE, DIE DU LIEBEN WIRST" limit={4} />
+        <ProductCarousel products={topProducts} limit={4} />
       )}
 
       {/* Small Media Mentions/Partner Logos */}
@@ -220,7 +220,6 @@ export default async function HomePage() {
       {newArrivals.length > 0 && (
         <ProductCarousel
           products={newArrivals.slice(0, 4)}
-          title="SCHNEIDEN, SERVIEREN & ANRICHTEN"
           limit={4}
         />
       )}
@@ -236,7 +235,6 @@ export default async function HomePage() {
       {bestsellers.length > 0 && (
         <ProductCarousel
           products={bestsellers.slice(0, 4)}
-          title="OLIVENHOLZ KOCHUTENSILIEN"
           limit={4}
         />
       )}

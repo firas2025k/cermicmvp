@@ -25,8 +25,6 @@ function normalizeSearchQuery(q: string | string[] | undefined): string {
 }
 
 export default async function ShopPage({ searchParams }: Props) {
-  console.log('🛒🛒🛒 SHOP PAGE LOADING - IF YOU SEE THIS, THE PAGE IS WORKING 🛒🛒🛒')
-  console.log('🛒 Shop page executing with searchParams:', searchParams)
   const { q: rawQ, sort, category } = await searchParams
   const searchValue = normalizeSearchQuery(rawQ)
   const activeSort = typeof sort === 'string' ? sort : null
@@ -77,7 +75,7 @@ export default async function ShopPage({ searchParams }: Props) {
     collection: 'products',
     draft: false,
     overrideAccess: false,
-    depth: 2,
+    depth: 3,
     limit: 100,
     select: {
       title: true,
@@ -108,7 +106,6 @@ export default async function ShopPage({ searchParams }: Props) {
   })
 
   // Apply active discounts to all products
-  console.log('🔍 About to apply discounts to', products.docs.length, 'products')
   const discountedDocs = await applyDiscountsToProducts(products.docs as Product[], payload)
 
   // Apply per-category custom ordering when a single specific category is selected
@@ -139,17 +136,6 @@ export default async function ShopPage({ searchParams }: Props) {
         return (a.title ?? '').localeCompare(b.title ?? '')
       })
     }
-  }
-
-  // Debug: Log first product data to client
-  if (orderedDocs.length > 0) {
-    const firstProduct = orderedDocs[0]
-    console.log('🔍 CLIENT DEBUG - First product:', {
-      title: firstProduct.title,
-      price: firstProduct.priceInEUR,
-      compareAtPrice: firstProduct.compareAtPriceInEUR,
-      hasDiscount: !!firstProduct.compareAtPriceInEUR && firstProduct.compareAtPriceInEUR > firstProduct.priceInEUR,
-    })
   }
 
   return (
