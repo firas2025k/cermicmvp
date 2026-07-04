@@ -10,6 +10,7 @@ type Props = {
 }
 
 export function NotifyMeForm({ productId, productTitle, variantId, variantTitle }: Props) {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
@@ -26,6 +27,7 @@ export function NotifyMeForm({ productId, productTitle, variantId, variantTitle 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          name: name.trim(),
           email: email.trim(),
           productId,
           productTitle,
@@ -64,7 +66,16 @@ export function NotifyMeForm({ productId, productTitle, variantId, variantTitle 
         Dieses Produkt ist derzeit nicht verfügbar. Hinterlasse deine E-Mail-Adresse und wir
         benachrichtigen dich, sobald es wieder auf Lager ist.
       </p>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Dein Name"
+          required
+          disabled={status === 'loading'}
+          className="flex-1 border border-warm-border bg-transparent px-4 py-3 font-sans text-sm text-charcoal outline-none placeholder:text-warm-gray focus:border-charcoal disabled:opacity-50"
+        />
         <input
           type="email"
           value={email}

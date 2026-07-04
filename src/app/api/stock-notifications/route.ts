@@ -1,11 +1,11 @@
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
+import { getPayload } from 'payload'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, productId, productTitle, variantId, variantTitle } = body
+    const { name, email, productId, productTitle, variantId, variantTitle } = body
 
     if (!email || !productId) {
       return NextResponse.json({ message: 'Email and productId are required.' }, { status: 400 })
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     await payload.create({
       collection: 'stock-notifications',
       data: {
+        name: name ? String(name) : undefined,
         email: String(email),
         product: Number(productId),
         productTitle: productTitle ? String(productTitle) : undefined,

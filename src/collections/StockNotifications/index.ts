@@ -6,7 +6,7 @@ export const StockNotifications: CollectionConfig = {
     group: 'Shop',
     useAsTitle: 'email',
     description: 'Customers who want to be notified when a product is back in stock.',
-    defaultColumns: ['email', 'productTitle', 'variantTitle', 'createdAt'],
+    defaultColumns: ['name', 'email', 'productTitle', 'variantTitle', 'createdAt'],
   },
   access: {
     read: ({ req }) => Boolean(req.user),
@@ -15,6 +15,11 @@ export const StockNotifications: CollectionConfig = {
     delete: ({ req }) => Boolean(req.user),
   },
   fields: [
+    {
+      name: 'name',
+      type: 'text',
+      label: 'Name',
+    },
     {
       name: 'email',
       type: 'email',
