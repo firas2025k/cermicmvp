@@ -15,18 +15,17 @@ export const FeatureCirclesBlockComponent: React.FC<FeatureCirclesBlockProps> = 
   }
 
   return (
-    <section className={`border-b border-neutral-200 ${bgClasses[backgroundColor]} py-12 dark:border-neutral-800`}>
+    <section
+      className={`overflow-x-hidden border-b border-neutral-200 ${bgClasses[backgroundColor]} py-8 sm:py-12 dark:border-neutral-800`}
+    >
       <div className="container">
-        <div
-          className="grid gap-8"
-          style={{ gridTemplateColumns: `repeat(${features.length}, 1fr)` }}
-        >
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
             const image = typeof feature.image === 'object' ? feature.image : null
 
             return (
-              <div key={index} className="flex flex-col items-center gap-4">
-                <div className="relative h-32 w-32 rounded-full border-4 border-white/20 bg-white/10 backdrop-blur-sm shadow-xl overflow-hidden">
+              <div key={index} className="mx-auto flex w-full max-w-xs flex-col items-center gap-3 sm:gap-4">
+                <div className="relative h-24 w-24 shrink-0 rounded-full border-4 border-white/20 bg-white/10 shadow-xl backdrop-blur-sm overflow-hidden sm:h-28 sm:w-28 lg:h-32 lg:w-32">
                   {image ? (
                     <Media
                       resource={image}
@@ -41,10 +40,10 @@ export const FeatureCirclesBlockComponent: React.FC<FeatureCirclesBlockProps> = 
                 </div>
                 <div className="text-center">
                   {feature.label && (
-                    <h3 className="text-sm font-semibold text-white">{feature.label}</h3>
+                    <h3 className="text-sm font-semibold text-white sm:text-base">{feature.label}</h3>
                   )}
                   {feature.description && (
-                    <p className="mt-1 text-xs text-red-100">{feature.description}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-white/80 sm:text-sm">{feature.description}</p>
                   )}
                 </div>
               </div>

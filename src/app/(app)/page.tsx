@@ -271,12 +271,12 @@ function FeatureCirclesSection() {
   ]
 
   return (
-    <section className="border-b border-neutral-200 bg-gradient-to-b from-red-900/95 via-red-800/90 to-red-900/95 py-12 dark:border-neutral-800">
+    <section className="overflow-x-hidden border-b border-neutral-200 bg-gradient-to-b from-red-900/95 via-red-800/90 to-red-900/95 py-8 sm:py-12 dark:border-neutral-800">
       <div className="container">
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
-            <div key={index} className="flex flex-col items-center gap-4">
-              <div className="relative h-32 w-32 rounded-full border-4 border-white/20 bg-white/10 backdrop-blur-sm shadow-xl overflow-hidden">
+            <div key={index} className="mx-auto flex w-full max-w-xs flex-col items-center gap-3 sm:gap-4">
+              <div className="relative h-24 w-24 shrink-0 rounded-full border-4 border-white/20 bg-white/10 shadow-xl backdrop-blur-sm overflow-hidden sm:h-28 sm:w-28 lg:h-32 lg:w-32">
                 <img
                   src={feature.image}
                   alt={feature.label}
@@ -284,8 +284,8 @@ function FeatureCirclesSection() {
                 />
               </div>
               <div className="text-center">
-                <h3 className="text-sm font-semibold text-white">{feature.label}</h3>
-                <p className="mt-1 text-xs text-red-100">{feature.description}</p>
+                <h3 className="text-sm font-semibold text-white sm:text-base">{feature.label}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-white/80 sm:text-sm">{feature.description}</p>
               </div>
             </div>
           ))}
