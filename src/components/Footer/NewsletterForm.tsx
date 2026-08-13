@@ -18,7 +18,7 @@ export function FooterNewsletterForm({ title, description }: Props) {
   }
 
   return (
-    <div className="mb-12 p-8 border" style={{ borderColor: 'rgba(248,244,238,0.1)' }}>
+    <div className="mb-12 overflow-hidden border p-5 sm:p-8" style={{ borderColor: 'rgba(248,244,238,0.1)' }}>
       <div className="max-w-xl">
         {title && (
           <p className="font-serif text-xl font-light mb-2" style={{ color: '#F8F4EE' }}>
@@ -35,19 +35,19 @@ export function FooterNewsletterForm({ title, description }: Props) {
             Danke! Wir melden uns bald. 🌿
           </p>
         ) : (
-          <form className="flex gap-3" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Deine E-Mail-Adresse"
-              className="flex-1 bg-transparent border px-4 py-2.5 font-sans text-sm outline-none"
+              className="min-w-0 w-full flex-1 bg-transparent border px-4 py-2.5 font-sans text-sm outline-none"
               style={{ borderColor: 'rgba(248,244,238,0.2)', color: '#F8F4EE' }}
               required
             />
             <button
               type="submit"
-              className="px-6 py-2.5 font-sans text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
+              className="w-full shrink-0 px-6 py-2.5 font-sans text-xs tracking-widest uppercase transition-opacity hover:opacity-80 sm:w-auto"
               style={{ background: '#F8F4EE', color: '#2C2A27' }}
             >
               Anmelden
