@@ -96,3 +96,46 @@ export function getCategoryAndDescendantIds(
   }
   return ids
 }
+
+/**
+ * Returns true if this category, or any of its descendants, has at least one
+ * published product. Used so leftover empty categories (e.g. unpublished ceramics)
+ * do not appear in shop filters or nav.
+ */
+export function categoryHasPublishedProducts(
+  categoryId: number | string,
+  byParent: Record<number | string, Category[]>,
+  publishedCategoryIds: Set<number | string>,
+): boolean {
+  if (publishedCategoryIds.has(categoryId)) return true
+  return (byParent[categoryId] ?? []).some(
+    (child) => child.id != null && categoryHasPublishedProducts(child.id, byParent, publishedCategoryIds),
+  )
+}
+
+/**
+ * Drops categories that have no published products in themselves or their children.
+ */
+export function filterCategoriesWithPublishedProducts(
+  categories: Category[],
+  publishedCategoryIds: Set<number | string>,
+): Category[] {
+  const { byParent } = organizeCategories(categories)
+  return categories.filter(
+    (c) => c.id != null && categoryHasPublishedProducts(c.id, byParent, publishedCategoryIds),
+  )
+}
+
+export function publishedCategoryIdsFromProducts(
+  products: Array<{ categories?: (number | { id?: number | string } | null)[] | null }>,
+): Set<number | string> {
+  const ids = new Set<number | string>()
+  for (const product of products) {
+    for (const cat of product.categories ?? []) {
+      if (cat == null) continue
+      if (typeof cat === 'number') ids.add(cat)
+      else if (typeof cat === 'object' && cat.id != null) ids.add(cat.id)
+    }
+  }
+  return ids
+}

@@ -1,7 +1,7 @@
 import { applyDiscountsToProducts } from '@/collections/Products/applyDiscounts'
 import { ProductGridItem } from '@/components/ProductGridItem'
 import { ShopFilterBar } from '@/components/ShopFilterBar'
-import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
+import { getCategoryAndDescendantIds, organizeCategories, filterCategoriesWithPublishedProducts, publishedCategoryIdsFromProducts } from '@/lib/categories'
 import type { Product } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -32,14 +32,30 @@ export default async function ShopPage({ searchParams }: Props) {
 
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch all categories with parent relationships for the filter bar
-  const categoriesResult = await payload.find({
-    collection: 'categories',
-    limit: 100,
-    sort: 'order',
-    depth: 1,
-  })
-  const categories = categoriesResult.docs || []
+  const [categoriesResult, categorizedProducts] = await Promise.all([
+    payload.find({
+      collection: 'categories',
+      limit: 100,
+      sort: 'order',
+      depth: 1,
+    }),
+    payload.find({
+      collection: 'products',
+      draft: false,
+      overrideAccess: false,
+      depth: 0,
+      limit: 1000,
+      pagination: false,
+      select: { categories: true },
+      where: { _status: { equals: 'published' } },
+    }),
+  ])
+
+  const publishedCategoryIds = publishedCategoryIdsFromProducts(categorizedProducts.docs)
+  const categories = filterCategoriesWithPublishedProducts(
+    categoriesResult.docs || [],
+    publishedCategoryIds,
+  )
   const { topLevel, byParent } = organizeCategories(categories)
 
   // Expand the selected category slug into that category + all its descendants
