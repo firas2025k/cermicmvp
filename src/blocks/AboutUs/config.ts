@@ -29,6 +29,26 @@ export const AboutUsBlock: Block = {
       defaultValue: 'Unser Team',
     },
     {
+      name: 'imagePosition',
+      type: 'select',
+      label: 'Image Position',
+      defaultValue: 'imageLeft',
+      admin: {
+        description:
+          'Choose whether the image sits on the left or the right. Use opposite sides on stacked sections so the homepage does not look repetitive.',
+      },
+      options: [
+        {
+          label: 'Image left / text right',
+          value: 'imageLeft',
+        },
+        {
+          label: 'Text left / image right',
+          value: 'imageRight',
+        },
+      ],
+    },
+    {
       name: 'learnMoreLabel',
       type: 'text',
       label: '"Learn More" Button Label',

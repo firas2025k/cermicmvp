@@ -7,6 +7,7 @@ import React from 'react'
 export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
   title,
   image,
+  imagePosition = 'imageLeft',
   content,
   learnMoreLabel,
   learnMoreUrl,
@@ -14,13 +15,14 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
   if (!content) return null
 
   const img = typeof image === 'object' && image ? (image as MediaType) : null
+  const imageOnRight = imagePosition === 'imageRight'
 
   return (
     <section id="story" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
         {/* ── Image column ──────────────────────────────────────────────── */}
-        <div className="relative">
+        <div className={`relative ${imageOnRight ? 'lg:order-2' : ''}`}>
           <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/5' }}>
             {img?.url ? (
               <Image
@@ -36,14 +38,14 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
           </div>
           {/* Decorative olive-tinted square behind the image */}
           <div
-            className="absolute -bottom-6 -right-6 w-40 h-40 -z-10"
+            className={`absolute -bottom-6 w-40 h-40 -z-10 ${imageOnRight ? '-left-6' : '-right-6'}`}
             style={{ background: 'rgba(74,94,58,0.10)' }}
             aria-hidden
           />
         </div>
 
         {/* ── Text column ───────────────────────────────────────────────── */}
-        <div>
+        <div className={imageOnRight ? 'lg:order-1' : undefined}>
           <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-4">
             Our Story
           </p>

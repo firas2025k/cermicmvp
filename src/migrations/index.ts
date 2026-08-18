@@ -16,6 +16,7 @@ import * as migration_20260611_092541 from './20260611_092541';
 import * as migration_20260611_095200 from './20260611_095200';
 import * as migration_20260704_000001_faq_answer_richtext from './20260704_000001_faq_answer_richtext';
 import * as migration_20260704_000002_add_name_to_stock_notifications from './20260704_000002_add_name_to_stock_notifications';
+import * as migration_20260818_000001_about_us_image_position from './20260818_000001_about_us_image_position';
 
 export const migrations = [
   {
@@ -107,5 +108,10 @@ export const migrations = [
     up: migration_20260704_000002_add_name_to_stock_notifications.up,
     down: migration_20260704_000002_add_name_to_stock_notifications.down,
     name: '20260704_000002_add_name_to_stock_notifications',
+  },
+  {
+    up: migration_20260818_000001_about_us_image_position.up,
+    down: migration_20260818_000001_about_us_image_position.down,
+    name: '20260818_000001_about_us_image_position',
   },
 ];

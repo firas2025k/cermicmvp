@@ -313,7 +313,21 @@ export interface Product {
   faqItems?:
     | {
         question: string;
-        answer: string;
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         id?: string | null;
       }[]
     | null;
@@ -1198,6 +1212,7 @@ export interface Address {
  */
 export interface StockNotification {
   id: number;
+  name?: string | null;
   email: string;
   product: number | Product;
   /**
@@ -1658,6 +1673,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "stock-notifications_select".
  */
 export interface StockNotificationsSelect<T extends boolean = true> {
+  name?: T;
   email?: T;
   product?: T;
   productTitle?: T;
@@ -2515,6 +2531,10 @@ export interface AboutUsBlock {
   image?: (number | null) | Media;
   imageCaption?: string | null;
   /**
+   * Choose whether the image sits on the left or the right. Use opposite sides on stacked sections so the homepage does not look repetitive.
+   */
+  imagePosition?: ('imageLeft' | 'imageRight') | null;
+  /**
    * Text shown on the button. Leave empty to hide the button.
    */
   learnMoreLabel?: string | null;
@@ -2870,6 +2890,7 @@ export interface AboutUsBlockSelect<T extends boolean = true> {
   title?: T;
   image?: T;
   imageCaption?: T;
+  imagePosition?: T;
   learnMoreLabel?: T;
   learnMoreUrl?: T;
   content?: T;
