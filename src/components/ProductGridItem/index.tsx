@@ -124,7 +124,9 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const handlePillClick = useCallback((e: React.MouseEvent, optionId: number) => {
     e.preventDefault()
     e.stopPropagation()
-    setSelectedOptionId((prev) => (prev === optionId ? null : optionId))
+    // Keep the same variant selected on repeat clicks so the price does not
+    // jump back to the product default / "from" amount.
+    setSelectedOptionId(optionId)
   }, [])
 
   return (
