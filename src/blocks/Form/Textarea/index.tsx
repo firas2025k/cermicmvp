@@ -9,6 +9,7 @@ import { Width } from '../Width'
 import { capitaliseFirstLetter } from '@/utilities/capitaliseFirstLetter'
 import { FormItem } from '@/components/forms/FormItem'
 import { FormError } from '@/components/forms/FormError'
+import { nabeaLabelClass, nabeaTextareaClass } from '../fieldStyles'
 
 export const Textarea: React.FC<
   TextField & {
@@ -27,18 +28,21 @@ export const Textarea: React.FC<
   label,
   register,
   required: requiredFromProps,
-  rows = 3,
+  rows = 6,
   width,
 }) => {
   return (
     <Width width={width}>
       <FormItem>
-        <Label htmlFor={name}>{label}</Label>
+        <Label className={nabeaLabelClass} htmlFor={name}>
+          {label}
+        </Label>
 
         <TextAreaComponent
           defaultValue={defaultValue}
           id={name}
           rows={rows}
+          className={nabeaTextareaClass}
           {...register(name, {
             required: requiredFromProps
               ? `${capitaliseFirstLetter(label || name)} is required.`

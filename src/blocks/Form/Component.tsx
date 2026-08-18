@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { RichText } from '@/components/RichText'
-import { Button } from '@/components/ui/button'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 import { buildInitialFormState } from './buildInitialFormState'
@@ -126,51 +125,99 @@ export const FormBlock: React.FC<
   )
 
   return (
-    <div className="container lg:max-w-[48rem]">
-      {enableIntro && introContent && !hasSubmitted && (
-        <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
-      )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
-        <FormProvider {...formMethods}>
-          {!isLoading && hasSubmitted && confirmationType === 'message' && (
-            <RichText data={confirmationMessage} />
-          )}
-          {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
-          {!hasSubmitted && (
-            <form id={formID} onSubmit={handleSubmit(onSubmit)}>
-              <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    const Field: React.FC<any> | undefined =
-                      fields?.[field.blockType as keyof typeof fields]
+    <section className="bg-linen">
+      <div className="mx-auto max-w-xl px-6 py-16 lg:px-10 lg:py-24">
+        {enableIntro && introContent && !hasSubmitted && (
+          <div className="inquiry-form-intro mb-10">
+            <RichText data={introContent} enableGutter={false} />
+          </div>
+        )}
 
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+        <div className="border border-warm-border bg-[#F7F3EE] p-6 sm:p-10">
+          <FormProvider {...formMethods}>
+            {!isLoading && hasSubmitted && confirmationType === 'message' && (
+              <div className="inquiry-form-intro">
+                <RichText data={confirmationMessage} />
               </div>
+            )}
+            {isLoading && !hasSubmitted && (
+              <p className="font-sans text-sm text-warm-gray">Wird gesendet…</p>
+            )}
+            {error && (
+              <p className="mb-6 font-sans text-sm text-terra">
+                {error.message || 'Etwas ist schiefgelaufen. Bitte versuche es erneut.'}
+              </p>
+            )}
+            {!hasSubmitted && (
+              <form id={formID} onSubmit={handleSubmit(onSubmit)}>
+                <div className="mb-8 space-y-6">
+                  {formFromProps &&
+                    formFromProps.fields &&
+                    formFromProps.fields?.map((field, index) => {
+                      const Field: React.FC<any> | undefined =
+                        fields?.[field.blockType as keyof typeof fields]
 
-              <Button form={formID} type="submit" variant="default">
-                {submitButtonLabel}
-              </Button>
-            </form>
-          )}
-        </FormProvider>
+                      if (Field) {
+                        return (
+                          <div key={index}>
+                            <Field
+                              form={formFromProps}
+                              {...field}
+                              {...formMethods}
+                              control={control}
+                              errors={errors}
+                              register={register}
+                            />
+                          </div>
+                        )
+                      }
+                      return null
+                    })}
+                </div>
+
+                <button
+                  form={formID}
+                  type="submit"
+                  className="inline-block px-8 py-3.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
+                >
+                  {submitButtonLabel}
+                </button>
+              </form>
+            )}
+          </FormProvider>
+        </div>
       </div>
-    </div>
+
+      <style>{`
+        .inquiry-form-intro h1,
+        .inquiry-form-intro h2,
+        .inquiry-form-intro h3,
+        .inquiry-form-intro h4,
+        .inquiry-form-intro p {
+          font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+          font-weight: 300;
+          color: #2C2A27;
+          line-height: 1.3;
+        }
+        .inquiry-form-intro h1,
+        .inquiry-form-intro h2,
+        .inquiry-form-intro h3,
+        .inquiry-form-intro h4 {
+          font-size: clamp(1.75rem, 3vw, 2.5rem);
+          margin-bottom: 0.75rem;
+        }
+        .inquiry-form-intro p {
+          font-family: var(--font-sans, 'DM Sans', system-ui, sans-serif);
+          font-size: 1rem;
+          font-weight: 300;
+          color: #8C8680;
+          line-height: 1.7;
+          margin-bottom: 0.75rem;
+        }
+        .inquiry-form-intro p:last-child {
+          margin-bottom: 0;
+        }
+      `}</style>
+    </section>
   )
 }

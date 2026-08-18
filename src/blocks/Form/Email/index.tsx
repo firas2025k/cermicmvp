@@ -9,6 +9,7 @@ import { Width } from '../Width'
 import { FormItem } from '@/components/forms/FormItem'
 import { FormError } from '@/components/forms/FormError'
 import { capitaliseFirstLetter } from '@/utilities/capitaliseFirstLetter'
+import { nabeaInputClass, nabeaLabelClass } from '../fieldStyles'
 
 export const Email: React.FC<
   EmailField & {
@@ -23,11 +24,15 @@ export const Email: React.FC<
   return (
     <Width width={width}>
       <FormItem>
-        <Label htmlFor={name}>{label}</Label>
+        <Label className={nabeaLabelClass} htmlFor={name}>
+          {label}
+        </Label>
         <Input
           defaultValue={defaultValue}
           id={name}
-          type="text"
+          type="email"
+          autoComplete="email"
+          className={nabeaInputClass}
           {...register(name, {
             pattern: /^\S[^\s@]*@\S+$/,
             required: requiredFromProps

@@ -9,6 +9,7 @@ import { Width } from '../Width'
 import { FormItem } from '@/components/forms/FormItem'
 import { FormError } from '@/components/forms/FormError'
 import { capitaliseFirstLetter } from '@/utilities/capitaliseFirstLetter'
+import { nabeaInputClass, nabeaLabelClass } from '../fieldStyles'
 
 export const Text: React.FC<
   TextField & {
@@ -23,11 +24,14 @@ export const Text: React.FC<
   return (
     <Width width={width}>
       <FormItem>
-        <Label htmlFor={name}>{label}</Label>
+        <Label className={nabeaLabelClass} htmlFor={name}>
+          {label}
+        </Label>
         <Input
           defaultValue={defaultValue}
           id={name}
           type="text"
+          className={nabeaInputClass}
           {...register(name, {
             required: requiredFromProps
               ? `${capitaliseFirstLetter(label || name)} is required.`

@@ -36,13 +36,15 @@ Without `RESEND_API_KEY`, the form still saves submissions in admin, but no emai
 
 ### Fields
 
-Add exactly three fields. Field **Name** values must match the table below — emails use them as `{{name}}`, `{{email}}`, `{{inquiry}}`.
+Add exactly three fields. **Name** is the machine id (lowercase). **Label** is what the customer sees. They are different fields in the dashboard.
 
-| Type     | Name     | Label                                      | Required |
-| -------- | -------- | ------------------------------------------ | -------- |
-| Text     | `name`   | Name                                       | Yes      |
-| Email    | `email`  | E-Mail                                     | Yes      |
-| Textarea | `inquiry` | Wobei können wir helfen? / Your inquiry   | Yes      |
+If Name is `Email` instead of `email`, confirmation mail fails: Resend gets the word `email` instead of the address.
+
+| Type     | Name (exact, lowercase) | Label                                      | Required |
+| -------- | ----------------------- | ------------------------------------------ | -------- |
+| Text     | `name`                  | Name                                       | Yes      |
+| Email    | `email`                 | E-Mail                                     | Yes      |
+| Textarea | `inquiry`               | Wobei können wir helfen? / Your inquiry    | Yes      |
 
 Do not add phone or extra fields unless you want them.
 
