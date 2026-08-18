@@ -188,13 +188,13 @@ function RelatedProducts({ products }: { products: Product[] }) {
   return (
     <section className="bg-linen border-t-2 border-charcoal">
       <div className="container py-16">
-        <div className="mb-8 flex items-baseline justify-between gap-4">
+        <div className="mb-8 flex items-center justify-between gap-4">
           <h2 className="font-serif text-3xl font-light text-charcoal">
             You May Also Like
           </h2>
           <Link
             href="/shop"
-            className="font-sans text-xs font-semibold tracking-[0.1em] uppercase text-charcoal underline underline-offset-4 transition-colors hover:text-olive"
+            className="inline-flex items-center bg-olive px-4 py-2.5 font-sans text-xs font-semibold tracking-[0.1em] uppercase text-linen no-underline transition-colors hover:bg-olive-light"
           >
             View All →
           </Link>
@@ -220,17 +220,19 @@ function RelatedProducts({ products }: { products: Product[] }) {
             return (
               <li key={product.id} className="group bg-linen">
                 <Link href={`/products/${product.slug}`} className="block">
-                  {/* 3:4 image */}
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#EDE8DD]">
+                  {/* Square image — fills the card like shop product cards */}
+                  <div className="relative mb-4 aspect-square overflow-hidden bg-[rgba(226,219,208,0.35)]">
                     {image?.url ? (
                       <Image
                         src={image.url}
                         alt={image.alt || product.title}
                         fill
-                        className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         sizes="(max-width: 1024px) 50vw, 25vw"
                       />
-                    ) : null}
+                    ) : (
+                      <div className="absolute inset-0 bg-[#E2DBD0]/40" />
+                    )}
                     {/* Slide-up quick-add overlay */}
                     <div className="absolute inset-x-0 bottom-0 translate-y-full bg-[rgba(248,244,238,0.96)] p-2.5 transition-transform duration-200 group-hover:translate-y-0">
                       <span className="block w-full bg-charcoal py-2.5 text-center font-sans text-[11px] font-bold tracking-[0.1em] uppercase text-linen transition-colors hover:bg-terra">
