@@ -1,13 +1,13 @@
 import { RichText } from '@/components/RichText'
-import type { AboutUsBlock as AboutUsBlockProps, Media as MediaType } from '@/payload-types'
+import type { InquiryBlock as InquiryBlockProps, Media as MediaType } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
+export const InquiryBlockComponent: React.FC<InquiryBlockProps> = ({
   title,
   image,
-  imagePosition = 'imageLeft',
+  imagePosition = 'imageRight',
   content,
   learnMoreLabel,
   learnMoreUrl,
@@ -18,16 +18,14 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
   const imageOnRight = imagePosition === 'imageRight'
 
   return (
-    <section id="story" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
+    <section id="inquiry" className="max-w-7xl mx-auto px-6 lg:px-10 py-28">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-        {/* ── Image column ──────────────────────────────────────────────── */}
         <div className={`relative ${imageOnRight ? 'lg:order-2' : ''}`}>
           <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/5' }}>
             {img?.url ? (
               <Image
                 src={img.url}
-                alt={img.alt || title || 'Our story'}
+                alt={img.alt || title || 'Inquiry'}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -36,7 +34,6 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
               <div className="absolute inset-0 bg-[#E2DBD0]" />
             )}
           </div>
-          {/* Decorative olive-tinted square behind the image */}
           <div
             className={`absolute -bottom-6 w-40 h-40 -z-10 ${imageOnRight ? '-left-6' : '-right-6'}`}
             style={{ background: 'rgba(74,94,58,0.10)' }}
@@ -44,7 +41,6 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
           />
         </div>
 
-        {/* ── Text column ───────────────────────────────────────────────── */}
         <div className={imageOnRight ? 'lg:order-1' : undefined}>
           {title && (
             <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal leading-tight mb-8">
@@ -52,26 +48,23 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
             </h2>
           )}
 
-          {/* Rich text — styled to match warm-gray light-weight paragraphs */}
-          <div className="about-us-content mb-10">
+          <div className="inquiry-content mb-10">
             <RichText data={content} enableGutter={false} />
           </div>
 
           {learnMoreLabel && (
             <Link
-              href={learnMoreUrl || '/shop'}
+              href={learnMoreUrl || '/anfrage'}
               className="inline-block px-8 py-3.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
             >
               {learnMoreLabel}
             </Link>
           )}
         </div>
-
       </div>
 
-      {/* Scoped prose overrides for the RichText body */}
       <style>{`
-        .about-us-content p {
+        .inquiry-content p {
           font-family: var(--font-sans, 'DM Sans', system-ui, sans-serif);
           font-size: 1rem;
           font-weight: 300;
@@ -79,26 +72,26 @@ export const AboutUsBlockComponent: React.FC<AboutUsBlockProps> = ({
           line-height: 1.75;
           margin-bottom: 1.5rem;
         }
-        .about-us-content p:last-child {
+        .inquiry-content p:last-child {
           margin-bottom: 0;
         }
-        .about-us-content h1,
-        .about-us-content h2,
-        .about-us-content h3,
-        .about-us-content h4 {
+        .inquiry-content h1,
+        .inquiry-content h2,
+        .inquiry-content h3,
+        .inquiry-content h4 {
           font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
           font-weight: 300;
           color: #2C2A27;
           margin-bottom: 1rem;
         }
-        .about-us-content strong {
+        .inquiry-content strong {
           font-weight: 500;
           color: #2C2A27;
         }
-        .about-us-content em {
+        .inquiry-content em {
           font-style: italic;
         }
-        .about-us-content a {
+        .inquiry-content a {
           color: #4A5E3A;
           text-decoration: underline;
           text-underline-offset: 3px;

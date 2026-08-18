@@ -11,6 +11,7 @@ import { PartnerLogosBlock } from '@/blocks/PartnerLogos/config'
 import { CustomerReviewsBlock } from '@/blocks/CustomerReviews/config'
 import { ProductUsageBlock } from '@/blocks/ProductUsage/config'
 import { AboutUsBlock } from '@/blocks/AboutUs/config'
+import { InquiryBlock } from '@/blocks/Inquiry/config'
 import { getServerSideURL } from '@/utilities/getURL'
 import { revalidateHomepage } from './hooks/revalidateHomepage'
 
@@ -43,6 +44,7 @@ export const Homepage: GlobalConfig = {
         CustomerReviewsBlock,
         ProductUsageBlock,
         AboutUsBlock,
+        InquiryBlock,
       ],
       required: true,
     },

@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import {
@@ -84,7 +85,13 @@ export default buildConfig({
       ]
     },
   }),
-  //email: nodemailerAdapter(),
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        defaultFromAddress: process.env.RESEND_FROM_ADDRESS || 'contact@nabea.at',
+        defaultFromName: process.env.RESEND_FROM_NAME || 'Nabea',
+        apiKey: process.env.RESEND_API_KEY,
+      })
+    : undefined,
   endpoints: [],
   globals: [Header, Footer, Homepage],
   plugins: [

@@ -2268,6 +2268,7 @@ export interface Homepage {
     | CustomerReviewsBlock
     | ProductUsageBlock
     | AboutUsBlock
+    | InquiryBlock
   )[];
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
@@ -2563,6 +2564,45 @@ export interface AboutUsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InquiryBlock".
+ */
+export interface InquiryBlock {
+  title?: string | null;
+  image?: (number | null) | Media;
+  imageCaption?: string | null;
+  /**
+   * Choose whether the image sits on the left or the right. Use the opposite of About Us so stacked sections do not look repetitive.
+   */
+  imagePosition?: ('imageLeft' | 'imageRight') | null;
+  /**
+   * Text shown on the button. Leave empty to hide the button.
+   */
+  learnMoreLabel?: string | null;
+  /**
+   * Where the button links to, e.g. /anfrage.
+   */
+  learnMoreUrl?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'inquiry';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2682,6 +2722,7 @@ export interface HomepageSelect<T extends boolean = true> {
         customerReviews?: T | CustomerReviewsBlockSelect<T>;
         productUsage?: T | ProductUsageBlockSelect<T>;
         aboutUs?: T | AboutUsBlockSelect<T>;
+        inquiry?: T | InquiryBlockSelect<T>;
       };
   _status?: T;
   updatedAt?: T;
@@ -2887,6 +2928,21 @@ export interface ProductUsageBlockSelect<T extends boolean = true> {
  * via the `definition` "AboutUsBlock_select".
  */
 export interface AboutUsBlockSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  imageCaption?: T;
+  imagePosition?: T;
+  learnMoreLabel?: T;
+  learnMoreUrl?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InquiryBlock_select".
+ */
+export interface InquiryBlockSelect<T extends boolean = true> {
   title?: T;
   image?: T;
   imageCaption?: T;

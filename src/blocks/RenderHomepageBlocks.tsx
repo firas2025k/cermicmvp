@@ -9,6 +9,7 @@ import { PartnerLogosBlockComponent } from '@/blocks/PartnerLogos/Component'
 import { CustomerReviewsBlockComponent } from '@/blocks/CustomerReviews/Component'
 import { ProductUsageBlockComponent } from '@/blocks/ProductUsage/Component'
 import { AboutUsBlockComponent } from '@/blocks/AboutUs/Component'
+import { InquiryBlockComponent } from '@/blocks/Inquiry/Component'
 import { toKebabCase } from '@/utilities/toKebabCase'
 import React, { Fragment } from 'react'
 
@@ -26,6 +27,7 @@ const blockComponents = {
   customerReviews: CustomerReviewsBlockComponent,
   productUsage: ProductUsageBlockComponent,
   aboutUs: AboutUsBlockComponent,
+  inquiry: InquiryBlockComponent,
 }
 
 export const RenderHomepageBlocks: React.FC<{
