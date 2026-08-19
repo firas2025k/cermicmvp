@@ -2,7 +2,7 @@
 
 import { Media } from '@/components/Media'
 import Link from 'next/link'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Media as MediaType } from '@/payload-types'
 
@@ -28,6 +28,7 @@ export const HeroCarousel: React.FC<Props> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [isFading, setIsFading] = useState(false)
 
   useEffect(() => {
     if (!autoPlay || isPaused || slides.length <= 1) return
@@ -38,6 +39,14 @@ export const HeroCarousel: React.FC<Props> = ({
 
     return () => clearInterval(interval)
   }, [autoPlay, autoPlayInterval, isPaused, slides.length])
+
+  // Premium polish: fade content when changing slides.
+  useEffect(() => {
+    if (slides.length <= 1) return
+    setIsFading(true)
+    const t = window.setTimeout(() => setIsFading(false), 250)
+    return () => window.clearTimeout(t)
+  }, [currentIndex, slides.length])
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
@@ -94,13 +103,17 @@ export const HeroCarousel: React.FC<Props> = ({
 
   return (
     <section
-      className="relative h-[70vh] min-h-[500px] w-full overflow-hidden"
+      className="relative h-[clamp(480px,70vh,720px)] min-h-[500px] w-full overflow-hidden"
       onTouchStart={handleTouchStart}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Slide Image */}
-      <div className="absolute inset-0">
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 motion-safe:duration-700 ${
+          isFading ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
         {typeof currentSlide.image === 'string' ? (
           // Direct image path from public folder
           <img
@@ -120,24 +133,32 @@ export const HeroCarousel: React.FC<Props> = ({
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-amber-100 to-amber-200" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        {/* Theming overlay: charcoal readability + subtle olive warmth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/30 to-transparent" />
+        <div className="absolute inset-0 bg-[rgba(74,94,58,0.12)]" />
       </div>
 
       {/* Content Overlay */}
       <div className="container relative z-10 flex h-full items-end pb-16 md:pb-24">
-        <div className="max-w-2xl space-y-6">
+        <div
+          className={`max-w-2xl transition-opacity duration-500 motion-safe:duration-700 ${
+            isFading ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           {currentSlide.title && (
-            <h1 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+            <h1 className="font-serif text-4xl font-light leading-tight text-linen md:text-5xl lg:text-6xl">
               {currentSlide.title}
             </h1>
           )}
           {currentSlide.subtitle && (
-            <p className="text-lg text-white/90 md:text-xl">{currentSlide.subtitle}</p>
+            <p className="mt-4 font-sans text-base text-linen/90 md:text-lg">
+              {currentSlide.subtitle}
+            </p>
           )}
           {currentSlide.buttonText && currentSlide.buttonLink && (
             <Link
               href={currentSlide.buttonLink}
-              className="inline-block rounded-md bg-white px-6 py-3 text-base font-medium text-neutral-900 transition hover:bg-neutral-100"
+              className="mt-8 inline-block rounded-none border border-olive bg-transparent px-6 py-3.5 font-sans text-xs tracking-[0.12em] uppercase text-linen transition-colors hover:bg-olive"
             >
               {currentSlide.buttonText}
             </Link>
@@ -150,17 +171,17 @@ export const HeroCarousel: React.FC<Props> = ({
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white md:left-8"
+            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-charcoal/30 p-2 shadow-sm backdrop-blur-sm transition hover:bg-charcoal/45 md:left-8"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="h-6 w-6 text-neutral-900" />
+            <ChevronLeft className="h-6 w-6 text-linen" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition hover:bg-white md:right-8"
+            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-charcoal/30 p-2 shadow-sm backdrop-blur-sm transition hover:bg-charcoal/45 md:right-8"
             aria-label="Next slide"
           >
-            <ChevronRight className="h-6 w-6 text-neutral-900" />
+            <ChevronRight className="h-6 w-6 text-linen" />
           </button>
         </>
       )}
@@ -174,8 +195,8 @@ export const HeroCarousel: React.FC<Props> = ({
               onClick={() => goToSlide(index)}
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'w-8 bg-white'
-                  : 'w-2 bg-white/50 hover:bg-white/75'
+                  ? 'w-8 bg-linen/90'
+                  : 'w-2 bg-linen/40 hover:bg-linen/65'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
