@@ -145,24 +145,26 @@ export const HeroCarousel: React.FC<Props> = ({
             isFading ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          {currentSlide.title && (
-            <h1 className="font-serif text-4xl font-light leading-tight text-linen md:text-5xl lg:text-6xl">
-              {currentSlide.title}
-            </h1>
-          )}
-          {currentSlide.subtitle && (
-            <p className="mt-4 font-sans text-base text-linen/90 md:text-lg">
-              {currentSlide.subtitle}
-            </p>
-          )}
-          {currentSlide.buttonText && currentSlide.buttonLink && (
-            <Link
-              href={currentSlide.buttonLink}
-              className="mt-8 inline-block rounded-none border border-olive bg-transparent px-6 py-3.5 font-sans text-xs tracking-[0.12em] uppercase text-linen transition-colors hover:bg-olive"
-            >
-              {currentSlide.buttonText}
-            </Link>
-          )}
+          <div className="space-y-6 rounded-none border border-white/10 bg-[rgba(44,42,39,0.28)] p-6 backdrop-blur-sm sm:p-7">
+            {currentSlide.title && (
+              <h1 className="font-serif text-3xl font-light leading-tight text-linen sm:text-4xl md:text-5xl lg:text-6xl">
+                {currentSlide.title}
+              </h1>
+            )}
+            {currentSlide.subtitle && (
+              <p className="font-sans text-base text-linen/90 md:text-lg">
+                {currentSlide.subtitle}
+              </p>
+            )}
+            {currentSlide.buttonText && currentSlide.buttonLink && (
+              <Link
+                href={currentSlide.buttonLink}
+                className="inline-block rounded-none border border-olive bg-transparent px-6 py-3.5 font-sans text-xs tracking-[0.12em] uppercase text-linen transition-colors hover:bg-olive"
+              >
+                {currentSlide.buttonText}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
