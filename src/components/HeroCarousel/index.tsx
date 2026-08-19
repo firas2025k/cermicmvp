@@ -145,25 +145,30 @@ export const HeroCarousel: React.FC<Props> = ({
             isFading ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          <div className="space-y-6 rounded-none border border-white/10 bg-[rgba(44,42,39,0.28)] p-6 backdrop-blur-sm sm:p-7">
-            {currentSlide.title && (
-              <h1 className="font-serif text-3xl font-light leading-tight text-linen sm:text-4xl md:text-5xl lg:text-6xl">
-                {currentSlide.title}
-              </h1>
-            )}
-            {currentSlide.subtitle && (
-              <p className="font-sans text-base text-linen/90 md:text-lg">
-                {currentSlide.subtitle}
-              </p>
-            )}
-            {currentSlide.buttonText && currentSlide.buttonLink && (
-              <Link
-                href={currentSlide.buttonLink}
-                className="inline-block rounded-none border border-olive bg-transparent px-6 py-3.5 font-sans text-xs tracking-[0.12em] uppercase text-linen transition-colors hover:bg-olive"
-              >
-                {currentSlide.buttonText}
-              </Link>
-            )}
+          <div className="relative">
+            {/* Gradient-only backplate (no boxed panel) */}
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-charcoal/70 via-charcoal/25 to-transparent" />
+
+            <div className="space-y-6 p-6 sm:p-7">
+              {currentSlide.title && (
+                <h1 className="font-serif text-3xl font-light leading-tight text-linen sm:text-4xl md:text-5xl lg:text-6xl">
+                  {currentSlide.title}
+                </h1>
+              )}
+              {currentSlide.subtitle && (
+                <p className="font-sans text-base text-linen/90 md:text-lg">
+                  {currentSlide.subtitle}
+                </p>
+              )}
+              {currentSlide.buttonText && currentSlide.buttonLink && (
+                <Link
+                  href={currentSlide.buttonLink}
+                  className="inline-block rounded-none border border-olive bg-transparent px-6 py-3.5 font-sans text-xs tracking-[0.12em] uppercase text-linen transition-colors hover:bg-olive"
+                >
+                  {currentSlide.buttonText}
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
