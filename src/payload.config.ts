@@ -27,6 +27,7 @@ import { Users } from '@/collections/Users'
 import { Footer } from '@/globals/Footer'
 import { Header } from '@/globals/Header'
 import { Homepage } from '@/globals/Homepage'
+import { ProductFaqSection } from '@/globals/ProductFaqSection'
 import { plugins } from './plugins'
 
 const filename = fileURLToPath(import.meta.url)
@@ -93,7 +94,7 @@ export default buildConfig({
       })
     : undefined,
   endpoints: [],
-  globals: [Header, Footer, Homepage],
+  globals: [Header, Footer, Homepage, ProductFaqSection],
   plugins: [
     ...plugins,
     // Always include Vercel Blob Storage plugin so the import map includes the client component

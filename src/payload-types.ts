@@ -141,11 +141,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     homepage: Homepage;
+    'product-faq-section': ProductFaqSection;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'product-faq-section': ProductFaqSectionSelect<false> | ProductFaqSectionSelect<true>;
   };
   locale: null;
   widgets: {
@@ -331,6 +333,10 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * When enabled, shows the site-wide Product FAQ Section (feature icons + image + FAQ accordion) on this product page. Edit content under Globals → Product FAQ Section.
+   */
+  showGeneralFaq?: boolean | null;
   layout?: (CallToActionBlock | ContentBlock | MediaBlock)[] | null;
   /**
    * Product-level stock. Each variant can also have its own inventory below.
@@ -1939,6 +1945,7 @@ export interface ProductsSelect<T extends boolean = true> {
         answer?: T;
         id?: T;
       };
+  showGeneralFaq?: T;
   layout?:
     | T
     | {
@@ -2602,6 +2609,56 @@ export interface InquiryBlock {
   blockType: 'inquiry';
 }
 /**
+ * General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Icon graphics are fixed — only labels are editable.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-faq-section".
+ */
+export interface ProductFaqSection {
+  id: number;
+  /**
+   * Up to 5 features. Pick a built-in icon and edit the label. Leave empty to hide the icon row.
+   */
+  featureIcons?:
+    | {
+        icon: 'knifeFriendly' | 'colorfulGrain' | 'foodSafe' | 'antibacterial' | 'easyCare';
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  heading?: string | null;
+  /**
+   * Lifestyle image shown on the left of the FAQ accordion.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Questions and answers for the general product FAQ accordion.
+   */
+  items?:
+    | {
+        question: string;
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -2952,6 +3009,31 @@ export interface InquiryBlockSelect<T extends boolean = true> {
   content?: T;
   id?: T;
   blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-faq-section_select".
+ */
+export interface ProductFaqSectionSelect<T extends boolean = true> {
+  featureIcons?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        id?: T;
+      };
+  heading?: T;
+  image?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

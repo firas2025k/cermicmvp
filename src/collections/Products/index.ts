@@ -236,6 +236,16 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               ],
             },
             {
+              name: 'showGeneralFaq',
+              type: 'checkbox',
+              label: 'Show general FAQ section',
+              defaultValue: false,
+              admin: {
+                description:
+                  'When enabled, shows the site-wide Product FAQ Section (feature icons + image + FAQ accordion) on this product page. Edit content under Globals → Product FAQ Section.',
+              },
+            },
+            {
               name: 'layout',
               type: 'blocks',
               blocks: [CallToAction, Content, MediaBlock],

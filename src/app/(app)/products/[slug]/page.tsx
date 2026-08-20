@@ -1,11 +1,13 @@
-import type { Category, Media, Product } from '@/payload-types'
+import type { Category, Media, Product, ProductFaqSection } from '@/payload-types'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { applyDiscountsToProduct } from '@/collections/Products/applyDiscounts'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
+import { GeneralProductFaq } from '@/components/product/GeneralProductFaq'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
 import configPromise from '@payload-config'
+import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -106,6 +108,11 @@ export default async function ProductPage({ params }: Args) {
       (c): c is Category => typeof c === 'object' && c !== null,
     ) ?? null
 
+  const generalFaq =
+    product.showGeneralFaq
+      ? ((await getCachedGlobal('product-faq-section', 1)()) as ProductFaqSection)
+      : null
+
   return (
     <React.Fragment>
       <script
@@ -161,6 +168,9 @@ export default async function ProductPage({ params }: Args) {
 
         {/* ── FAQ / Description accordion — full-width below gallery ── */}
         <ProductFAQ product={product} />
+
+        {/* ── General product FAQ (site-wide Global, per-product toggle) ── */}
+        {generalFaq ? <GeneralProductFaq data={generalFaq} /> : null}
 
         {/* ── Extra content blocks (CTA / content / media from CMS) ── */}
         {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : null}
