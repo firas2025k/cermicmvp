@@ -6,6 +6,14 @@ type Props = {
   className?: string
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  processing: 'In Bearbeitung',
+  completed: 'Abgeschlossen',
+  cancelled: 'Storniert',
+  refunded: 'Erstattet',
+  pending: 'Ausstehend',
+}
+
 export const OrderStatus: React.FC<Props> = ({ status, className }) => {
   return (
     <div
@@ -18,7 +26,7 @@ export const OrderStatus: React.FC<Props> = ({ status, className }) => {
         },
       )}
     >
-      {status}
+      {STATUS_LABELS[status] ?? status}
     </div>
   )
 }

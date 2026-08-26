@@ -115,13 +115,13 @@ export const CheckoutPage: React.FC = () => {
       } catch (err) {
         console.error('[checkout] initiatePayment failed:', err)
 
-        let errorMessage = 'An error occurred while initiating payment.'
+        let errorMessage = 'Beim Starten der Zahlung ist ein Fehler aufgetreten.'
         if (err instanceof Error) {
           const raw = err.message.trim()
           try {
             const parsed = JSON.parse(raw) as { message?: string; cause?: { code?: string } }
             if (parsed?.cause?.code === 'OutOfStock') {
-              errorMessage = 'One or more items in your cart are out of stock.'
+              errorMessage = 'Ein oder mehrere Artikel in deinem Warenkorb sind nicht auf Lager.'
             } else if (typeof parsed.message === 'string' && parsed.message.length > 0) {
               errorMessage = parsed.message
             }
@@ -145,7 +145,7 @@ export const CheckoutPage: React.FC = () => {
     return (
       <div className="py-24 w-full flex flex-col items-center justify-center gap-6">
         <p className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-          Processing your payment…
+          Zahlung wird verarbeitet…
         </p>
         <LoadingSpinner />
       </div>
@@ -156,14 +156,14 @@ export const CheckoutPage: React.FC = () => {
     return (
       <div className="py-24 w-full flex flex-col items-center gap-4">
         <p className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-          Your cart is empty.
+          Dein Warenkorb ist leer.
         </p>
         <Link
           href="/shop"
           className="font-sans text-xs tracking-[0.14em] uppercase"
           style={{ color: OLIVE }}
         >
-          ← Continue Shopping
+          ← Weiter einkaufen
         </Link>
       </div>
     )
@@ -176,7 +176,7 @@ export const CheckoutPage: React.FC = () => {
       <div>
 
         {/* Contact section */}
-        <SectionCard title="Contact Information">
+        <SectionCard title="Kontaktinformationen">
           {user ? (
             <div className="flex items-center justify-between">
               <p className="font-sans text-sm" style={{ color: CHARCOAL }}>
@@ -187,21 +187,21 @@ export const CheckoutPage: React.FC = () => {
                 className="font-sans text-xs tracking-[0.12em] uppercase transition-colors"
                 style={{ color: WARM_GRAY }}
               >
-                Log out
+                Abmelden
               </Link>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-3" style={{ background: LINEN }}>
                 <p className="font-sans text-xs" style={{ color: WARM_GRAY }}>
-                  Have an account?
+                  Bereits ein Konto?
                 </p>
                 <Link
                   href="/login"
                   className="font-sans text-xs tracking-[0.12em] uppercase font-medium transition-colors"
                   style={{ color: OLIVE }}
                 >
-                  Log in
+                  Anmelden
                 </Link>
               </div>
 
@@ -211,7 +211,7 @@ export const CheckoutPage: React.FC = () => {
                   className={fieldLabelClass}
                   style={{ color: WARM_GRAY }}
                 >
-                  Email Address
+                  E-Mail-Adresse
                 </label>
                 <input
                   id="email"
@@ -242,11 +242,11 @@ export const CheckoutPage: React.FC = () => {
                   }
                   onMouseLeave={(e) => (e.currentTarget.style.background = BORDEAUX)}
                 >
-                  Continue as Guest
+                  Als Gast fortfahren
                 </button>
               ) : (
                 <p className="font-sans text-xs" style={{ color: OLIVE }}>
-                  ✓ Checking out as {email}
+                  ✓ Checkout als {email}
                 </p>
               )}
             </div>
@@ -254,7 +254,7 @@ export const CheckoutPage: React.FC = () => {
         </SectionCard>
 
         {/* Billing address section */}
-        <SectionCard title="Billing Address">
+        <SectionCard title="Rechnungsadresse">
           {billingAddress ? (
             <div className="flex items-start justify-between gap-4">
               <AddressItem address={billingAddress} />
@@ -267,11 +267,11 @@ export const CheckoutPage: React.FC = () => {
                 className="font-sans text-xs tracking-[0.12em] uppercase transition-colors flex-shrink-0 disabled:opacity-40"
                 style={{ color: WARM_GRAY }}
               >
-                Change
+                Ändern
               </button>
             </div>
           ) : user ? (
-            <CheckoutAddresses heading="Select billing address" setAddress={setBillingAddress} />
+            <CheckoutAddresses heading="Rechnungsadresse auswählen" setAddress={setBillingAddress} />
           ) : (
             <CreateAddressModal
               disabled={!email || Boolean(emailEditable)}
@@ -292,14 +292,14 @@ export const CheckoutPage: React.FC = () => {
               className="font-sans text-sm cursor-pointer"
               style={{ color: CHARCOAL }}
             >
-              Shipping address same as billing
+              Lieferadresse entspricht der Rechnungsadresse
             </Label>
           </div>
         </SectionCard>
 
         {/* Separate shipping address */}
         {!billingAddressSameAsShipping && (
-          <SectionCard title="Shipping Address">
+          <SectionCard title="Lieferadresse">
             {shippingAddress ? (
               <div className="flex items-start justify-between gap-4">
                 <AddressItem address={shippingAddress} />
@@ -312,13 +312,13 @@ export const CheckoutPage: React.FC = () => {
                   className="font-sans text-xs tracking-[0.12em] uppercase transition-colors flex-shrink-0 disabled:opacity-40"
                   style={{ color: WARM_GRAY }}
                 >
-                  Change
+                  Ändern
                 </button>
               </div>
             ) : user ? (
               <CheckoutAddresses
-                heading="Select shipping address"
-                description="Please select a shipping address."
+                heading="Lieferadresse auswählen"
+                description="Bitte wähle eine Lieferadresse aus."
                 setAddress={setShippingAddress}
               />
             ) : (
@@ -347,7 +347,7 @@ export const CheckoutPage: React.FC = () => {
             }
             onMouseLeave={(e) => (e.currentTarget.style.background = BORDEAUX)}
           >
-            Continue to Payment →
+            Weiter zur Zahlung →
           </button>
         )}
 
@@ -363,7 +363,7 @@ export const CheckoutPage: React.FC = () => {
               className="mt-4 font-sans text-xs tracking-[0.12em] uppercase transition-colors"
               style={{ color: OLIVE }}
             >
-              Try again
+              Erneut versuchen
             </button>
           </div>
         )}
@@ -371,7 +371,7 @@ export const CheckoutPage: React.FC = () => {
         {/* Stripe payment section */}
         <Suspense fallback={<React.Fragment />}>
           {paymentData && paymentData?.['clientSecret'] && (
-            <SectionCard title="Payment">
+            <SectionCard title="Zahlung">
               {/* Trust badges */}
               <div className="flex flex-wrap gap-6 mb-6">
                 <div className="flex items-center gap-2">
@@ -386,7 +386,7 @@ export const CheckoutPage: React.FC = () => {
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                   <span className="font-sans text-xs" style={{ color: WARM_GRAY }}>
-                    SSL Encrypted
+                    SSL-verschlüsselt
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -401,7 +401,7 @@ export const CheckoutPage: React.FC = () => {
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                   </svg>
                   <span className="font-sans text-xs" style={{ color: WARM_GRAY }}>
-                    30-Day Returns
+                    30 Tage Rückgaberecht
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export const CheckoutPage: React.FC = () => {
                     <path d="M12 6v6l4 2" />
                   </svg>
                   <span className="font-sans text-xs" style={{ color: WARM_GRAY }}>
-                    Ships in 1–2 Days
+                    Versand in 1–2 Tagen
                   </span>
                 </div>
               </div>
@@ -478,7 +478,7 @@ export const CheckoutPage: React.FC = () => {
                 className="mt-4 font-sans text-xs tracking-[0.12em] uppercase transition-colors"
                 style={{ color: WARM_GRAY }}
               >
-                ← Cancel payment
+                ← Zahlung abbrechen
               </button>
             </SectionCard>
           )}
@@ -491,7 +491,7 @@ export const CheckoutPage: React.FC = () => {
           style={{ background: '#fff', border: `1px solid ${WARM_BORDER}`, padding: '2rem' }}
         >
           <h2 className="font-serif text-xl font-light mb-6" style={{ color: CHARCOAL }}>
-            Order Summary
+            Bestellübersicht
           </h2>
 
           {/* Cart items */}
@@ -587,7 +587,7 @@ export const CheckoutPage: React.FC = () => {
           >
             <div className="flex justify-between">
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-                Subtotal
+                Zwischensumme
               </span>
               <Price
                 amount={cart?.subtotal || 0}
@@ -597,10 +597,10 @@ export const CheckoutPage: React.FC = () => {
             </div>
             <div className="flex justify-between">
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-                Shipping
+                Versand
               </span>
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-                Calculated at next step
+                Wird im nächsten Schritt berechnet
               </span>
             </div>
             <div
@@ -608,7 +608,7 @@ export const CheckoutPage: React.FC = () => {
               style={{ borderTop: `1px solid ${WARM_BORDER}` }}
             >
               <span className="font-serif text-lg font-light" style={{ color: CHARCOAL }}>
-                Total
+                Gesamt
               </span>
               <Price
                 amount={cart?.subtotal || 0}
@@ -617,7 +617,7 @@ export const CheckoutPage: React.FC = () => {
               />
             </div>
             <p className="font-sans text-[10px]" style={{ color: WARM_GRAY }}>
-              Incl. VAT where applicable
+              inkl. MwSt. soweit zutreffend
             </p>
           </div>
         </div>
@@ -640,10 +640,10 @@ export const CheckoutPage: React.FC = () => {
             </svg>
             <div>
               <p className="font-sans text-sm font-medium" style={{ color: CHARCOAL }}>
-                Estimated delivery: 3–5 business days
+                Voraussichtliche Lieferung: 3–5 Werktage
               </p>
               <p className="font-sans text-xs mt-0.5" style={{ color: WARM_GRAY }}>
-                Orders placed before 12:00 ship same day
+                Bestellungen vor 12:00 Uhr werden noch am selben Tag versendet
               </p>
             </div>
           </div>

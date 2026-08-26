@@ -13,15 +13,15 @@ export type AccordionItem = {
 
 export const STATIC_CARE_AND_SHIPPING: AccordionItem[] = [
   {
-    title: 'Dimensions & Care',
-    body: 'All dimensions are listed in the product description above. Hand wash only — do not soak or place in a dishwasher. Re-oil periodically with food-safe mineral oil to maintain the natural lustre.',
+    title: 'Maße & Pflege',
+    body: 'Alle Maße findest du in der Produktbeschreibung oben. Nur von Hand waschen — nicht einweichen und nicht in die Spülmaschine geben. Bei Bedarf mit lebensmittelechtem Mineralöl nachölen, um den natürlichen Glanz zu erhalten.',
   },
   {
-    title: 'Shipping & Returns',
-    body: 'Ships within 1–2 business days from Vienna, Austria. Free standard shipping on orders over € 50. Returns accepted within 30 days for unused items in original packaging. Contact us at hello@nabea.at to initiate a return.',
+    title: 'Versand & Rückgabe',
+    body: 'Versand innerhalb von 1–2 Werktagen aus Wien, Österreich. Kostenloser Standardversand ab 50 €. Rückgabe innerhalb von 30 Tagen für unbenutzte Artikel in Originalverpackung. Kontaktiere uns unter hello@nabea.at, um eine Rücksendung zu starten.',
   },
   {
     title: 'FAQ',
-    body: 'Is this food-safe? Yes — all finishes are food-grade. Can I personalise an item? Reach out via our contact page and we will be happy to discuss custom options. Do grain patterns vary? Yes, each piece is unique; the images are representative.',
+    body: 'Ist das lebensmittelecht? Ja — alle Oberflächen sind lebensmittelgeeignet. Kann ich ein Produkt personalisieren? Melde dich über unsere Kontaktseite, wir besprechen gerne individuelle Optionen. Variiert die Maserung? Ja, jedes Stück ist einzigartig; die Bilder sind beispielhaft.',
   },
 ]

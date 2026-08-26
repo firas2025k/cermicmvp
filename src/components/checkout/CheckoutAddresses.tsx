@@ -24,15 +24,15 @@ type Props = {
 
 export const CheckoutAddresses: React.FC<Props> = ({
   setAddress,
-  heading = 'Addresses',
-  description = 'Please select or add your shipping and billing addresses.',
+  heading = 'Adressen',
+  description = 'Bitte wähle oder füge deine Liefer- und Rechnungsadresse hinzu.',
 }) => {
   const { addresses } = useAddresses()
 
   if (!addresses || addresses.length === 0) {
     return (
       <div>
-        <p>No addresses found. Please add an address.</p>
+        <p>Keine Adressen gefunden. Bitte füge eine Adresse hinzu.</p>
 
         <CreateAddressModal />
       </div>
@@ -62,17 +62,17 @@ const AddressesModal: React.FC<Props> = ({ setAddress }) => {
   const { addresses } = useAddresses()
 
   if (!addresses || addresses.length === 0) {
-    return <p>No addresses found. Please add an address.</p>
+    return <p>Keine Adressen gefunden. Bitte füge eine Adresse hinzu.</p>
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={'outline'}>{'Select an address'}</Button>
+        <Button variant={'outline'}>{'Adresse auswählen'}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{'Select an address'}</DialogTitle>
+          <DialogTitle>{'Adresse auswählen'}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-12">
@@ -89,7 +89,7 @@ const AddressesModal: React.FC<Props> = ({ setAddress }) => {
                         closeModal()
                       }}
                     >
-                      Select
+                      Auswählen
                     </Button>
                   }
                 />

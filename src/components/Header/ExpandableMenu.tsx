@@ -93,7 +93,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
 
         <div className="mb-6 border border-warm-border bg-white p-3">
           <p className="px-2 pb-2 font-sans text-xs font-semibold uppercase tracking-wide text-warm-gray">
-            Search products
+            Produkte suchen
           </p>
           <Suspense fallback={<div className="h-10 animate-pulse bg-[#EDE8DD]" />}>
             <Search onNavigate={closeMenu} />
@@ -268,7 +268,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
         {/* Account Section */}
         {user ? (
           <div className="mt-8 border-t border-warm-border pt-6">
-            <h2 className="mb-4 font-serif text-xl font-light text-charcoal">My Account</h2>
+            <h2 className="mb-4 font-serif text-xl font-light text-charcoal">Mein Konto</h2>
             <hr className="my-2 border-warm-border" />
             <ul className="flex flex-col gap-2">
               <li>
@@ -277,7 +277,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                   onClick={closeMenu}
                   className="block py-2 font-sans text-sm text-charcoal transition hover:text-olive"
                 >
-                  Orders
+                  Bestellungen
                 </Link>
               </li>
               <li>
@@ -286,7 +286,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                   onClick={closeMenu}
                   className="block py-2 font-sans text-sm text-charcoal transition hover:text-olive"
                 >
-                  Addresses
+                  Adressen
                 </Link>
               </li>
               <li>
@@ -295,7 +295,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                   onClick={closeMenu}
                   className="block py-2 font-sans text-sm text-charcoal transition hover:text-olive"
                 >
-                  Manage Account
+                  Konto verwalten
                 </Link>
               </li>
               <li className="mt-4">
@@ -305,7 +305,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                   className="w-full rounded-none border-warm-border font-sans text-xs tracking-wide uppercase hover:border-olive hover:bg-olive hover:text-linen"
                 >
                   <Link href="/logout" onClick={closeMenu}>
-                    Log out
+                    Abmelden
                   </Link>
                 </Button>
               </li>
@@ -313,7 +313,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
           </div>
         ) : (
           <div className="mt-8 border-t border-warm-border pt-6">
-            <h2 className="mb-4 font-serif text-xl font-light text-charcoal">My Account</h2>
+            <h2 className="mb-4 font-serif text-xl font-light text-charcoal">Mein Konto</h2>
             <div className="flex flex-col gap-3">
               <Button
                 asChild
@@ -321,7 +321,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                 variant="outline"
               >
                 <Link href="/login" onClick={closeMenu}>
-                  Log in
+                  Anmelden
                 </Link>
               </Button>
               <Button
@@ -329,7 +329,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                 className="w-full rounded-none bg-terra font-sans text-xs tracking-wide uppercase text-linen hover:bg-terra-dark"
               >
                 <Link href="/create-account" onClick={closeMenu}>
-                  Create an Account
+                  Konto erstellen
                 </Link>
               </Button>
             </div>

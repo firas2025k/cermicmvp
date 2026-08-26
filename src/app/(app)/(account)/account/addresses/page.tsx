@@ -18,7 +18,7 @@ export default async function AddressesPage() {
 
   if (!user) {
     redirect(
-      `/login?warning=${encodeURIComponent('Please login to access your account settings.')}`,
+      `/login?warning=${encodeURIComponent('Bitte melde dich an, um deine Kontoeinstellungen zu sehen.')}`,
     )
   }
 
@@ -47,7 +47,7 @@ export default async function AddressesPage() {
   return (
     <>
       <div className="border p-8 rounded-lg bg-primary-foreground">
-        <h1 className="text-3xl font-medium mb-8">Addresses</h1>
+        <h1 className="text-3xl font-medium mb-8">Adressen</h1>
 
         <div className="mb-8">
           <AddressListing />
@@ -62,8 +62,8 @@ export default async function AddressesPage() {
 export const metadata: Metadata = {
   description: 'Manage your addresses.',
   openGraph: mergeOpenGraph({
-    title: 'Addresses',
+    title: 'Adressen',
     url: '/account/addresses',
   }),
-  title: 'Addresses',
+  title: 'Adressen',
 }

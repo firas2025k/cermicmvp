@@ -82,7 +82,7 @@ export function CartModal({
 
       {/* Drawer panel */}
       <aside
-        aria-label="Shopping cart"
+        aria-label="Warenkorb"
         className={`fixed top-0 right-0 h-full w-full max-w-[min(100vw,28rem)] z-[70] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -90,9 +90,9 @@ export function CartModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-warm-border flex-shrink-0">
-          <h2 className="font-serif text-2xl font-light text-charcoal">Your Cart</h2>
+          <h2 className="font-serif text-2xl font-light text-charcoal">Dein Warenkorb</h2>
           <button
-            aria-label="Close cart"
+            aria-label="Warenkorb schließen"
             className="text-warm-gray hover:text-charcoal transition-colors"
             onClick={closeCart}
           >
@@ -110,12 +110,12 @@ export function CartModal({
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
-            <p className="font-serif text-xl font-light text-warm-gray">Your cart is empty</p>
+            <p className="font-serif text-xl font-light text-warm-gray">Dein Warenkorb ist leer</p>
             <button
               onClick={closeCart}
               className="font-sans text-xs tracking-widest uppercase px-6 py-3 border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"
             >
-              Continue Shopping
+              Weiter einkaufen
             </button>
           </div>
         )}
@@ -267,9 +267,9 @@ export function CartModal({
               </div>
             </div>
 
-            {/* Subtotal */}
+            {/* Zwischensumme */}
             <div className="flex items-center justify-between mb-5">
-              <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Subtotal</p>
+              <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Zwischensumme</p>
               {subtotalCents > 0 && (
                 <Price
                   amount={subtotalCents}
@@ -285,7 +285,7 @@ export function CartModal({
               onClick={closeCart}
               className="flex items-center justify-center w-full py-3.5 mb-3 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"
             >
-              View Cart
+              Warenkorb ansehen
             </Link>
             <Link
               href="/checkout"
@@ -293,11 +293,11 @@ export function CartModal({
               className="flex items-center justify-center w-full py-3.5 font-sans text-sm tracking-wide text-white transition-colors duration-200 hover:opacity-90"
               style={{ background: '#6B1F3A' }}
             >
-              Proceed to Checkout →
+              Zur Kasse →
             </Link>
 
             <p className="font-sans text-[10px] text-center mt-4 text-warm-gray">
-              Taxes and shipping calculated at checkout
+              Steuern und Versand werden an der Kasse berechnet
             </p>
           </div>
         )}

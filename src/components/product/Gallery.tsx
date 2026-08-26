@@ -59,7 +59,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
                 key={`${item.image.id ?? i}-thumb`}
                 type="button"
                 onClick={() => setCurrent(i)}
-                aria-label={`View image ${i + 1}`}
+                aria-label={`Bild ${i + 1} ansehen`}
                 className={cn(
                   'h-[84px] w-[84px] flex-shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200',
                   i === current

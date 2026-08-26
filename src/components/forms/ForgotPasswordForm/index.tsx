@@ -41,7 +41,7 @@ export const ForgotPasswordForm: React.FC = () => {
       setError('')
     } else {
       setError(
-        'There was a problem while attempting to send you a password reset email. Please try again.',
+        'Beim Senden der E-Mail zum Zurücksetzen des Passworts ist ein Fehler aufgetreten. Bitte versuche es erneut.',
       )
     }
   }, [])
@@ -50,12 +50,11 @@ export const ForgotPasswordForm: React.FC = () => {
     <Fragment>
       {!success && (
         <React.Fragment>
-          <h1 className="text-xl mb-4">Forgot Password</h1>
+          <h1 className="text-xl mb-4">Passwort vergessen</h1>
           <div className="prose dark:prose-invert mb-8">
             <p>
-              {`Please enter your email below. You will receive an email message with instructions on
-              how to reset your password. To manage your all users, `}
-              <Link href="/admin/collections/users">login to the admin dashboard</Link>.
+              {`Gib unten deine E-Mail-Adresse ein. Du erhältst eine E-Mail mit Anweisungen zum Zurücksetzen deines Passworts. `}
+              
             </p>
           </div>
           <form className="max-w-lg" onSubmit={handleSubmit(onSubmit)}>
@@ -63,27 +62,27 @@ export const ForgotPasswordForm: React.FC = () => {
 
             <FormItem className="mb-8">
               <Label htmlFor="email" className="mb-2">
-                Email address
+                E-Mail-Adresse
               </Label>
               <Input
                 id="email"
-                {...register('email', { required: 'Please provide your email.' })}
+                {...register('email', { required: 'Bitte gib deine E-Mail-Adresse ein.' })}
                 type="email"
               />
               {errors.email && <FormError message={errors.email.message} />}
             </FormItem>
 
             <Button type="submit" variant="default">
-              Forgot Password
+              Passwort vergessen
             </Button>
           </form>
         </React.Fragment>
       )}
       {success && (
         <React.Fragment>
-          <h1 className="text-xl mb-4">Request submitted</h1>
+          <h1 className="text-xl mb-4">Anfrage gesendet</h1>
           <div className="prose dark:prose-invert">
-            <p>Check your email for a link that will allow you to securely reset your password.</p>
+            <p>Prüfe deine E-Mails — dort findest du einen Link zum sicheren Zurücksetzen deines Passworts.</p>
           </div>
         </React.Fragment>
       )}

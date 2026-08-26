@@ -165,7 +165,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           {/* "New" or "Bestseller" badge — driven by product tags if available */}
           {isOutOfStock && (
             <span className="absolute right-3 top-3 bg-charcoal/80 px-2.5 py-1 font-sans text-[10px] tracking-widest uppercase text-white">
-              Sold Out
+              Ausverkauft
             </span>
           )}
         </div>
@@ -271,7 +271,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         aria-disabled={isOutOfStock}
         tabIndex={isOutOfStock ? -1 : undefined}
       >
-        {isOutOfStock ? 'Sold Out' : '+ Add to Cart'}
+        {isOutOfStock ? 'Ausverkauft' : '+ In den Warenkorb'}
       </Link>
     </div>
   )

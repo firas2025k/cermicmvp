@@ -87,12 +87,12 @@ export function HeaderClient({ header, categories = [] }: Props) {
             <button
               type="button"
               className="hidden font-sans text-xs tracking-widest text-warm-gray transition-colors hover:text-olive md:inline"
-              aria-label="Language (coming soon)"
+              aria-label="Sprache (demnächst)"
             >
               DE&nbsp;|&nbsp;<span className="font-medium text-olive">EN</span>
             </button>
             <HeaderSearch />
-            <Link href="/account" className={iconBtnClass} aria-label="Account">
+            <Link href="/account" className={iconBtnClass} aria-label="Konto">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path
                   strokeLinecap="round"

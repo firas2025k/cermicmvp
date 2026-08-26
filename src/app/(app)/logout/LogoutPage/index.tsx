@@ -13,9 +13,9 @@ export const LogoutPage: React.FC = (props) => {
     const performLogout = async () => {
       try {
         await logout()
-        setSuccess('Logged out successfully.')
+        setSuccess('Erfolgreich abgemeldet.')
       } catch (_) {
-        setError('You are already logged out.')
+        setError('Du bist bereits abgemeldet.')
       }
     }
 
@@ -28,14 +28,14 @@ export const LogoutPage: React.FC = (props) => {
         <div className="prose dark:prose-invert">
           <h1>{error || success}</h1>
           <p>
-            What would you like to do next?
+            Was möchtest du als Nächstes tun?
             <Fragment>
               {' '}
-              <Link href="/search">Click here</Link>
-              {` to shop.`}
+              <Link href="/search">Hier klicken</Link>
+              {`, um einzukaufen.`}
             </Fragment>
-            {` To log back in, `}
-            <Link href="/login">click here</Link>.
+            {` Zum erneuten Anmelden `}
+            <Link href="/login">hier klicken</Link>.
           </p>
         </div>
       )}

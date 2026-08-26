@@ -48,7 +48,7 @@ export function HeaderSearch() {
           className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] border border-warm-border bg-linen p-3 shadow-lg md:w-[min(100vw-2rem,28rem)]"
           role="search"
         >
-          <p className="mb-2 font-sans text-xs font-medium tracking-wide text-warm-gray">Search products</p>
+          <p className="mb-2 font-sans text-xs font-medium tracking-wide text-warm-gray">Produkte suchen</p>
           <Suspense
             fallback={<div className="h-10 animate-pulse bg-[#EDE8DD]" />}
           >

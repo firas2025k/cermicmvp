@@ -122,14 +122,14 @@ export default async function Order({ params, searchParams }: PageProps) {
         )}
 
         <h1 className="text-sm uppercase font-mono px-2 bg-primary/10 rounded tracking-[0.07em]">
-          <span className="">{`Order #${order.id}`}</span>
+          <span className="">{`Bestellung #${order.id}`}</span>
         </h1>
       </div>
 
       <div className="bg-card border rounded-lg px-6 py-4 flex flex-col gap-12">
         <div className="flex flex-col gap-6 lg:flex-row lg:justify-between">
           <div className="">
-            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Order Date</p>
+            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Bestelldatum</p>
             <p className="text-lg">
               <time dateTime={order.createdAt}>
                 {formatDateTime({ date: order.createdAt, format: 'MMMM dd, yyyy' })}
@@ -138,7 +138,7 @@ export default async function Order({ params, searchParams }: PageProps) {
           </div>
 
           <div className="">
-            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Total</p>
+            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Gesamt</p>
             {order.amount && <Price className="text-lg" amount={order.amount} />}
           </div>
 
@@ -152,7 +152,7 @@ export default async function Order({ params, searchParams }: PageProps) {
 
         {order.items && (
           <div>
-            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Items</h2>
+            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Artikel</h2>
             <ul className="flex flex-col gap-6">
               {order.items?.map((item, index) => {
                 if (typeof item.product === 'string') {
@@ -182,7 +182,7 @@ export default async function Order({ params, searchParams }: PageProps) {
 
         {order.shippingAddress && (
           <div>
-            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Shipping Address</h2>
+            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Lieferadresse</h2>
 
             {/* @ts-expect-error - some kind of type hell */}
             <AddressItem address={order.shippingAddress} hideActions />
@@ -197,11 +197,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params
 
   return {
-    description: `Order details for order ${id}.`,
+    description: `Bestelldetails für Bestellung ${id}.`,
     openGraph: mergeOpenGraph({
-      title: `Order ${id}`,
+      title: `Bestellung ${id}`,
       url: `/orders/${id}`,
     }),
-    title: `Order ${id}`,
+    title: `Bestellung ${id}`,
   }
 }

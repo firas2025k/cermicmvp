@@ -21,7 +21,7 @@ export default async function ConfirmOrderPage({
         fallback={
           <div className="text-center">
             <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
-              Confirming your order…
+              Bestellung wird bestätigt…
             </p>
           </div>
         }
@@ -33,10 +33,10 @@ export default async function ConfirmOrderPage({
 }
 
 export const metadata: Metadata = {
-  description: 'Confirm order.',
+  description: 'Bestellung bestätigen.',
   openGraph: mergeOpenGraph({
-    title: 'Confirming order',
+    title: 'Bestellung wird bestätigt',
     url: '/checkout/confirm-order',
   }),
-  title: 'Confirming order',
+  title: 'Bestellung wird bestätigt',
 }

@@ -60,10 +60,10 @@ export const ConfirmOrder: React.FC = () => {
         </svg>
       </div>
       <h1 className="font-serif text-3xl font-light" style={{ color: '#2C2A27' }}>
-        Confirming Your Order
+        Bestellung wird bestätigt
       </h1>
       <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
-        Please wait while we confirm your payment…
+        Bitte warte, während wir deine Zahlung bestätigen…
       </p>
       <LoadingSpinner className="w-8 h-8" />
     </div>

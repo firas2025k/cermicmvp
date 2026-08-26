@@ -35,7 +35,7 @@ export function EditItemQuantityButton({ type, item }: { item: CartItem; type: '
     <button
       aria-disabled={disabled}
       disabled={disabled}
-      aria-label={type === 'plus' ? 'Increase item quantity' : 'Reduce item quantity'}
+      aria-label={type === 'plus' ? 'Menge erhöhen' : 'Menge verringern'}
       className="w-7 h-7 flex items-center justify-center text-warm-gray hover:text-charcoal transition-colors disabled:cursor-not-allowed disabled:opacity-40 border-r last:border-r-0 last:border-l border-warm-border"
       onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()

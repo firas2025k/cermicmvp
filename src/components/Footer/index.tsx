@@ -24,7 +24,7 @@ export async function Footer() {
 
   const logoName = footer.brand?.logoName || SITE_NAME
   const tagline =
-    footer.brand?.tagline || 'Handcrafted olive wood and ceramic pieces, made with care in Austria.'
+    footer.brand?.tagline || 'Handgefertigte Olivenholz- und Keramikstücke, mit Sorgfalt in Österreich hergestellt.'
   const address = footer.contactInfo?.address || 'Wien, Österreich'
   const email = footer.contactInfo?.email || 'hello@nabea.at'
   const phone = footer.contactInfo?.phone
@@ -88,7 +88,7 @@ export async function Footer() {
               className="font-sans text-xs tracking-[0.2em] uppercase mb-4"
               style={{ color: 'rgba(248,244,238,0.4)' }}
             >
-              Navigate
+              Navigation
             </p>
             <Suspense
               fallback={

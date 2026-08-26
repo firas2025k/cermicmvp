@@ -66,7 +66,7 @@ export function AddToCart({ product }: Props) {
 
           if (res.ok && parsed?.success) {
             await refreshCart()
-            toast.success('Item added to cart.')
+            toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
             openCart()
             return
           }
@@ -121,7 +121,7 @@ export function AddToCart({ product }: Props) {
         }
         console.log('[AddToCart] cart created', { newCartID })
         await refreshCart()
-        toast.success('Item added to cart.')
+        toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()
       } catch (err) {
         console.error('[AddToCart] POST /api/carts threw', err)
@@ -167,7 +167,7 @@ export function AddToCart({ product }: Props) {
 
   return (
     <Button
-      aria-label="Add to cart"
+      aria-label="In den Warenkorb"
       variant="default"
       className={clsx(
         'w-full rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white',
@@ -177,7 +177,7 @@ export function AddToCart({ product }: Props) {
       onClick={addToCart}
       type="submit"
     >
-      Add To Cart
+      In den Warenkorb
     </Button>
   )
 }

@@ -41,7 +41,7 @@ export const Search: React.FC<Props> = ({ className, onNavigate }) => {
         defaultValue={searchParams?.get('q') || ''}
         key={searchParams?.get('q')}
         name="search"
-        placeholder="Search for products..."
+        placeholder="Produkte suchen…"
         type="text"
       />
       <div className="absolute right-0 top-0 mr-3 flex h-full items-center">

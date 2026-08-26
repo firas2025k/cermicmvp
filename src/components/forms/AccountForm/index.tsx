@@ -53,7 +53,7 @@ export const AccountForm: React.FC = () => {
         if (response.ok) {
           const json = await response.json()
           setUser(json.doc)
-          toast.success('Successfully updated account.')
+          toast.success('Konto erfolgreich aktualisiert.')
           setChangePassword(false)
           reset({
             name: json.doc.name,
@@ -62,7 +62,7 @@ export const AccountForm: React.FC = () => {
             passwordConfirm: '',
           })
         } else {
-          toast.error('There was a problem updating your account.')
+          toast.error('Beim Aktualisieren deines Kontos ist ein Fehler aufgetreten.')
         }
       }
     },
@@ -85,7 +85,7 @@ export const AccountForm: React.FC = () => {
       // Use replace instead of push to avoid adding to history stack
       router.replace(
         `/login?error=${encodeURIComponent(
-          'You must be logged in to view this page.',
+          'Du musst angemeldet sein, um diese Seite zu sehen.',
         )}&redirect=${encodeURIComponent('/account')}`,
       )
       return
@@ -108,27 +108,27 @@ export const AccountForm: React.FC = () => {
         <Fragment>
           <div className="prose dark:prose-invert mb-8">
             <p className="">
-              {'Change your account details below, or '}
+              {'Ändere unten deine Kontodaten, oder '}
               <Button
                 className="px-0 text-inherit underline hover:cursor-pointer"
                 onClick={() => setChangePassword(!changePassword)}
                 type="button"
                 variant="link"
               >
-                click here
+                klicke hier
               </Button>
-              {' to change your password.'}
+              {', um dein Passwort zu ändern.'}
             </p>
           </div>
 
           <div className="flex flex-col gap-8 mb-8">
             <FormItem>
               <Label htmlFor="email" className="mb-2">
-                Email Address
+                E-Mail-Adresse
               </Label>
               <Input
                 id="email"
-                {...register('email', { required: 'Please provide an email.' })}
+                {...register('email', { required: 'Bitte gib eine E-Mail-Adresse ein.' })}
                 type="email"
               />
               {errors.email && <FormError message={errors.email.message} />}
@@ -140,7 +140,7 @@ export const AccountForm: React.FC = () => {
               </Label>
               <Input
                 id="name"
-                {...register('name', { required: 'Please provide a name.' })}
+                {...register('name', { required: 'Bitte gib einen Namen ein.' })}
                 type="text"
               />
               {errors.name && <FormError message={errors.name.message} />}
@@ -151,14 +151,14 @@ export const AccountForm: React.FC = () => {
         <Fragment>
           <div className="prose dark:prose-invert mb-8">
             <p>
-              {'Change your password below, or '}
+              {'Ändere unten dein Passwort, oder '}
               <Button
                 className="px-0 text-inherit underline hover:cursor-pointer"
                 onClick={() => setChangePassword(!changePassword)}
                 type="button"
                 variant="link"
               >
-                cancel
+                abbrechen
               </Button>
               .
             </p>
@@ -167,11 +167,11 @@ export const AccountForm: React.FC = () => {
           <div className="flex flex-col gap-8 mb-8">
             <FormItem>
               <Label htmlFor="password" className="mb-2">
-                New password
+                Neues Passwort
               </Label>
               <Input
                 id="password"
-                {...register('password', { required: 'Please provide a new password.' })}
+                {...register('password', { required: 'Bitte gib ein neues Passwort ein.' })}
                 type="password"
               />
               {errors.password && <FormError message={errors.password.message} />}
@@ -179,13 +179,13 @@ export const AccountForm: React.FC = () => {
 
             <FormItem>
               <Label htmlFor="passwordConfirm" className="mb-2">
-                Confirm password
+                Passwort bestätigen
               </Label>
               <Input
                 id="passwordConfirm"
                 {...register('passwordConfirm', {
-                  required: 'Please confirm your new password.',
-                  validate: (value) => value === password.current || 'The passwords do not match',
+                  required: 'Bitte bestätige dein neues Passwort.',
+                  validate: (value) => value === password.current || 'Die Passwörter stimmen nicht überein',
                 })}
                 type="password"
               />
@@ -196,10 +196,10 @@ export const AccountForm: React.FC = () => {
       )}
       <Button disabled={isLoading || isSubmitting || !isDirty} type="submit" variant="default">
         {isLoading || isSubmitting
-          ? 'Processing'
+          ? 'Wird verarbeitet…'
           : changePassword
-            ? 'Change Password'
-            : 'Update Account'}
+            ? 'Passwort ändern'
+            : 'Konto aktualisieren'}
       </Button>
     </form>
   )

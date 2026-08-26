@@ -47,10 +47,10 @@ export default function CartPage() {
             className="font-sans text-xs tracking-[0.3em] uppercase mb-2"
             style={{ color: '#8C8680' }}
           >
-            Review
+            Übersicht
           </p>
           <h1 className="font-serif text-4xl lg:text-5xl font-light" style={{ color: '#2C2A27' }}>
-            Your Cart
+            Dein Warenkorb
           </h1>
         </div>
 
@@ -70,13 +70,13 @@ export default function CartPage() {
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
             <p className="font-serif text-2xl font-light" style={{ color: '#8C8680' }}>
-              Your cart is empty
+              Dein Warenkorb ist leer
             </p>
             <Link
               href="/shop"
               className="font-sans text-xs tracking-widest uppercase px-8 py-3.5 border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"
             >
-              Continue Shopping
+              Weiter einkaufen
             </Link>
           </div>
         ) : (
@@ -213,7 +213,7 @@ export default function CartPage() {
                   className="font-serif text-xl font-light mb-6"
                   style={{ color: '#2C2A27' }}
                 >
-                  Order Summary
+                  Bestellübersicht
                 </h2>
 
                 {/* Free shipping progress */}
@@ -244,7 +244,7 @@ export default function CartPage() {
                   style={{ borderColor: '#E2DBD0' }}
                 >
                   <p className="font-sans text-sm tracking-wide uppercase" style={{ color: '#2C2A27' }}>
-                    Subtotal
+                    Zwischensumme
                   </p>
                   {subtotalCents > 0 && (
                     <Price
@@ -260,7 +260,7 @@ export default function CartPage() {
                   className="flex items-center justify-center w-full py-4 font-sans text-sm tracking-wide text-white transition-colors duration-200 hover:opacity-90"
                   style={{ background: '#6B1F3A' }}
                 >
-                  Proceed to Checkout →
+                  Zur Kasse →
                 </Link>
 
                 <Link
@@ -268,11 +268,11 @@ export default function CartPage() {
                   className="flex items-center justify-center w-full py-3.5 mt-3 font-sans text-xs tracking-widest uppercase border transition-all duration-200"
                   style={{ borderColor: '#4A5E3A', color: '#4A5E3A' }}
                 >
-                  Continue Shopping
+                  Weiter einkaufen
                 </Link>
 
                 <p className="font-sans text-[10px] text-center mt-4" style={{ color: '#8C8680' }}>
-                  Taxes and shipping calculated at checkout
+                  Steuern und Versand werden an der Kasse berechnet
                 </p>
               </div>
             </div>

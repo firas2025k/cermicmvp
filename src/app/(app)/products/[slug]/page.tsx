@@ -125,7 +125,7 @@ export default async function ProductPage({ params }: Args) {
         <div className="container pt-8 lg:pt-10">
           <nav className="flex items-center gap-2 font-sans text-[11px] text-warm-gray">
             <Link href="/" className="transition-colors hover:text-charcoal">
-              Home
+              Startseite
             </Link>
             <span className="text-warm-border">/</span>
             {firstCategory ? (
@@ -200,13 +200,13 @@ function RelatedProducts({ products }: { products: Product[] }) {
       <div className="container py-16">
         <div className="mb-8 flex items-center justify-between gap-4">
           <h2 className="font-serif text-3xl font-light text-charcoal">
-            You May Also Like
+            Das könnte dir auch gefallen
           </h2>
           <Link
             href="/shop"
             className="inline-flex items-center bg-olive px-4 py-2.5 font-sans text-xs font-semibold tracking-[0.1em] uppercase text-linen no-underline transition-colors hover:bg-olive-light"
           >
-            View All →
+            Alle ansehen →
           </Link>
         </div>
 
@@ -246,7 +246,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
                     {/* Slide-up quick-add overlay */}
                     <div className="absolute inset-x-0 bottom-0 translate-y-full bg-[rgba(248,244,238,0.96)] p-2.5 transition-transform duration-200 group-hover:translate-y-0">
                       <span className="block w-full bg-charcoal py-2.5 text-center font-sans text-[11px] font-bold tracking-[0.1em] uppercase text-linen transition-colors hover:bg-terra">
-                        View Product
+                        Produkt ansehen
                       </span>
                     </div>
                   </div>

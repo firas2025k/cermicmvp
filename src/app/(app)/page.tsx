@@ -174,7 +174,7 @@ export default async function HomePage() {
       image: '/media/Kitchen_PERLATO.webp',
       title: 'Premium Quality Ceramics',
       subtitle: 'Transform your space with elegance',
-      buttonText: 'View Collection',
+      buttonText: 'Kollektion ansehen',
       buttonLink: '/shop',
     },
     {
@@ -182,7 +182,7 @@ export default async function HomePage() {
       image: '/media/Diva-4K.webp',
       title: 'Handcrafted Excellence',
       subtitle: 'Unique designs for modern homes',
-      buttonText: 'Explore Now',
+      buttonText: 'Jetzt entdecken',
       buttonLink: '/shop',
     },
   ]

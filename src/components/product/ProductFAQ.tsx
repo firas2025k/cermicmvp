@@ -65,7 +65,7 @@ function DescriptionRow({ product }: { product: Product }) {
         className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-olive"
       >
         <span className="font-sans text-xs font-bold tracking-[0.1em] uppercase text-charcoal">
-          Description
+          Beschreibung
         </span>
         <svg
           className={cn(

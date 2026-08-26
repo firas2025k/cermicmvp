@@ -11,7 +11,7 @@ export function DeleteItemButton({ item }: { item: CartItem }) {
   return (
     <button
       aria-disabled={!itemId}
-      aria-label="Remove cart item"
+      aria-label="Artikel entfernen"
       disabled={!itemId}
       className="text-warm-gray hover:text-[#6B1F3A] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
       onClick={(e: React.MouseEvent<HTMLButtonElement>) => {

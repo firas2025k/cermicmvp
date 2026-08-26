@@ -11,7 +11,7 @@ export function OpenCartButton({
     <button
       type="button"
       className={`relative flex h-9 w-9 items-center justify-center text-charcoal transition-colors hover:text-olive md:h-10 md:w-10 ${className ?? ''}`}
-      aria-label="Cart"
+      aria-label="Warenkorb"
       {...rest}
     >
       <svg

@@ -6,10 +6,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 
 const SORT_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'title', label: 'Sort: Featured' },
-  { value: 'priceInEUR', label: 'Price: Low to High' },
-  { value: '-priceInEUR', label: 'Price: High to Low' },
-  { value: '-createdAt', label: 'Newest' },
+  { value: 'title', label: 'Sortierung: Empfohlen' },
+  { value: 'priceInEUR', label: 'Preis: aufsteigend' },
+  { value: '-priceInEUR', label: 'Preis: absteigend' },
+  { value: '-createdAt', label: 'Neueste' },
 ]
 
 type Props = {
@@ -83,7 +83,7 @@ export function ShopFilterBar({
           {/* Category filter buttons */}
           <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
             <button onClick={() => setParam('category', null)} className={cn(filterBtnClass(!activeCategory), 'flex-shrink-0')}>
-              All
+              Alle
             </button>
             {topLevel.map((parent) => (
               <button
@@ -99,7 +99,7 @@ export function ShopFilterBar({
           {/* Right side: product count + sort */}
           <div className="flex items-center gap-6">
             <span className="font-sans text-xs text-warm-gray">
-              {productCount} {productCount === 1 ? 'product' : 'products'}
+              {productCount} {productCount === 1 ? 'Produkt' : 'Produkte'}
             </span>
 
             <div className="relative">
@@ -107,7 +107,7 @@ export function ShopFilterBar({
                 value={activeSort ?? 'title'}
                 onChange={(e) => setParam('sort', e.target.value)}
                 className="cursor-pointer appearance-none border border-warm-border bg-transparent py-2 pr-8 pl-3 font-sans text-xs text-charcoal outline-none"
-                aria-label="Sort products"
+                aria-label="Produkte sortieren"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>

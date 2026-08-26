@@ -38,25 +38,25 @@ const PAYMENT_METHODS = [
 
 const TRUST_ITEMS = [
   {
-    label: 'Free shipping on orders over € 50',
+    label: 'Kostenloser Versand ab 50 €',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
     ),
   },
   {
-    label: '30-day hassle-free returns',
+    label: '30 Tage Rückgaberecht',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
     ),
   },
   {
-    label: 'Secure SSL checkout',
+    label: 'Sicherer SSL-Checkout',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     ),
   },
   {
-    label: 'Ships within 1–2 business days from Vienna',
+    label: 'Versand innerhalb von 1–2 Werktagen aus Wien',
     icon: (
       <>
         <circle cx="12" cy="12" r="10" />

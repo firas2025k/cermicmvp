@@ -87,7 +87,7 @@ export const ProductItem: React.FC<Props> = ({
 
         {itemPrice && quantity && (
           <div className="text-right">
-            <p className="font-medium text-lg">Subtotal</p>
+            <p className="font-medium text-lg">Zwischensumme</p>
             <Price
               className="font-mono text-primary/50 text-sm"
               amount={itemPrice * quantity}

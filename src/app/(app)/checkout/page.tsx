@@ -16,16 +16,16 @@ export default function Checkout() {
             style={{ borderColor: '#E2DBD0', background: '#fff', color: '#8C8680' }}
           >
             <Fragment>
-              {'To enable checkout, you must '}
+              {'Um den Checkout zu aktivieren, musst du '}
               <a
                 href="https://dashboard.stripe.com/test/apikeys"
                 rel="noopener noreferrer"
                 target="_blank"
                 style={{ color: '#4A5E3A' }}
               >
-                obtain your Stripe API Keys
+                Stripe-API-Schlüssel abrufen
               </a>
-              {' then set them as environment variables. See the '}
+              {' und als Umgebungsvariablen setzen. Siehe die '}
               <a
                 href="https://github.com/payloadcms/payload/blob/main/templates/ecommerce/README.md#stripe"
                 rel="noopener noreferrer"
@@ -34,7 +34,7 @@ export default function Checkout() {
               >
                 README
               </a>
-              {' for more details.'}
+              {' für weitere Details.'}
             </Fragment>
           </div>
         )}
@@ -45,13 +45,13 @@ export default function Checkout() {
             className="font-sans text-xs tracking-[0.3em] uppercase mb-2"
             style={{ color: '#8C8680' }}
           >
-            Secure Checkout
+            Sicherer Checkout
           </p>
           <h1
             className="font-serif text-4xl lg:text-5xl font-light"
             style={{ color: '#2C2A27' }}
           >
-            Your Order
+            Deine Bestellung
           </h1>
         </div>
 
@@ -61,7 +61,7 @@ export default function Checkout() {
               className="w-full py-24 text-center font-sans text-sm"
               style={{ color: '#8C8680' }}
             >
-              Loading checkout…
+              Checkout wird geladen…
             </div>
           }
         >
@@ -73,10 +73,10 @@ export default function Checkout() {
 }
 
 export const metadata: Metadata = {
-  description: 'Checkout.',
+  description: 'Kasse.',
   openGraph: mergeOpenGraph({
-    title: 'Checkout',
+    title: 'Kasse',
     url: '/checkout',
   }),
-  title: 'Checkout',
+  title: 'Kasse',
 }

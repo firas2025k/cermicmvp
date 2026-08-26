@@ -85,8 +85,8 @@ export const CheckoutForm: React.FC<Props> = ({
               }
             } catch (err) {
               console.log({ err })
-              const msg = err instanceof Error ? err.message : 'Something went wrong.'
-              setError(`Error while confirming order: ${msg}`)
+              const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
+              setError(`Fehler bei der Bestellbestätigung: ${msg}`)
               setIsLoading(false)
             }
           }
@@ -95,8 +95,8 @@ export const CheckoutForm: React.FC<Props> = ({
             setIsLoading(false)
           }
         } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Something went wrong.'
-          setError(`Error while submitting payment: ${msg}`)
+          const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
+          setError(`Fehler bei der Zahlungsübermittlung: ${msg}`)
           setIsLoading(false)
           setProcessingPayment(false)
         }
@@ -126,7 +126,7 @@ export const CheckoutForm: React.FC<Props> = ({
       <PaymentElement />
       <div className="mt-8 flex gap-4">
         <Button disabled={!stripe || isLoading} type="submit" variant="default">
-          {isLoading ? 'Loading...' : 'Pay now'}
+          {isLoading ? 'Wird geladen…' : 'Jetzt bezahlen'}
         </Button>
       </div>
     </form>

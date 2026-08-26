@@ -9,7 +9,7 @@ import { Suspense } from 'react'
 
 export const metadata = {
   title: 'Shop',
-  description: 'Browse our product collections.',
+  description: 'Entdecken our product collections.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -158,8 +158,8 @@ export default async function ShopPage({ searchParams }: Props) {
     <div className="min-h-screen bg-linen">
       {/* Page header */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
-        <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">Browse</p>
-        <h1 className="font-serif text-5xl lg:text-6xl font-light text-charcoal">The Shop</h1>
+        <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">Entdecken</p>
+        <h1 className="font-serif text-5xl lg:text-6xl font-light text-charcoal">Der Shop</h1>
       </section>
 
       {/* Sticky filter bar */}
@@ -179,8 +179,8 @@ export default async function ShopPage({ searchParams }: Props) {
         {searchValue && (
           <div className="mb-8 flex items-center justify-between">
             <p className="font-sans text-sm text-warm-gray">
-              {orderedDocs.length === 0 ? 'No results' : orderedDocs.length}{' '}
-              {orderedDocs.length === 1 ? 'result' : 'results'} for{' '}
+              {orderedDocs.length === 0 ? 'Keine Ergebnisse' : orderedDocs.length}{' '}
+              {orderedDocs.length === 1 ? 'Ergebnis' : 'Ergebnisse'} für{' '}
               <span className="font-medium text-charcoal">&ldquo;{searchValue}&rdquo;</span>
             </p>
             {orderedDocs.length === 0 && (
@@ -188,7 +188,7 @@ export default async function ShopPage({ searchParams }: Props) {
                 href="/shop"
                 className="font-sans text-sm text-olive underline-offset-2 hover:underline"
               >
-                Clear search
+                Suche löschen
               </a>
             )}
           </div>
@@ -197,11 +197,11 @@ export default async function ShopPage({ searchParams }: Props) {
         {/* Empty state */}
         {orderedDocs.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="font-serif text-2xl font-light text-charcoal">No products found</p>
+            <p className="font-serif text-2xl font-light text-charcoal">Keine Produkte gefunden</p>
             <p className="mt-2 font-sans text-sm text-warm-gray">
               {searchValue
-                ? 'Try a different search term.'
-                : 'Check back soon for new collections.'}
+                ? 'Versuche einen anderen Suchbegriff.'
+                : 'Schau bald wieder vorbei für neue Kollektionen.'}
             </p>
           </div>
         )}
