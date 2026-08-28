@@ -122,7 +122,7 @@ export function GeneralProductFaq({ data }: Props) {
   )
   const items = (data.items ?? []).filter((item) => item?.question && item?.answer)
   const image = typeof data.image === 'object' && data.image ? (data.image as Media) : null
-  const heading = data.heading || "FAQ'S"
+  const heading = data.heading || 'Häufig gestellte Fragen'
 
   if (icons.length === 0 && items.length === 0 && !image) return null
 

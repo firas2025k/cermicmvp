@@ -60,7 +60,7 @@ export default async function AddressesPage() {
 }
 
 export const metadata: Metadata = {
-  description: 'Manage your addresses.',
+  description: 'Verwalte deine Adressen.',
   openGraph: mergeOpenGraph({
     title: 'Adressen',
     url: '/account/addresses',

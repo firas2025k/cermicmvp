@@ -164,7 +164,7 @@ export default async function HomePage() {
     {
       id: '1',
       image: '/media/Arena-gtis-4K.webp',
-      title: 'Mediterranean Tiles',
+      title: 'Mediterrane Fliesen',
       subtitle: 'Für mehr Genuss & Glamour in deine mediterrane Weltküche',
       buttonText: 'Jetzt entdecken',
       buttonLink: '/shop',
@@ -172,16 +172,16 @@ export default async function HomePage() {
     {
       id: '2',
       image: '/media/Kitchen_PERLATO.webp',
-      title: 'Premium Quality Ceramics',
-      subtitle: 'Transform your space with elegance',
+      title: 'Hochwertige Keramik',
+      subtitle: 'Verwandle deinen Raum mit Eleganz',
       buttonText: 'Kollektion ansehen',
       buttonLink: '/shop',
     },
     {
       id: '3',
       image: '/media/Diva-4K.webp',
-      title: 'Handcrafted Excellence',
-      subtitle: 'Unique designs for modern homes',
+      title: 'Handgefertigte Qualität',
+      subtitle: 'Einzigartige Designs für moderne Zuhause',
       buttonText: 'Jetzt entdecken',
       buttonLink: '/shop',
     },
@@ -227,7 +227,7 @@ export default async function HomePage() {
       {/* Category Banner: Kitchen Utensils */}
       <CategoryBannerSection
         title="OLIVENHOLZ KOCHUTENSILIEN"
-        subtitle="Live, Love & Cook"
+        subtitle="Leben, lieben & kochen"
         products={bestsellers.slice(0, 4)}
       />
 

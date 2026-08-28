@@ -118,7 +118,7 @@ export const HeroCarousel: React.FC<Props> = ({
           // Direct image path from public folder
           <img
             src={currentSlide.image}
-            alt={currentSlide.title || 'Hero image'}
+            alt={currentSlide.title || 'Hero-Bild'}
             className="h-full w-full object-cover"
           />
         ) : typeof currentSlide.image === 'object' && currentSlide.image ? (
@@ -179,14 +179,14 @@ export const HeroCarousel: React.FC<Props> = ({
           <button
             onClick={goToPrevious}
             className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-charcoal/30 p-2 shadow-sm backdrop-blur-sm transition hover:bg-charcoal/45 md:left-8"
-            aria-label="Previous slide"
+            aria-label="Vorherige Folie"
           >
             <ChevronLeft className="h-6 w-6 text-linen" />
           </button>
           <button
             onClick={goToNext}
             className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-charcoal/30 p-2 shadow-sm backdrop-blur-sm transition hover:bg-charcoal/45 md:right-8"
-            aria-label="Next slide"
+            aria-label="Nächste Folie"
           >
             <ChevronRight className="h-6 w-6 text-linen" />
           </button>

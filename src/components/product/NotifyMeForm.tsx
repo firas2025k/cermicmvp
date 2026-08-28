@@ -63,15 +63,15 @@ export function NotifyMeForm({ productId, productTitle, variantId, variantTitle 
   return (
     <div className="mt-4">
       <p className="mb-3 font-sans text-sm text-warm-gray">
-        Dieses Produkt ist derzeit nicht verfügbar. Hinterlasse deine E-Mail-Adresse und wir
-        benachrichtigen dich, sobald es wieder auf Lager ist.
+        Dieses Produkt ist derzeit nicht verfügbar. Wir informieren Sie gerne, sobald es wieder
+        verfügbar ist.
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Dein Name"
+          placeholder="Name"
           required
           disabled={status === 'loading'}
           className="flex-1 border border-warm-border bg-transparent px-4 py-3 font-sans text-sm text-charcoal outline-none placeholder:text-warm-gray focus:border-charcoal disabled:opacity-50"
@@ -80,7 +80,7 @@ export function NotifyMeForm({ productId, productTitle, variantId, variantTitle 
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Deine E-Mail-Adresse"
+          placeholder="E-Mail-Adresse"
           required
           disabled={status === 'loading'}
           className="flex-1 border border-warm-border bg-transparent px-4 py-3 font-sans text-sm text-charcoal outline-none placeholder:text-warm-gray focus:border-charcoal disabled:opacity-50"

@@ -75,7 +75,7 @@ export function HeaderClient({ header, categories = [] }: Props) {
 
           {/* Center: inline nav (desktop only) — shop.html */}
           {hasDesktopNav ? (
-            <nav className="hidden shrink-0 md:flex" aria-label="Main navigation">
+            <nav className="hidden shrink-0 md:flex" aria-label="Hauptnavigation">
               <Suspense fallback={<ul className="flex items-center gap-8" aria-hidden />}>
                 <HeaderDesktopNav menu={menu} categories={categories} />
               </Suspense>

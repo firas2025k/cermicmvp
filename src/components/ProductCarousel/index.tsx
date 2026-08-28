@@ -103,7 +103,7 @@ export const ProductCarousel: React.FC<Props> = ({ products, limit = 8 }) => {
       <button
         onClick={() => { scrollBy('left'); setIsPaused(true); setTimeout(() => setIsPaused(false), 4000) }}
         disabled={!canScrollLeft}
-        aria-label="Previous products"
+        aria-label="Vorherige Produkte"
         className="absolute left-0 top-1/3 -translate-y-1/2 -translate-x-3 flex h-9 w-9 items-center justify-center border border-warm-border bg-linen text-charcoal shadow-sm transition-all hover:border-olive hover:text-olive disabled:opacity-0 disabled:pointer-events-none"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -113,7 +113,7 @@ export const ProductCarousel: React.FC<Props> = ({ products, limit = 8 }) => {
       <button
         onClick={() => { scrollBy('right'); setIsPaused(true); setTimeout(() => setIsPaused(false), 4000) }}
         disabled={!canScrollRight}
-        aria-label="Next products"
+        aria-label="Nächste Produkte"
         className="absolute right-0 top-1/3 -translate-y-1/2 translate-x-3 flex h-9 w-9 items-center justify-center border border-warm-border bg-linen text-charcoal shadow-sm transition-all hover:border-olive hover:text-olive disabled:opacity-0 disabled:pointer-events-none"
       >
         <ChevronRight className="h-4 w-4" />

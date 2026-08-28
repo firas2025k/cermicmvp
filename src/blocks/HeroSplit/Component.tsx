@@ -69,7 +69,7 @@ function MarqueeStrip({ items }: { items: MarqueeItem[] }) {
     <div
       className="overflow-hidden py-3"
       style={{ background: '#2C2A27' }}
-      aria-label="Announcements"
+      aria-label="Ankündigungen"
     >
       <div
         className="flex gap-12 whitespace-nowrap"
@@ -113,7 +113,7 @@ export const HeroSplitBlockComponent: React.FC<Props> = ({
       <section
         className="grid grid-cols-1 sm:grid-cols-2"
         style={{ minHeight: '88vh' }}
-        aria-label="Hero"
+        aria-label="Titelbild"
       >
         <HeroPanel panel={leftPanel} />
         <HeroPanel panel={rightPanel} />

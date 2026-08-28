@@ -40,7 +40,7 @@ export function FooterNewsletterForm({ title, description }: Props) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Deine E-Mail-Adresse"
+              placeholder="E-Mail-Adresse"
               className="min-w-0 w-full flex-1 bg-transparent border px-4 py-2.5 font-sans text-sm outline-none"
               style={{ borderColor: 'rgba(248,244,238,0.2)', color: '#F8F4EE' }}
               required

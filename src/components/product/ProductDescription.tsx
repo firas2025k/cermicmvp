@@ -199,7 +199,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
           />
         ) : null
       )}
-      <p className="mt-1 mb-4 font-sans text-xs text-warm-gray">inkl. MwSt</p>
+      <p className="mt-1 mb-4 font-sans text-xs text-warm-gray">inkl. MwSt.</p>
 
       {/* Trust bullets — moved here, under price */}
       <div className="mb-5 flex flex-col gap-2">
@@ -257,7 +257,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
       {/* Delivery time + Payment methods */}
       <div className="border-t border-warm-border pt-5">
         <p className="mb-3 font-sans text-xs text-charcoal">
-          <span className="text-olive">•</span>{' '}Lieferzeit: In 3–5 Werktagen bei Dir
+          <span className="text-olive">•</span>{' '}Lieferzeit: 3–5 Werktage
         </p>
         <div className="flex flex-wrap items-center gap-2">
           {PAYMENT_METHODS.map((pm) => (

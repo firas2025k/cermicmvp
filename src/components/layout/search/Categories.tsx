@@ -25,8 +25,8 @@ async function CategoryList() {
     console.error('Error loading categories:', error)
     return (
       <div className="rounded-xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800/80 dark:bg-neutral-900/60">
-        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">Categories</h3>
-        <p className="mt-2 text-xs text-neutral-500">Unable to load categories.</p>
+        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">Kategorien</h3>
+        <p className="mt-2 text-xs text-neutral-500">Kategorien konnten nicht geladen werden.</p>
       </div>
     )
   }

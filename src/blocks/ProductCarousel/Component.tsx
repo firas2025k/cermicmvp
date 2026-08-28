@@ -155,25 +155,24 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
         <div className="flex items-end justify-between mb-14">
           <div>
             <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">
-              Handpicked
+              HANDGEFERTIGTE
             </p>
             <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal">
-              {title || 'Featured Pieces'}
+              {title || 'Handgefertigte Stücke'}
             </h2>
           </div>
           <Link
             href="/shop"
             className="hidden md:inline-flex items-center px-6 py-2.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
           >
-            View All
+            Alle ansehen
           </Link>
         </div>
 
         {/* Carousel or empty state */}
         {products.length === 0 ? (
           <p className="font-sans text-sm text-warm-gray">
-            No products to display. Add products in the admin or adjust this block&apos;s
-            configuration.
+            Keine Produkte verfügbar. Bitte passe die Block-Konfiguration an.
           </p>
         ) : (
           <ProductCarousel products={products} limit={limit || 8} />

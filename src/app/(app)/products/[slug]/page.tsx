@@ -200,7 +200,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
       <div className="container py-16">
         <div className="mb-8 flex items-center justify-between gap-4">
           <h2 className="font-serif text-3xl font-light text-charcoal">
-            Das könnte dir auch gefallen
+            Weitere Produkte
           </h2>
           <Link
             href="/shop"

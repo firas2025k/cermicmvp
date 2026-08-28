@@ -67,7 +67,7 @@ export function CategorySidebar({ topLevel, byParent }: Props) {
   return (
     <div className="rounded-xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-neutral-900/60">
       <h3 className="mb-3 text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-        Categories
+        Kategorien
       </h3>
       <ul className="space-y-0.5">
         {topLevel.map((category) => {

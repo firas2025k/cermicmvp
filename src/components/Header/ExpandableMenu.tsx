@@ -104,7 +104,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
           {/* Main Categories with Expandable Subcategories */}
           <div className="border border-warm-border bg-white p-3">
             <p className="px-2 pb-1 font-sans text-xs font-semibold uppercase tracking-wide text-warm-gray">
-              Shop by category
+              Nach Kategorie einkaufen
             </p>
             <div className="mt-1 divide-y divide-warm-border">
               {topLevel.map((category) => {
@@ -126,7 +126,11 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                         <button
                           onClick={() => toggleCategory(category.slug)}
                           className="ml-1 p-2 text-warm-gray transition hover:bg-linen hover:text-olive"
-                          aria-label={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
+                          aria-label={
+                            isExpanded
+                              ? 'Unterkategorien einklappen'
+                              : 'Unterkategorien anzeigen'
+                          }
                         >
                           {isExpanded ? (
                             <ChevronUp className="h-4 w-4" />
@@ -162,7 +166,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
           {menu?.length ? (
             <div className="border border-warm-border bg-white p-3">
               <p className="px-2 pb-1 font-sans text-xs font-semibold uppercase tracking-wide text-warm-gray">
-                Pages
+                Seiten
               </p>
               <div className="mt-1 space-y-1">
                 {menu.map((item) => {
@@ -237,7 +241,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
           {/* Additional Menu Items */}
           <div className="border border-warm-border bg-white p-3">
             <p className="px-2 pb-1 font-sans text-xs font-semibold uppercase tracking-wide text-warm-gray">
-              Info
+              Informationen
             </p>
             <div className="mt-1 space-y-1 font-sans text-sm">
               <Link
@@ -245,21 +249,21 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
                 onClick={closeMenu}
                 className="block px-2 py-2 text-charcoal transition hover:bg-linen hover:text-olive"
               >
-                Imprint
+                Impressum
               </Link>
               <Link
                 href="/contact"
                 onClick={closeMenu}
                 className="block px-2 py-2 text-charcoal transition hover:bg-linen hover:text-olive"
               >
-                Contact
+                Kontakt
               </Link>
               <Link
                 href="/care-instructions"
                 onClick={closeMenu}
                 className="block px-2 py-2 text-charcoal transition hover:bg-linen hover:text-olive"
               >
-                Care Instructions
+                Pflegehinweise
               </Link>
             </div>
           </div>

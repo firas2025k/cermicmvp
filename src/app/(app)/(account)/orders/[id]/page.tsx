@@ -160,7 +160,7 @@ export default async function Order({ params, searchParams }: PageProps) {
                 }
 
                 if (!item.product || typeof item.product !== 'object') {
-                  return <div key={index}>This item is no longer available.</div>
+                  return <div key={index}>Dieser Artikel ist nicht mehr verfügbar.</div>
                 }
 
                 const variant =

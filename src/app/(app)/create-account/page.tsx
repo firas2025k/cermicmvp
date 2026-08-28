@@ -16,7 +16,7 @@ export default async function CreateAccount() {
   const { user } = await payload.auth({ headers })
 
   if (user) {
-    redirect(`/account?warning=${encodeURIComponent('You are already logged in.')}`)
+    redirect(`/account?warning=${encodeURIComponent('Du bist bereits angemeldet.')}`)
   }
 
   return (

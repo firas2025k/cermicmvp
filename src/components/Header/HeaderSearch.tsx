@@ -31,7 +31,7 @@ export function HeaderSearch() {
       <button
         type="button"
         className="flex h-9 w-9 items-center justify-center text-charcoal transition-colors hover:text-olive md:h-10 md:w-10"
-        aria-label={open ? 'Close search' : 'Open search'}
+        aria-label={open ? 'Suche schließen' : 'Suche öffnen'}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => setOpen((v) => !v)}

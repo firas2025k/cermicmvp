@@ -58,8 +58,8 @@ export default async function AccountPage() {
 
         <div className="prose dark:prose-invert mb-8">
           <p>
-            These are the most recent orders you have placed. Each order is associated with an
-            payment. As you place more orders, they will appear in your orders list.
+            Hier siehst du deine zuletzt aufgegebenen Bestellungen. Jede Bestellung ist mit einer
+            Zahlung verknüpft. Weitere Bestellungen werden hier angezeigt.
           </p>
         </div>
 

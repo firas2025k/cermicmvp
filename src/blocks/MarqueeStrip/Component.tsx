@@ -14,7 +14,7 @@ export const MarqueeStripBlockComponent: React.FC<Props> = ({ items }) => {
     <div
       className="overflow-hidden py-3"
       style={{ background: '#2C2A27' }}
-      aria-label="Announcements"
+      aria-label="Ankündigungen"
     >
       <div
         className="flex gap-12 whitespace-nowrap"

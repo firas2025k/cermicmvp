@@ -22,24 +22,24 @@ export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ i
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 flex items-end justify-between">
         <div>
           <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">
-            Explore
+            Entdecken
           </p>
           <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal">
-            Our Collections
+            Unsere Vielfalt
           </h2>
         </div>
         <Link
           href="/shop"
           className="hidden md:inline-flex items-center px-6 py-2.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
         >
-          View All
+          Alle ansehen
         </Link>
       </div>
 
       {/* ── Collection tiles ───────────────────────────────────────────── */}
       <section
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        aria-label="Our Collections"
+        aria-label="Unsere Vielfalt"
       >
         {items.map((item, index) => {
           const image = typeof item.image === 'object' ? (item.image as MediaType) : null

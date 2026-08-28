@@ -83,7 +83,7 @@ export function VariantSelector({ product }: { product: Product }) {
                       key={optionID}
                       type="button"
                       onClick={() => router.replace(optionUrl, { scroll: false })}
-                      title={`${option.label}${!isAvailableForSale ? ' (Nicht auf Lager)' : ''}`}
+                      title={`${option.label}${!isAvailableForSale ? ' (Nicht vorrätig)' : ''}`}
                       aria-label={option.label}
                       aria-disabled={!isAvailableForSale}
                       disabled={!isAvailableForSale}
@@ -104,7 +104,7 @@ export function VariantSelector({ product }: { product: Product }) {
                     key={optionID}
                     type="button"
                     onClick={() => router.replace(optionUrl, { scroll: false })}
-                    title={`${option.label}${!isAvailableForSale ? ' (Nicht auf Lager)' : ''}`}
+                    title={`${option.label}${!isAvailableForSale ? ' (Nicht vorrätig)' : ''}`}
                     aria-disabled={!isAvailableForSale}
                     disabled={!isAvailableForSale}
                     className={cn(

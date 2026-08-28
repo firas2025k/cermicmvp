@@ -9,7 +9,7 @@ import { Suspense } from 'react'
 
 export const metadata = {
   title: 'Shop',
-  description: 'Entdecken our product collections.',
+  description: 'Entdecke unsere Produktkollektionen.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -159,7 +159,7 @@ export default async function ShopPage({ searchParams }: Props) {
       {/* Page header */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
         <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">Entdecken</p>
-        <h1 className="font-serif text-5xl lg:text-6xl font-light text-charcoal">Der Shop</h1>
+        <h1 className="font-serif text-5xl lg:text-6xl font-light text-charcoal">Shop</h1>
       </section>
 
       {/* Sticky filter bar */}
@@ -219,7 +219,7 @@ export default async function ShopPage({ searchParams }: Props) {
         {orderedDocs.length > 0 && products.totalDocs > orderedDocs.length && (
           <div className="mt-16 text-center">
             <button className="border border-warm-border px-10 py-4 font-sans text-sm tracking-[0.2em] uppercase text-charcoal transition-colors hover:border-olive hover:text-olive">
-              Load More
+              Mehr laden
             </button>
           </div>
         )}
