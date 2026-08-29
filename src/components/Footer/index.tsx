@@ -3,6 +3,7 @@ import type { Footer } from '@/payload-types'
 import { FooterMenu } from '@/components/Footer/menu'
 import { FooterNewsletterForm } from '@/components/Footer/NewsletterForm'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
@@ -16,6 +17,15 @@ const SOCIAL_LABELS: Record<string, string> = {
   pinterest: 'Pinterest',
   youtube: 'YouTube',
 }
+
+const PAYMENT_METHODS = [
+  { id: 'paypal', label: 'PayPal', src: '/payment-logos/apm/paypal.svg' },
+  { id: 'mastercard', label: 'Mastercard', src: '/payment-logos/cards/mastercard.svg' },
+  { id: 'visa', label: 'VISA', src: '/payment-logos/cards/visa.svg' },
+  { id: 'amex', label: 'American Express', src: '/payment-logos/cards/american-express.svg' },
+  { id: 'klarna', label: 'Klarna', src: '/payment-logos/apm/klarna.svg' },
+  { id: 'applepay', label: 'Apple Pay', src: '/payment-logos/wallets/apple-pay.svg' },
+]
 
 export async function Footer() {
   const footer = (await getCachedGlobal('footer', 1)()) as Footer
@@ -147,7 +157,7 @@ export async function Footer() {
           style={{ borderTop: '1px solid rgba(248,244,238,0.1)' }}
         >
           <p className="font-sans text-xs" style={{ color: 'rgba(248,244,238,0.3)' }}>
-            © {currentYear} {COMPANY_NAME}. All rights reserved.
+            © {currentYear} {COMPANY_NAME}. Alle Rechte vorbehalten.
           </p>
 
           {/* Legal links */}
@@ -167,9 +177,26 @@ export async function Footer() {
             </ul>
           ) : (
             <p className="font-sans text-xs" style={{ color: 'rgba(248,244,238,0.3)' }}>
-              Handmade with care · Wien, Austria
+              Handgefertigt mit Sorgfalt · Wien, Österreich
             </p>
           )}
+        </div>
+
+        <div
+          className="mt-8 flex flex-wrap items-center justify-center gap-2 border-t pt-6"
+          style={{ borderColor: 'rgba(248,244,238,0.1)' }}
+          aria-label="Zahlungsmethoden"
+        >
+          {PAYMENT_METHODS.map((method) => (
+            <Image
+              key={method.id}
+              src={method.src}
+              alt={method.label}
+              width={60}
+              height={40}
+              className="h-7 w-auto rounded opacity-80"
+            />
+          ))}
         </div>
 
       </div>

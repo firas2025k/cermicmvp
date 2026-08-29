@@ -146,6 +146,8 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
 export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> = async (props) => {
   const { title, limit = 8 } = props
   const products = await fetchProducts(props)
+  const displayTitle =
+    title?.trim().toLowerCase() === 'products' ? 'Olivenholzprodukte' : title || 'Olivenholzprodukte'
 
   return (
     <section className="bg-white py-24">
@@ -158,7 +160,7 @@ export const ProductCarouselBlockComponent: React.FC<ProductCarouselBlockProps> 
               HANDGEFERTIGTE
             </p>
             <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal">
-              {title || 'Handgefertigte Stücke'}
+              {displayTitle}
             </h2>
           </div>
           <Link
