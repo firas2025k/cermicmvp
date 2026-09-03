@@ -11,6 +11,10 @@ import { absoluteUrl } from '@/utilities/absoluteUrl'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { lexicalToPlainText } from '@/utilities/lexicalToPlainText'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import {
+  buildProductBreadcrumbJsonLd,
+  buildProductFaqPageJsonLd,
+} from '@/utilities/productJsonLd'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -153,12 +157,31 @@ export default async function ProductPage({ params }: Args) {
       ? ((await getCachedGlobal('product-faq-section', 1)()) as ProductFaqSection)
       : null
 
+  const breadcrumbJsonLd = buildProductBreadcrumbJsonLd({
+    category: firstCategory,
+    product,
+  })
+  const faqPageJsonLd = buildProductFaqPageJsonLd({
+    generalFaq,
+    product,
+  })
+
   return (
     <React.Fragment>
       <script
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
         type="application/ld+json"
       />
+      <script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        type="application/ld+json"
+      />
+      {faqPageJsonLd ? (
+        <script
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd) }}
+          type="application/ld+json"
+        />
+      ) : null}
 
       <div className="bg-linen min-h-screen">
         {/* ── Breadcrumb ──────────────────────────────────────── */}
