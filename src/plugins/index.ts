@@ -20,13 +20,21 @@ import { Page, Product } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Product | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Ecommerce Template` : 'Payload Ecommerce Template'
+  return doc?.title ? `${doc.title} | Nabea` : 'Nabea'
 }
 
-const generateURL: GenerateURL<Product | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<Product | Page> = ({ collectionConfig, doc }) => {
+  const baseUrl = getServerSideURL().replace(/\/$/, '')
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  if (!doc?.slug) return baseUrl
+
+  if (doc.slug === 'home') return `${baseUrl}/`
+
+  if (collectionConfig?.slug === 'products') {
+    return `${baseUrl}/products/${doc.slug}`
+  }
+
+  return `${baseUrl}/${doc.slug}`
 }
 
 export const plugins: Plugin[] = [

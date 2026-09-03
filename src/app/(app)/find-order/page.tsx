@@ -25,5 +25,9 @@ export const metadata: Metadata = {
     title: 'Bestellung finden',
     url: '/find-order',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Bestellung finden',
 }

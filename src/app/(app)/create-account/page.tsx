@@ -31,8 +31,12 @@ export default async function CreateAccount() {
 export const metadata: Metadata = {
   description: 'Konto erstellen oder anmelden.',
   openGraph: mergeOpenGraph({
-    title: 'Konto',
-    url: '/account',
+    title: 'Konto erstellen',
+    url: '/create-account',
   }),
-  title: 'Konto',
+  robots: {
+    follow: false,
+    index: false,
+  },
+  title: 'Konto erstellen',
 }

@@ -19,5 +19,9 @@ export const metadata: Metadata = {
     title: 'Abgemeldet',
     url: '/logout',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Abgemeldet',
 }

@@ -3,13 +3,26 @@ import { ProductGridItem } from '@/components/ProductGridItem'
 import { ShopFilterBar } from '@/components/ShopFilterBar'
 import { getCategoryAndDescendantIds, organizeCategories, filterCategoriesWithPublishedProducts, publishedCategoryIdsFromProducts } from '@/lib/categories'
 import type { Product } from '@/payload-types'
+import { absoluteUrl } from '@/utilities/absoluteUrl'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
+import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
-export const metadata = {
+const shopDescription = 'Entdecke unsere handgefertigten Olivenholzprodukte und Keramik.'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: absoluteUrl('/shop'),
+  },
+  description: shopDescription,
+  openGraph: mergeOpenGraph({
+    description: shopDescription,
+    title: 'Shop',
+    url: '/shop',
+  }),
   title: 'Shop',
-  description: 'Entdecke unsere Produktkollektionen.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }

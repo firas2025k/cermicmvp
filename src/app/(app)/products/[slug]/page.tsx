@@ -7,7 +7,10 @@ import { ProductDescription } from '@/components/product/ProductDescription'
 import { GeneralProductFaq } from '@/components/product/GeneralProductFaq'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
 import configPromise from '@payload-config'
+import { absoluteUrl } from '@/utilities/absoluteUrl'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { lexicalToPlainText } from '@/utilities/lexicalToPlainText'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -32,21 +35,30 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const metaImage = typeof product.meta?.image === 'object' ? product.meta?.image : undefined
   const canIndex = product._status === 'published'
   const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
+  const path = `/products/${slug}`
+  const canonical = absoluteUrl(path)
+  const description =
+    product.meta?.description || lexicalToPlainText(product.description) || undefined
+  const imageUrl = absoluteUrl(seoImage?.url)
 
   return {
-    description: product.meta?.description || '',
-    openGraph: seoImage?.url
-      ? {
-          images: [
+    alternates: canonical ? { canonical } : undefined,
+    description,
+    openGraph: mergeOpenGraph({
+      description,
+      images: imageUrl
+        ? [
             {
-              alt: seoImage?.alt,
-              height: seoImage.height!,
-              url: seoImage?.url,
-              width: seoImage.width!,
+              alt: seoImage?.alt || product.title,
+              height: seoImage?.height || undefined,
+              url: imageUrl,
+              width: seoImage?.width || undefined,
             },
-          ],
-        }
-      : null,
+          ]
+        : undefined,
+      title: product.meta?.title || product.title,
+      url: path,
+    }),
     robots: {
       follow: canIndex,
       googleBot: { follow: canIndex, index: canIndex },
@@ -75,28 +87,56 @@ export default async function ProductPage({ params }: Args) {
       })
     : product.inventory! > 0
 
-  let price = product.priceInEUR
-  if (product.enableVariants && product?.variants?.docs?.length) {
-    price = product?.variants?.docs?.reduce((acc, variant) => {
-      if (typeof variant === 'object' && variant?.priceInEUR && acc && variant?.priceInEUR > acc) {
-        return variant.priceInEUR
-      }
-      return acc
-    }, price)
-  }
+  const variantPrices =
+    product.enableVariants && product?.variants?.docs?.length
+      ? product.variants.docs
+          .map((variant) => (typeof variant === 'object' ? variant.priceInEUR : null))
+          .filter((value): value is number => typeof value === 'number')
+      : []
+
+  const priceCentsList = [
+    ...(typeof product.priceInEUR === 'number' ? [product.priceInEUR] : []),
+    ...variantPrices,
+  ]
+  const lowPriceCents = priceCentsList.length ? Math.min(...priceCentsList) : undefined
+  const highPriceCents = priceCentsList.length ? Math.max(...priceCentsList) : undefined
+  const seoImage = metaImage || (gallery.length ? gallery[0]?.image : undefined)
+  const productPath = `/products/${slug}`
+  const productUrl = absoluteUrl(productPath)
+  const imageUrl = absoluteUrl(seoImage?.url)
+  const plainDescription =
+    product.meta?.description || lexicalToPlainText(product.description) || undefined
+
+  const offers =
+    lowPriceCents != null && highPriceCents != null && lowPriceCents !== highPriceCents
+      ? {
+          '@type': 'AggregateOffer',
+          availability: hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          highPrice: (highPriceCents / 100).toFixed(2),
+          lowPrice: (lowPriceCents / 100).toFixed(2),
+          priceCurrency: 'EUR',
+          url: productUrl,
+        }
+      : {
+          '@type': 'Offer',
+          availability: hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          price: ((lowPriceCents ?? 0) / 100).toFixed(2),
+          priceCurrency: 'EUR',
+          url: productUrl,
+        }
 
   const productJsonLd = {
-    name: product.title,
     '@context': 'https://schema.org',
     '@type': 'Product',
-    description: product.description,
-    image: metaImage?.url,
-    offers: {
-      '@type': 'AggregateOffer',
-      availability: hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: price,
-      priceCurrency: 'eur',
+    brand: {
+      '@type': 'Brand',
+      name: 'Nabea',
     },
+    description: plainDescription,
+    image: imageUrl ? [imageUrl] : undefined,
+    name: product.title,
+    offers,
+    url: productUrl,
   }
 
   const relatedProducts =

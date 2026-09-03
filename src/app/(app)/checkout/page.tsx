@@ -78,5 +78,9 @@ export const metadata: Metadata = {
     title: 'Kasse',
     url: '/checkout',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Kasse',
 }

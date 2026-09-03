@@ -6,8 +6,12 @@ type Props = {
 }
 
 export const metadata: Metadata = {
-  title: 'Newsletter-Anmeldung',
   description: 'Bestätigung deiner Newsletter-Anmeldung.',
+  robots: {
+    follow: false,
+    index: false,
+  },
+  title: 'Newsletter-Anmeldung',
 }
 
 export default async function NewsletterConfirmedPage({ searchParams }: Props) {

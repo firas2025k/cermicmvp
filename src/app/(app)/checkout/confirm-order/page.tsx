@@ -38,5 +38,9 @@ export const metadata: Metadata = {
     title: 'Bestellung wird bestätigt',
     url: '/checkout/confirm-order',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Bestellung wird bestätigt',
 }

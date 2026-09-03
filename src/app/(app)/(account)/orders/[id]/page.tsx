@@ -202,6 +202,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `Bestellung ${id}`,
       url: `/orders/${id}`,
     }),
+    robots: {
+      follow: false,
+      index: false,
+    },
     title: `Bestellung ${id}`,
   }
 }

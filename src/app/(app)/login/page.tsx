@@ -51,5 +51,9 @@ export const metadata: Metadata = {
     title: 'Anmelden',
     url: '/login',
   },
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Anmelden',
 }

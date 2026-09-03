@@ -65,5 +65,9 @@ export const metadata: Metadata = {
     title: 'Adressen',
     url: '/account/addresses',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Adressen',
 }

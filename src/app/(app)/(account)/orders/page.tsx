@@ -65,5 +65,9 @@ export const metadata: Metadata = {
     title: 'Bestellungen',
     url: '/orders',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Bestellungen',
 }

@@ -91,5 +91,9 @@ export const metadata: Metadata = {
     title: 'Konto',
     url: '/account',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Konto',
 }

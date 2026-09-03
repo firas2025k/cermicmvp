@@ -19,5 +19,9 @@ export const metadata: Metadata = {
     title: 'Passwort vergessen',
     url: '/forgot-password',
   }),
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: 'Passwort vergessen',
 }
