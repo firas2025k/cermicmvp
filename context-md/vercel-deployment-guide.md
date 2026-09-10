@@ -190,12 +190,15 @@ const nextConfig = {
 Configure Stripe webhooks to point to your Vercel deployment:
 
 1. Go to Stripe Dashboard → Developers → Webhooks
-2. Add endpoint: `https://your-domain.vercel.app/api/stripe/webhooks`
-3. Select events:
+2. Add endpoint: `https://nabea.at/api/payments/stripe/webhooks` (or your Vercel production URL + same path)
+3. Select events (PaymentIntent shop):
    - `payment_intent.succeeded`
    - `payment_intent.payment_failed`
-   - `checkout.session.completed`
+   - `payment_intent.canceled`
+   - Optional ops: `charge.refunded`, `charge.dispute.created`
 4. Copy the webhook signing secret and add it to Vercel as `STRIPE_WEBHOOKS_SIGNING_SECRET`
+
+See `stripe-webhooks-go-live.md` for the full live vs test setup.
 
 ## Step 6: Database Connection
 

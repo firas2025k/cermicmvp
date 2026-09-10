@@ -1,108 +1,60 @@
-import type { Media as MediaType, ProductUsageBlock as ProductUsageBlockProps } from '@/payload-types'
-import Image from 'next/image'
+import type { ProductUsageBlock as ProductUsageBlockProps } from '@/payload-types'
 import Link from 'next/link'
 import React from 'react'
 
-function getItemHref(item: NonNullable<ProductUsageBlockProps['items']>[number]): string {
-  if (item.linkType === 'product' && item.product) {
-    const product = typeof item.product === 'object' ? item.product : null
-    if (product && 'slug' in product && product.slug) {
-      return `/products/${product.slug}`
-    }
-  }
-  return item.link || '/shop'
-}
+import { ProductUsageCarousel, ProductUsageTile } from './ProductUsageCarousel'
 
 export const ProductUsageBlockComponent: React.FC<ProductUsageBlockProps> = ({ items }) => {
   if (!items || items.length === 0) return null
 
+  const useCarousel = items.length > 3
+
   return (
     <>
-      {/* ── Section label ──────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 flex items-end justify-between">
+      <div className="mx-auto flex max-w-7xl items-end justify-between px-6 py-16 lg:px-10">
         <div>
-          <p className="font-sans text-xs tracking-[0.3em] uppercase text-warm-gray mb-3">
+          <p className="mb-3 font-sans text-xs tracking-[0.3em] uppercase text-warm-gray">
             Entdecken
           </p>
-          <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal">
+          <h2 className="font-serif text-4xl font-light text-charcoal lg:text-5xl">
             Unsere Vielfalt
           </h2>
         </div>
         <Link
           href="/shop"
-          className="hidden md:inline-flex items-center px-6 py-2.5 font-sans text-sm tracking-wide border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200 rounded-none"
+          className="hidden items-center rounded-none border border-olive px-6 py-2.5 font-sans text-sm tracking-wide text-olive transition-all duration-200 hover:bg-olive hover:text-linen md:inline-flex"
         >
           Alle ansehen
         </Link>
       </div>
 
-      {/* ── Collection tiles ───────────────────────────────────────────── */}
-      <section
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        aria-label="Unsere Vielfalt"
-      >
-        {items.map((item, index) => {
-          const image = typeof item.image === 'object' ? (item.image as MediaType) : null
-          const href = getItemHref(item)
+      {useCarousel ? (
+        <ProductUsageCarousel items={items} />
+      ) : (
+        <section
+          className={`grid grid-cols-1 ${
+            items.length === 1
+              ? 'md:grid-cols-1'
+              : items.length === 2
+                ? 'md:grid-cols-2'
+                : 'md:grid-cols-2 lg:grid-cols-3'
+          }`}
+          aria-label="Unsere Vielfalt"
+        >
+          {items.map((item, index) => (
+            <ProductUsageTile key={item.id ?? index} item={item} />
+          ))}
+        </section>
+      )}
 
-          return (
-            <Link
-              key={index}
-              href={href}
-              // Hide the 3rd tile on md (2-col) only — visible on sm (1-col) and lg (3-col)
-              className={`relative overflow-hidden group block bg-[#F7F3EE]${index === 2 ? ' md:hidden lg:block' : ''}`}
-              style={{ aspectRatio: '4/5' }}
-            >
-              {/* Full product frame visible (images use #F7F3EE padding — avoid object-cover crop) */}
-              {image?.url ? (
-                <div className="absolute inset-6 md:inset-8 lg:inset-10">
-                  <Image
-                    src={image.url}
-                    alt={image.alt || item.title}
-                    fill
-                    className="object-contain transition-transform duration-500 ease-in-out group-hover:scale-[1.03]"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
-              ) : (
-                <div className="absolute inset-0 bg-[#E2DBD0]" />
-              )}
-
-              {/* Bottom gradient overlay */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(to top, rgba(44,42,39,0.62) 0%, transparent 55%)',
-                }}
-              />
-
-              {/* Tile content */}
-              <div className="absolute bottom-0 left-0 right-0 p-7 lg:p-8 text-[#F8F4EE]">
-                {item.description && (
-                  <p className="font-sans text-[0.6rem] font-bold tracking-[0.22em] uppercase mb-2 opacity-75">
-                    {item.description}
-                  </p>
-                )}
-                <h3
-                  className="font-sans font-extrabold leading-[1.1] mb-4"
-                  style={{
-                    fontSize: 'clamp(1.4rem, 2.2vw, 1.9rem)',
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  {item.title}
-                </h3>
-                {item.linkText && (
-                  <span className="font-sans text-[0.65rem] font-bold tracking-[0.14em] uppercase underline underline-offset-[3px] text-[#F8F4EE] opacity-90 group-hover:opacity-100 transition-opacity duration-200">
-                    {item.linkText} →
-                  </span>
-                )}
-              </div>
-            </Link>
-          )
-        })}
-      </section>
+      <div className="px-6 pb-10 md:hidden">
+        <Link
+          href="/shop"
+          className="inline-flex w-full items-center justify-center border border-olive px-6 py-2.5 font-sans text-sm tracking-wide text-olive transition-all duration-200 hover:bg-olive hover:text-linen"
+        >
+          Alle ansehen
+        </Link>
+      </div>
     </>
   )
 }
