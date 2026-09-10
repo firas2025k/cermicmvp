@@ -18,6 +18,7 @@ import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c08
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { DiscountStatusField as DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff } from '@/components/admin/DiscountStatus'
 import { VariantDeleteCell as VariantDeleteCell_de6dbb444563e18971822baa752ac617 } from '@/components/admin/VariantDeleteCell'
 import { VariantOptionsSelector as VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
 import { PriceCell as PriceCell_e27bf7b8cc50640dcdd584767b8eac3c } from '@payloadcms/plugin-ecommerce/client'
@@ -25,6 +26,7 @@ import { PriceInput as PriceInput_b91672ccd6e8b071c11142ab941fedfb } from '@payl
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ColorPicker as ColorPicker_55a7d1ebef7afeed563b856ae2e2cbf4 } from '@/components/ColorPicker'
 import { HeroSlideRowLabel as HeroSlideRowLabel_fc80b8c2dc3ad48d23b1601d610bdcee } from '@/blocks/HeroCarousel/HeroSlideRowLabel'
+import { FeatureIconPicker as FeatureIconPicker_3b012f96180385db56fa4bad7fe64b02 } from '@/components/admin/FeatureIconPicker'
 import { BeforeDashboard as BeforeDashboard_1a7510af427896d367a49dbf838d2de6 } from '@/components/BeforeDashboard'
 import { BeforeLogin as BeforeLogin_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
@@ -51,6 +53,7 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
+  "@/components/admin/DiscountStatus#DiscountStatusField": DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff,
   "@/components/admin/VariantDeleteCell#VariantDeleteCell": VariantDeleteCell_de6dbb444563e18971822baa752ac617,
   "@payloadcms/plugin-ecommerce/rsc#VariantOptionsSelector": VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb,
   "@payloadcms/plugin-ecommerce/client#PriceCell": PriceCell_e27bf7b8cc50640dcdd584767b8eac3c,
@@ -58,6 +61,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/ColorPicker#ColorPicker": ColorPicker_55a7d1ebef7afeed563b856ae2e2cbf4,
   "@/blocks/HeroCarousel/HeroSlideRowLabel#HeroSlideRowLabel": HeroSlideRowLabel_fc80b8c2dc3ad48d23b1601d610bdcee,
+  "@/components/admin/FeatureIconPicker#FeatureIconPicker": FeatureIconPicker_3b012f96180385db56fa4bad7fe64b02,
   "@/components/BeforeDashboard#BeforeDashboard": BeforeDashboard_1a7510af427896d367a49dbf838d2de6,
   "@/components/BeforeLogin#BeforeLogin": BeforeLogin_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,

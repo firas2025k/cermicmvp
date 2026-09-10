@@ -6,15 +6,10 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-export const FEATURE_ICON_OPTIONS = [
-  { label: 'Knife-friendly (Messerfreundlich)', value: 'knifeFriendly' },
-  { label: 'Colorful grain (Farbenprächtig)', value: 'colorfulGrain' },
-  { label: 'Food-safe (Lebensmittelecht)', value: 'foodSafe' },
-  { label: 'Antibacterial (Antibakteriell)', value: 'antibacterial' },
-  { label: 'Easy care (Pflegeleicht)', value: 'easyCare' },
-] as const
+import { FEATURE_ICON_OPTIONS } from '@/utilities/featureIcons'
 
-export type FeatureIconValue = (typeof FEATURE_ICON_OPTIONS)[number]['value']
+export type { FeatureIconValue } from '@/utilities/featureIcons'
+export { FEATURE_ICON_OPTIONS } from '@/utilities/featureIcons'
 
 export const ProductFaqSection: GlobalConfig = {
   slug: 'product-faq-section',
@@ -25,7 +20,7 @@ export const ProductFaqSection: GlobalConfig = {
   admin: {
     group: 'Content',
     description:
-      'General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Icon graphics are fixed — only labels are editable.',
+      'General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Choose a Lucide icon visually and edit each label.',
   },
   fields: [
     {
@@ -36,7 +31,7 @@ export const ProductFaqSection: GlobalConfig = {
       minRows: 0,
       admin: {
         description:
-          'Up to 5 features. Pick a built-in icon and edit the label. Leave empty to hide the icon row.',
+          'Up to 5 features. Click an icon to select it, then edit the label. Leave empty to hide the icon row.',
         initCollapsed: false,
       },
       defaultValue: [
@@ -54,6 +49,12 @@ export const ProductFaqSection: GlobalConfig = {
           required: true,
           options: [...FEATURE_ICON_OPTIONS],
           defaultValue: 'knifeFriendly',
+          admin: {
+            description: 'Click an icon to select it for this feature.',
+            components: {
+              Field: '@/components/admin/FeatureIconPicker#FeatureIconPicker',
+            },
+          },
         },
         {
           name: 'label',
@@ -67,7 +68,7 @@ export const ProductFaqSection: GlobalConfig = {
       name: 'heading',
       type: 'text',
       label: 'FAQ Heading',
-      defaultValue: "FAQ'S",
+      defaultValue: 'Häufig gestellte Fragen',
     },
     {
       name: 'image',

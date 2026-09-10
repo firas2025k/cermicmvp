@@ -1,8 +1,8 @@
 'use client'
 
 import { RichText } from '@/components/RichText'
-import type { FeatureIconValue } from '@/globals/ProductFaqSection'
 import type { Media, ProductFaqSection } from '@/payload-types'
+import { FEATURE_ICON_MAP, type FeatureIconValue } from '@/utilities/featureIcons'
 import { cn } from '@/utilities/cn'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -14,69 +14,13 @@ type Props = {
   data: ProductFaqSection
 }
 
-function FeatureIconSvg({ icon }: { icon: FeatureIconValue }) {
-  const common = {
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.5,
-    viewBox: '0 0 24 24',
-    className: 'h-6 w-6',
-    'aria-hidden': true as const,
-  }
-
-  switch (icon) {
-    case 'knifeFriendly':
-      return (
-        <svg {...common}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 20l8-8M12 12l7-7M14 5l5 5" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 14.5c-1.2 1.8-3.8 2.2-5.2.8" />
-        </svg>
-      )
-    case 'colorfulGrain':
-      return (
-        <svg {...common}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 7c2.5 2 5.5 2 8 0s5.5-2 8 0M4 12c2.5 2 5.5 2 8 0s5.5-2 8 0M4 17c2.5 2 5.5 2 8 0s5.5-2 8 0"
-          />
-        </svg>
-      )
-    case 'foodSafe':
-      return (
-        <svg {...common}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 3v10a2 2 0 104 0V3" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10 13v8" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 3v7c0 1.7 1.3 3 3 3h0V3" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 13v8" />
-        </svg>
-      )
-    case 'antibacterial':
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="4" />
-          <path strokeLinecap="round" d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M17.7 6.3l-1.4 1.4M7.7 16.3l-1.4 1.4" />
-          <path strokeLinecap="round" d="M5 19L19 5" />
-        </svg>
-      )
-    case 'easyCare':
-      return (
-        <svg {...common}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M7 14c2-3 4-5 5-7 1 2 3 4 5 7M5 18h14"
-          />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 14c.8 1.5 1.5 2.5 3 4 1.5-1.5 2.2-2.5 3-4" />
-        </svg>
-      )
-    default:
-      return null
-  }
+function FeatureIconSvg({ icon }: { icon: string }) {
+  const Icon = FEATURE_ICON_MAP[icon as FeatureIconValue] ?? FEATURE_ICON_MAP.unique
+  return <Icon className="h-6 w-6" strokeWidth={1.5} aria-hidden />
 }
 
-function FaqAccordionRow({ item, defaultOpen = false }: { item: FaqItem; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen)
+function FaqAccordionRow({ item }: { item: FaqItem }) {
+  const [open, setOpen] = useState(false)
 
   return (
     <div className="border-b border-warm-border">
@@ -134,7 +78,7 @@ export function GeneralProductFaq({ data }: Props) {
             {icons.map((item, index) => (
               <li key={item.id ?? `${item.icon}-${index}`} className="flex flex-col items-center text-center">
                 <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-charcoal text-linen">
-                  <FeatureIconSvg icon={item.icon as FeatureIconValue} />
+                  <FeatureIconSvg icon={item.icon} />
                 </div>
                 <p className="font-sans text-[11px] font-medium tracking-[0.12em] uppercase text-charcoal">
                   {item.label}
@@ -166,11 +110,7 @@ export function GeneralProductFaq({ data }: Props) {
               </h2>
               <div className="border-t border-warm-border">
                 {items.map((item, index) => (
-                  <FaqAccordionRow
-                    key={item.id ?? `${item.question}-${index}`}
-                    item={item}
-                    defaultOpen={index === 0}
-                  />
+                  <FaqAccordionRow key={item.id ?? `${item.question}-${index}`} item={item} />
                 ))}
               </div>
             </div>

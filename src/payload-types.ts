@@ -2609,7 +2609,7 @@ export interface InquiryBlock {
   blockType: 'inquiry';
 }
 /**
- * General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Icon graphics are fixed — only labels are editable.
+ * General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Choose a Lucide icon visually and edit each label.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "product-faq-section".
@@ -2617,11 +2617,36 @@ export interface InquiryBlock {
 export interface ProductFaqSection {
   id: number;
   /**
-   * Up to 5 features. Pick a built-in icon and edit the label. Leave empty to hide the icon row.
+   * Up to 5 features. Click an icon to select it, then edit the label. Leave empty to hide the icon row.
    */
   featureIcons?:
     | {
-        icon: 'knifeFriendly' | 'colorfulGrain' | 'foodSafe' | 'antibacterial' | 'easyCare';
+        /**
+         * Click an icon to select it for this feature.
+         */
+        icon:
+          | 'knifeFriendly'
+          | 'colorfulGrain'
+          | 'foodSafe'
+          | 'antibacterial'
+          | 'easyCare'
+          | 'unique'
+          | 'durable'
+          | 'leaf'
+          | 'tree'
+          | 'heart'
+          | 'hand'
+          | 'droplet'
+          | 'sun'
+          | 'award'
+          | 'recycle'
+          | 'gem'
+          | 'clock'
+          | 'flame'
+          | 'utensils'
+          | 'sprout'
+          | 'checkCircle'
+          | 'shieldCheck';
         label: string;
         id?: string | null;
       }[]
