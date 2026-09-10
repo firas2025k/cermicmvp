@@ -46,6 +46,7 @@ export function filterOptionsForProduct(
 /**
  * Collect options directly from the product's populated variants for a given variant type.
  * This avoids relying on variantType.options.docs which can be truncated by the JOIN field page limit.
+ * Order follows Payload Global Variants drag order (`_variantOptions_options_order`).
  */
 export function getOptionsForProductByType(
   product: Product,
@@ -69,20 +70,11 @@ export function getOptionsForProductByType(
     }
   }
 
-  // Sort: parse "NxM" dimensions numerically (smallest first), fall back to alphabetical
   opts.sort((a, b) => {
-    const parseDim = (label: string) => {
-      const m = label.match(/^(\d+(?:\.\d+)?)\s*[xX×]\s*(\d+(?:\.\d+)?)/)
-      if (m) return [parseFloat(m[1]!), parseFloat(m[2]!)] as [number, number]
-      return null
-    }
-    const da = parseDim(a.label)
-    const db = parseDim(b.label)
-    if (da && db) {
-      if (da[0] !== db[0]) return da[0] - db[0]
-      return da[1] - db[1]
-    }
-    return a.label.localeCompare(b.label)
+    const orderA = a._variantOptions_options_order ?? ''
+    const orderB = b._variantOptions_options_order ?? ''
+    if (orderA || orderB) return orderA.localeCompare(orderB)
+    return 0
   })
 
   return opts
