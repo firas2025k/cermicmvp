@@ -17,8 +17,10 @@ import {
     InlineToolbarFeature,
     lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import type { Field } from 'payload'
+import type { CollectionAfterChangeHook, Field } from 'payload'
 import { DefaultDocumentIDType, slugField, Where } from 'payload'
+
+import { notifyOnProductRestock } from '@/hooks/notifyStockWaitlist'
 
 /**
  * - Inventory: plugin hides it when variants are enabled; keep it visible.
@@ -73,7 +75,14 @@ function patchEcommerceProductDetailFields(fields: Field[]): Field[] {
   })
 }
 
-export const ProductsCollection: CollectionOverride = ({ defaultCollection }) => ({
+export const ProductsCollection: CollectionOverride = ({ defaultCollection }) => {
+  const existingAfter = defaultCollection.hooks?.afterChange
+  const afterChangeChain: CollectionAfterChangeHook[] = [
+    ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
+    notifyOnProductRestock,
+  ]
+
+  return {
   ...defaultCollection,
   admin: {
     ...defaultCollection?.admin,
@@ -93,6 +102,10 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
         req,
       }),
     useAsTitle: 'title',
+  },
+  hooks: {
+    ...defaultCollection.hooks,
+    afterChange: afterChangeChain,
   },
   defaultPopulate: {
     ...defaultCollection?.defaultPopulate,
@@ -342,4 +355,5 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
     },
     slugField(),
   ],
-})
+  }
+}

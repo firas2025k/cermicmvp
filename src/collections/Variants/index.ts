@@ -1,6 +1,7 @@
 import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
-import type { CollectionBeforeChangeHook } from 'payload'
+import type { CollectionAfterChangeHook, CollectionBeforeChangeHook } from 'payload'
 
+import { notifyOnVariantRestock } from '@/hooks/notifyStockWaitlist'
 import { autoGenerateVariantSku } from './autoGenerateSku'
 
 export const VariantsCollection: CollectionOverride = ({ defaultCollection }) => {
@@ -8,6 +9,12 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
   const beforeChangeChain: CollectionBeforeChangeHook[] = [
     ...(Array.isArray(existingBefore) ? existingBefore : existingBefore ? [existingBefore] : []),
     autoGenerateVariantSku,
+  ]
+
+  const existingAfter = defaultCollection.hooks?.afterChange
+  const afterChangeChain: CollectionAfterChangeHook[] = [
+    ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
+    notifyOnVariantRestock,
   ]
 
   return {
@@ -27,6 +34,7 @@ export const VariantsCollection: CollectionOverride = ({ defaultCollection }) =>
     hooks: {
       ...defaultCollection.hooks,
       beforeChange: beforeChangeChain,
+      afterChange: afterChangeChain,
     },
     fields: [
       {
