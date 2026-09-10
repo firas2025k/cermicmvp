@@ -5,13 +5,6 @@ import { cn } from '@/utilities/cn'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 
-const SORT_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'title', label: 'Sortierung: Empfohlen' },
-  { value: 'priceInEUR', label: 'Preis: aufsteigend' },
-  { value: '-priceInEUR', label: 'Preis: absteigend' },
-  { value: '-createdAt', label: 'Neueste' },
-]
-
 type Props = {
   topLevel: Category[]
   byParent: Record<string | number, Category[]>
@@ -24,7 +17,6 @@ export function ShopFilterBar({
   topLevel,
   byParent,
   activeCategory,
-  activeSort,
   productCount,
 }: Props) {
   const router = useRouter()
@@ -44,6 +36,9 @@ export function ShopFilterBar({
     [pathname, router, searchParams],
   )
 
+  const singleParentMode = topLevel.length === 1
+  const soleParent = singleParentMode ? topLevel[0] : null
+
   // Which top-level category is active (either directly selected or parent of selected sub)
   const activeParentCategory = useMemo(() => {
     if (!activeCategory) return null
@@ -54,17 +49,24 @@ export function ShopFilterBar({
     )
   }, [activeCategory, topLevel, byParent])
 
-  const activeSubs = activeParentCategory ? (byParent[activeParentCategory.id] ?? []) : []
+  // Single-parent shop: always show that parent's subs next to Alle
+  const rowSubs = soleParent
+    ? (byParent[soleParent.id] ?? [])
+    : activeParentCategory
+      ? (byParent[activeParentCategory.id] ?? [])
+      : []
 
   const handleParentClick = (parent: Category) => {
     setParam('category', activeParentCategory?.slug === parent.slug ? null : parent.slug)
   }
 
   const handleSubClick = (sub: Category) => {
-    setParam(
-      'category',
-      activeCategory === sub.slug ? (activeParentCategory?.slug ?? null) : sub.slug,
-    )
+    if (activeCategory === sub.slug) {
+      // Single-parent: back to Alle. Multi-parent: back to parent category.
+      setParam('category', soleParent ? null : (activeParentCategory?.slug ?? null))
+      return
+    }
+    setParam('category', sub.slug)
   }
 
   const filterBtnClass = (isActive: boolean) =>
@@ -75,91 +77,95 @@ export function ShopFilterBar({
         : 'border-warm-border text-warm-gray hover:border-olive hover:bg-olive hover:text-linen',
     )
 
+  const subBtnClass = (isActive: boolean) =>
+    singleParentMode
+      ? cn(filterBtnClass(isActive), 'flex-shrink-0')
+      : cn(
+          'flex-shrink-0 cursor-pointer border px-3 py-1 font-sans text-[11px] tracking-[0.1em] uppercase transition-all duration-150',
+          isActive
+            ? 'border-olive font-medium text-olive'
+            : 'border-transparent text-warm-gray hover:border-olive hover:text-olive',
+        )
+
   return (
     <section className="sticky top-16 z-20 border-y border-warm-border bg-white">
-      {/* Row 1: categories + sort */}
       <div className="container py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* Category filter buttons */}
-          <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
-            <button onClick={() => setParam('category', null)} className={cn(filterBtnClass(!activeCategory), 'flex-shrink-0')}>
+          {/* Category filters */}
+          <div
+            className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
+          >
+            <button
+              onClick={() => setParam('category', null)}
+              className={cn(filterBtnClass(!activeCategory), 'flex-shrink-0')}
+            >
               Alle
             </button>
-            {topLevel.map((parent) => (
-              <button
-                key={parent.id}
-                onClick={() => handleParentClick(parent)}
-                className={cn(filterBtnClass(activeParentCategory?.slug === parent.slug), 'flex-shrink-0')}
-              >
-                {parent.title}
-              </button>
-            ))}
+
+            {singleParentMode
+              ? rowSubs.map((sub) => (
+                  <button
+                    key={sub.id}
+                    onClick={() => handleSubClick(sub)}
+                    className={cn(subBtnClass(activeCategory === sub.slug), 'flex-shrink-0')}
+                  >
+                    {sub.title}
+                  </button>
+                ))
+              : topLevel.map((parent) => (
+                  <button
+                    key={parent.id}
+                    onClick={() => handleParentClick(parent)}
+                    className={cn(
+                      filterBtnClass(activeParentCategory?.slug === parent.slug),
+                      'flex-shrink-0',
+                    )}
+                  >
+                    {parent.title}
+                  </button>
+                ))}
           </div>
 
-          {/* Right side: product count + sort */}
+          {/* Product count */}
           <div className="flex items-center gap-6">
             <span className="font-sans text-xs text-warm-gray">
               {productCount} {productCount === 1 ? 'Produkt' : 'Produkte'}
             </span>
+          </div>
+        </div>
 
-            <div className="relative">
-              <select
-                value={activeSort ?? 'title'}
-                onChange={(e) => setParam('sort', e.target.value)}
-                className="cursor-pointer appearance-none border border-warm-border bg-transparent py-2 pr-8 pl-3 font-sans text-xs text-charcoal outline-none"
-                aria-label="Produkte sortieren"
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-warm-gray"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+        {/* Multi-parent only: subcategory row when a parent is active */}
+        {!singleParentMode ? (
+          <div
+            className={cn(
+              'overflow-hidden transition-all duration-300',
+              rowSubs.length > 0 ? 'mt-3 max-h-40 border-t border-warm-border pt-3' : 'max-h-0',
+            )}
+          >
+            <div
+              className="flex items-center gap-1 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
+            >
+              {rowSubs.map((sub, index) => {
+                const isActive = activeCategory === sub.slug
+                return (
+                  <React.Fragment key={sub.id}>
+                    {index > 0 ? (
+                      <span className="select-none text-[11px] text-warm-border">·</span>
+                    ) : null}
+                    <button
+                      onClick={() => handleSubClick(sub)}
+                      className={subBtnClass(isActive)}
+                    >
+                      {sub.title}
+                    </button>
+                  </React.Fragment>
+                )
+              })}
             </div>
           </div>
-        </div>
-
-        {/* Row 2: subcategory pills — slides in when a parent is active */}
-        <div
-          className={cn(
-            'overflow-hidden transition-all duration-300',
-            activeSubs.length > 0 ? 'mt-3 max-h-40 border-t border-warm-border pt-3' : 'max-h-0',
-          )}
-        >
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-x-visible sm:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
-            {activeSubs.map((sub, index) => {
-              const isActive = activeCategory === sub.slug
-              return (
-                <React.Fragment key={sub.id}>
-                  {index > 0 ? (
-                    <span className="select-none text-[11px] text-warm-border">·</span>
-                  ) : null}
-                  <button
-                    onClick={() => handleSubClick(sub)}
-                    className={cn(
-                      'flex-shrink-0 cursor-pointer border px-3 py-1 font-sans text-[11px] tracking-[0.1em] uppercase transition-all duration-150',
-                      isActive
-                        ? 'border-olive font-medium text-olive'
-                        : 'border-transparent text-warm-gray hover:border-olive hover:text-olive',
-                    )}
-                  >
-                    {sub.title}
-                  </button>
-                </React.Fragment>
-              )
-            })}
-          </div>
-        </div>
+        ) : null}
       </div>
     </section>
   )
