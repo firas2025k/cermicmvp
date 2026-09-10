@@ -9,13 +9,217 @@
   border: 0;
 }
 
-/* Custom block preview images for Payload CMS block selector */
-/* Plain CSS (no mixins) targeting exact classes from the Payload DOM */
+/* -------------------------------------------------------------------------- */
+/* Nabea admin shell — charcoal / olive look & feel (CSS only)                */
+/* -------------------------------------------------------------------------- */
 
-/* Debug: make Hero Carousel background red to confirm CSS loads */
-button[title*="Hero Carousel"] .blocks-drawer__default-image {
-  background-color: red !important;
+:root {
+  --nabea-charcoal: #2c2a27;
+  --nabea-olive: #4a5e3a;
+  --nabea-olive-light: #6b7f5a;
+  --nabea-linen: #f8f4ee;
+  --nabea-warm-border: #e2dbd0;
+  --nabea-warm-gray: #8c8680;
+  --nabea-surface: #f5f2ec;
 }
+
+html[data-theme='light'] {
+  --theme-bg: #f7f4ef;
+  --theme-input-bg: #ffffff;
+  --theme-text: var(--nabea-charcoal);
+  --theme-success-500: var(--nabea-olive);
+  --theme-success-600: #3d4f31;
+  --theme-elevation-0: #ffffff;
+  --theme-elevation-50: #f8f4ee;
+  --theme-elevation-100: #efe9e0;
+  --theme-elevation-150: #e2dbd0;
+  --theme-elevation-200: #d5cdc2;
+  --theme-elevation-400: #8c8680;
+  --theme-elevation-500: #6f6a64;
+  --theme-elevation-800: #3f3c38;
+  --theme-elevation-1000: #2c2a27;
+  --theme-border-color: var(--nabea-warm-border);
+}
+
+html[data-theme='dark'] {
+  --theme-success-500: var(--nabea-olive-light);
+  --theme-success-600: #8fa57a;
+}
+
+/* Soft page canvas behind lists / dashboard */
+.template-default__wrap,
+.collection-list,
+.dashboard {
+  background-color: var(--nabea-surface);
+}
+
+html[data-theme='dark'] .template-default__wrap,
+html[data-theme='dark'] .collection-list,
+html[data-theme='dark'] .dashboard {
+  background-color: transparent;
+}
+
+.dashboard .before-dashboard {
+  padding: 24px 16px 32px;
+}
+
+/* Header: quieter chrome */
+.app-header {
+  border-bottom-color: var(--nabea-warm-border);
+}
+
+html[data-theme='light'] .app-header__bg {
+  background: rgba(248, 244, 238, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sidebar / Nav                                                              */
+/* -------------------------------------------------------------------------- */
+
+.nav {
+  background: #ffffff;
+  border-right: 1px solid var(--nabea-warm-border) !important;
+  border-left: none !important;
+}
+
+html[data-theme='dark'] .nav {
+  background: var(--theme-elevation-0);
+  border-right-color: var(--theme-elevation-100) !important;
+}
+
+.nav__scroll {
+  gap: 4px;
+}
+
+.nav__label,
+.nav-group__toggle {
+  color: var(--nabea-warm-gray);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.nav-group {
+  margin-bottom: 18px;
+}
+
+.nav-group__toggle:hover,
+.nav-group__toggle:focus-visible {
+  color: var(--nabea-charcoal);
+}
+
+.nav__link {
+  width: 100%;
+  margin: 2px 0;
+  padding-block: 8px !important;
+  padding-inline: 12px 14px !important;
+  border-radius: 10px;
+  color: var(--nabea-warm-gray);
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.nav a.nav__link:hover,
+.nav a.nav__link:focus-visible {
+  text-decoration: none !important;
+  background: rgba(74, 94, 58, 0.08);
+  color: var(--nabea-charcoal);
+}
+
+.nav__link.active,
+.nav__link:has(.nav__link-indicator) {
+  background: var(--nabea-charcoal) !important;
+  color: var(--nabea-linen) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 16px rgba(44, 42, 39, 0.12);
+}
+
+.nav__link.active:hover,
+.nav__link:has(.nav__link-indicator):hover {
+  background: var(--nabea-olive) !important;
+  color: #ffffff !important;
+}
+
+/* Hide default left bar indicator — pill replaces it */
+.nav__link-indicator {
+  display: none !important;
+}
+
+.nav__controls {
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--nabea-warm-border);
+  margin-top: 20px;
+  width: 100%;
+}
+
+html[data-theme='dark'] .nav__controls {
+  border-top-color: var(--theme-elevation-100);
+}
+
+.nav__controls a,
+.nav__log-out {
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--nabea-warm-gray);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.nav__controls a:hover,
+.nav__log-out:hover {
+  background: rgba(74, 94, 58, 0.08);
+  color: var(--nabea-charcoal);
+  text-decoration: none;
+}
+
+html[data-theme='dark'] .nav__link {
+  color: var(--theme-elevation-500);
+}
+
+html[data-theme='dark'] .nav a.nav__link:hover,
+html[data-theme='dark'] .nav a.nav__link:focus-visible {
+  background: rgba(107, 127, 90, 0.18);
+  color: var(--theme-elevation-1000);
+}
+
+html[data-theme='dark'] .nav__link.active,
+html[data-theme='dark'] .nav__link:has(.nav__link-indicator) {
+  background: var(--nabea-olive) !important;
+  color: #ffffff !important;
+  box-shadow: none;
+}
+
+/* Cards / lists feel a bit softer on the linen canvas */
+html[data-theme='light'] .table,
+html[data-theme='light'] .collection-list__wrap,
+html[data-theme='light'] .card,
+html[data-theme='light'] .group-field,
+html[data-theme='light'] .render-fields {
+  --theme-border-color: var(--nabea-warm-border);
+}
+
+html[data-theme='light'] .btn--style-primary {
+  background: var(--nabea-charcoal);
+  border-color: var(--nabea-charcoal);
+}
+
+html[data-theme='light'] .btn--style-primary:hover {
+  background: var(--nabea-olive);
+  border-color: var(--nabea-olive);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Custom block preview images for Payload CMS block selector                 */
+/* -------------------------------------------------------------------------- */
 
 /* Hide inline SVG placeholders once backgrounds apply */
 .blocks-drawer__default-image svg {
@@ -25,12 +229,12 @@ button[title*="Hero Carousel"] .blocks-drawer__default-image {
 }
 
 /* Hero Carousel (includes possible leading space in title) */
-button[title="Hero Carousel"] .blocks-drawer__default-image,
-button[title=" Hero Carousel"] .blocks-drawer__default-image,
-button[title="🖼️ Hero Carousel"] .blocks-drawer__default-image,
-button[title=" 🖼️ Hero Carousel"] .blocks-drawer__default-image,
-button[title*="Hero Carousel"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Hero Carousel"] .blocks-drawer__default-image {
+button[title='Hero Carousel'] .blocks-drawer__default-image,
+button[title=' Hero Carousel'] .blocks-drawer__default-image,
+button[title='🖼️ Hero Carousel'] .blocks-drawer__default-image,
+button[title=' 🖼️ Hero Carousel'] .blocks-drawer__default-image,
+button[title*='Hero Carousel'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Hero Carousel'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/hero-carousel.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -38,12 +242,12 @@ button[title*="Hero Carousel"] .blocks-drawer__default-image,
 }
 
 /* Product Carousel */
-button[title="Product Carousel"] .blocks-drawer__default-image,
-button[title=" Product Carousel"] .blocks-drawer__default-image,
-button[title="📦 Product Carousel"] .blocks-drawer__default-image,
-button[title=" 📦 Product Carousel"] .blocks-drawer__default-image,
-button[title*="Product Carousel"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Product Carousel"] .blocks-drawer__default-image {
+button[title='Product Carousel'] .blocks-drawer__default-image,
+button[title=' Product Carousel'] .blocks-drawer__default-image,
+button[title='📦 Product Carousel'] .blocks-drawer__default-image,
+button[title=' 📦 Product Carousel'] .blocks-drawer__default-image,
+button[title*='Product Carousel'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Product Carousel'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/product-carousel.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -51,12 +255,12 @@ button[title*="Product Carousel"] .blocks-drawer__default-image,
 }
 
 /* Category Banner */
-button[title="Category Banner"] .blocks-drawer__default-image,
-button[title=" Category Banner"] .blocks-drawer__default-image,
-button[title="🏷️ Category Banner"] .blocks-drawer__default-image,
-button[title=" 🏷️ Category Banner"] .blocks-drawer__default-image,
-button[title*="Category Banner"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Category Banner"] .blocks-drawer__default-image {
+button[title='Category Banner'] .blocks-drawer__default-image,
+button[title=' Category Banner'] .blocks-drawer__default-image,
+button[title='🏷️ Category Banner'] .blocks-drawer__default-image,
+button[title=' 🏷️ Category Banner'] .blocks-drawer__default-image,
+button[title*='Category Banner'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Category Banner'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/category-banner.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -64,12 +268,12 @@ button[title*="Category Banner"] .blocks-drawer__default-image,
 }
 
 /* Brand Story */
-button[title="Brand Story"] .blocks-drawer__default-image,
-button[title=" Brand Story"] .blocks-drawer__default-image,
-button[title="📄 Brand Story"] .blocks-drawer__default-image,
-button[title=" 📄 Brand Story"] .blocks-drawer__default-image,
-button[title*="Brand Story"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Brand Story"] .blocks-drawer__default-image {
+button[title='Brand Story'] .blocks-drawer__default-image,
+button[title=' Brand Story'] .blocks-drawer__default-image,
+button[title='📄 Brand Story'] .blocks-drawer__default-image,
+button[title=' 📄 Brand Story'] .blocks-drawer__default-image,
+button[title*='Brand Story'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Brand Story'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/brand-story.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -77,12 +281,12 @@ button[title*="Brand Story"] .blocks-drawer__default-image,
 }
 
 /* Feature Circles */
-button[title="Feature Circles"] .blocks-drawer__default-image,
-button[title=" Feature Circles"] .blocks-drawer__default-image,
-button[title="⭕ Feature Circles"] .blocks-drawer__default-image,
-button[title=" ⭕ Feature Circles"] .blocks-drawer__default-image,
-button[title*="Feature Circles"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Feature Circles"] .blocks-drawer__default-image {
+button[title='Feature Circles'] .blocks-drawer__default-image,
+button[title=' Feature Circles'] .blocks-drawer__default-image,
+button[title='⭕ Feature Circles'] .blocks-drawer__default-image,
+button[title=' ⭕ Feature Circles'] .blocks-drawer__default-image,
+button[title*='Feature Circles'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Feature Circles'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/feature-circles.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -90,12 +294,12 @@ button[title*="Feature Circles"] .blocks-drawer__default-image,
 }
 
 /* Media Mentions */
-button[title="Media Mentions"] .blocks-drawer__default-image,
-button[title=" Media Mentions"] .blocks-drawer__default-image,
-button[title="📰 Media Mentions"] .blocks-drawer__default-image,
-button[title=" 📰 Media Mentions"] .blocks-drawer__default-image,
-button[title*="Media Mentions"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Media Mentions"] .blocks-drawer__default-image {
+button[title='Media Mentions'] .blocks-drawer__default-image,
+button[title=' Media Mentions'] .blocks-drawer__default-image,
+button[title='📰 Media Mentions'] .blocks-drawer__default-image,
+button[title=' 📰 Media Mentions'] .blocks-drawer__default-image,
+button[title*='Media Mentions'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Media Mentions'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/media-mentions.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -103,12 +307,12 @@ button[title*="Media Mentions"] .blocks-drawer__default-image,
 }
 
 /* Partner Logos */
-button[title="Partner Logos"] .blocks-drawer__default-image,
-button[title=" Partner Logos"] .blocks-drawer__default-image,
-button[title="🤝 Partner Logos"] .blocks-drawer__default-image,
-button[title=" 🤝 Partner Logos"] .blocks-drawer__default-image,
-button[title*="Partner Logos"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Partner Logos"] .blocks-drawer__default-image {
+button[title='Partner Logos'] .blocks-drawer__default-image,
+button[title=' Partner Logos'] .blocks-drawer__default-image,
+button[title='🤝 Partner Logos'] .blocks-drawer__default-image,
+button[title=' 🤝 Partner Logos'] .blocks-drawer__default-image,
+button[title*='Partner Logos'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Partner Logos'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/partner-logos.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -116,12 +320,12 @@ button[title*="Partner Logos"] .blocks-drawer__default-image,
 }
 
 /* Customer Reviews */
-button[title="Customer Reviews"] .blocks-drawer__default-image,
-button[title=" Customer Reviews"] .blocks-drawer__default-image,
-button[title="⭐ Customer Reviews"] .blocks-drawer__default-image,
-button[title=" ⭐ Customer Reviews"] .blocks-drawer__default-image,
-button[title*="Customer Reviews"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Customer Reviews"] .blocks-drawer__default-image {
+button[title='Customer Reviews'] .blocks-drawer__default-image,
+button[title=' Customer Reviews'] .blocks-drawer__default-image,
+button[title='⭐ Customer Reviews'] .blocks-drawer__default-image,
+button[title=' ⭐ Customer Reviews'] .blocks-drawer__default-image,
+button[title*='Customer Reviews'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Customer Reviews'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/customer-reviews.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -129,12 +333,12 @@ button[title*="Customer Reviews"] .blocks-drawer__default-image,
 }
 
 /* Product Usage */
-button[title="Product Usage"] .blocks-drawer__default-image,
-button[title=" Product Usage"] .blocks-drawer__default-image,
-button[title="💚 Product Usage"] .blocks-drawer__default-image,
-button[title=" 💚 Product Usage"] .blocks-drawer__default-image,
-button[title*="Product Usage"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="Product Usage"] .blocks-drawer__default-image {
+button[title='Product Usage'] .blocks-drawer__default-image,
+button[title=' Product Usage'] .blocks-drawer__default-image,
+button[title='💚 Product Usage'] .blocks-drawer__default-image,
+button[title=' 💚 Product Usage'] .blocks-drawer__default-image,
+button[title*='Product Usage'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='Product Usage'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/product-usage.svg') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -142,28 +346,14 @@ button[title*="Product Usage"] .blocks-drawer__default-image,
 }
 
 /* About Us */
-button[title="About Us"] .blocks-drawer__default-image,
-button[title=" About Us"] .blocks-drawer__default-image,
-button[title="👥 About Us"] .blocks-drawer__default-image,
-button[title=" 👥 About Us"] .blocks-drawer__default-image,
-button[title*="About Us"] .blocks-drawer__default-image,
-.blocks-drawer__block button[title*="About Us"] .blocks-drawer__default-image {
+button[title='About Us'] .blocks-drawer__default-image,
+button[title=' About Us'] .blocks-drawer__default-image,
+button[title='👥 About Us'] .blocks-drawer__default-image,
+button[title=' 👥 About Us'] .blocks-drawer__default-image,
+button[title*='About Us'] .blocks-drawer__default-image,
+.blocks-drawer__block button[title*='About Us'] .blocks-drawer__default-image {
   background-image: url('/admin-block-previews/about-us.svg') !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-}
-
-/* -------------------------------------------------------------------------- */
-/* High-level dashboard polish (background, spacing) using plain CSS          */
-/* -------------------------------------------------------------------------- */
-
-/* Soft background for the whole admin area, loosely inspired by the reference. */
-.dashboard {
-  background-color: #f5f5f8;
-}
-
-/* Give the dashboard content some breathing room. */
-.dashboard .before-dashboard {
-  padding: 24px 16px 32px;
 }
