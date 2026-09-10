@@ -128,6 +128,7 @@ export default async function ShopPage({ searchParams }: Props) {
         options: true,
         priceInEUR: true,
         compareAtPriceInEUR: true,
+        inventory: true,
       },
     } as Record<string, unknown>,
     sort: activeSort ?? 'title',

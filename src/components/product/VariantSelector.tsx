@@ -1,10 +1,10 @@
 'use client'
 
 import {
-    findMatchingProductVariant,
-    getOptionsForProductByType,
-    getPopulatedProductVariants,
-    getSelectedVariantOptionIds,
+  findMatchingProductVariant,
+  getOptionsForProductByType,
+  getPopulatedProductVariants,
+  getSelectedVariantOptionIds,
 } from '@/lib/productVariants'
 import type { Product, VariantType } from '@/payload-types'
 import { cn } from '@/utilities/cn'
@@ -54,6 +54,7 @@ export function VariantSelector({ product }: { product: Product }) {
                 const optionSearchParams = new URLSearchParams(searchParams.toString())
                 optionSearchParams.delete('variant')
                 optionSearchParams.delete('image')
+                optionSearchParams.delete('option')
                 optionSearchParams.set(optionKey, String(optionID))
 
                 const nextSelection = getSelectedVariantOptionIds(
@@ -74,8 +75,7 @@ export function VariantSelector({ product }: { product: Product }) {
                 }
 
                 const optionUrl = createUrl(pathname, optionSearchParams)
-                const isActive =
-                  isAvailableForSale && searchParams.get(optionKey) === String(optionID)
+                const isSelected = searchParams.get(optionKey) === String(optionID)
 
                 if (isColorSwatch && option.color) {
                   return (
@@ -84,15 +84,16 @@ export function VariantSelector({ product }: { product: Product }) {
                       type="button"
                       onClick={() => router.replace(optionUrl, { scroll: false })}
                       title={`${option.label}${!isAvailableForSale ? ' (Nicht vorrätig)' : ''}`}
-                      aria-label={option.label}
-                      aria-disabled={!isAvailableForSale}
-                      disabled={!isAvailableForSale}
+                      aria-label={`${option.label}${!isAvailableForSale ? ' – Nicht vorrätig' : ''}`}
+                      aria-pressed={isSelected}
                       className={cn(
                         'h-8 w-8 flex-shrink-0 border-2 transition-all duration-150 outline-offset-2',
-                        isActive
+                        isSelected && isAvailableForSale
                           ? 'border-charcoal outline outline-2 outline-charcoal'
-                          : 'border-transparent hover:border-warm-gray',
-                        !isAvailableForSale && 'cursor-not-allowed opacity-30',
+                          : isSelected && !isAvailableForSale
+                            ? 'border-warm-gray outline outline-2 outline-warm-gray opacity-40'
+                            : 'border-transparent hover:border-warm-gray',
+                        !isAvailableForSale && !isSelected && 'opacity-30',
                       )}
                       style={{ backgroundColor: option.color }}
                     />
@@ -105,15 +106,17 @@ export function VariantSelector({ product }: { product: Product }) {
                     type="button"
                     onClick={() => router.replace(optionUrl, { scroll: false })}
                     title={`${option.label}${!isAvailableForSale ? ' (Nicht vorrätig)' : ''}`}
-                    aria-disabled={!isAvailableForSale}
-                    disabled={!isAvailableForSale}
+                    aria-pressed={isSelected}
                     className={cn(
                       'h-[38px] min-w-[52px] border px-3.5 font-sans text-xs font-semibold transition-all duration-150',
-                      isActive
+                      isSelected && isAvailableForSale
                         ? 'border-charcoal bg-charcoal text-linen'
-                        : 'border-warm-border bg-linen text-charcoal hover:border-olive hover:text-olive',
+                        : isSelected && !isAvailableForSale
+                          ? 'border-warm-gray bg-warm-border/40 text-warm-gray line-through'
+                          : 'border-warm-border bg-linen text-charcoal hover:border-olive hover:text-olive',
                       !isAvailableForSale &&
-                        'cursor-not-allowed border-warm-border text-warm-border line-through',
+                        !isSelected &&
+                        'border-warm-border text-warm-border line-through',
                     )}
                   >
                     {option.label}

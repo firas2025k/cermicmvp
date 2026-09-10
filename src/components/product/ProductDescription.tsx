@@ -234,6 +234,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
       {/* QTY + Add to Cart / Notify Me */}
       {isOutOfStock ? (
         <NotifyMeForm
+          key={selectedVariantID ?? 'product'}
           productId={product.id}
           productTitle={product.title || ''}
           variantId={selectedVariantID ? Number(selectedVariantID) : null}

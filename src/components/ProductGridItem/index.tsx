@@ -74,6 +74,35 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     )
   }, [product.variants])
 
+  const isOptionAvailable = useCallback(
+    (optionId: number) => {
+      const variant = findVariantByOptionId(optionId)
+      if (!variant) return false
+      return Number(variant.inventory ?? 0) > 0
+    },
+    [findVariantByOptionId],
+  )
+
+  const productPageHref = useMemo(() => {
+    if (!product.slug) return '#'
+    if (selectedOptionId == null) return `/products/${product.slug}`
+
+    const params = new URLSearchParams()
+    const primaryType = variantTypes[0]
+    if (primaryType?.name) {
+      params.set(primaryType.name, String(selectedOptionId))
+    } else {
+      params.set('option', String(selectedOptionId))
+    }
+
+    const variant = findVariantByOptionId(selectedOptionId)
+    if (variant?.id != null) {
+      params.set('variant', String(variant.id))
+    }
+
+    return `/products/${product.slug}?${params.toString()}`
+  }, [product.slug, selectedOptionId, variantTypes, findVariantByOptionId])
+
   const variantDocs = useMemo(() => {
     const docs = (product.variants as any)?.docs ?? []
     return docs.filter((v: any) => typeof v === 'object' && typeof v.priceInEUR === 'number')
@@ -119,7 +148,17 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       : 0
 
   const activeImage = gallery[activeImageIndex]?.image as Media | undefined
-  const isOutOfStock = inventory == null || Number(inventory) <= 0
+
+  const isOutOfStock = useMemo(() => {
+    if (product.enableVariants) {
+      const docs = ((product.variants as { docs?: unknown[] } | undefined)?.docs ?? []).filter(
+        (v): v is { inventory?: number | null } => typeof v === 'object' && v !== null,
+      )
+      if (!docs.length) return true
+      return docs.every((v) => Number(v.inventory ?? 0) <= 0)
+    }
+    return inventory == null || Number(inventory) <= 0
+  }, [product.enableVariants, product.variants, inventory])
 
   const handlePillClick = useCallback((e: React.MouseEvent, optionId: number) => {
     e.preventDefault()
@@ -196,6 +235,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
             return opts.map((opt) => {
               const isSelected = selectedOptionId === opt.id
               const hasColor = Boolean(opt.color)
+              const available = isOptionAvailable(opt.id)
 
               if (hasColor && opt.color) {
                 return (
@@ -203,15 +243,16 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
                     key={opt.id}
                     type="button"
                     onClick={(e) => handlePillClick(e, opt.id)}
-                    title={opt.label}
+                    title={`${opt.label}${!available ? ' (Nicht vorrätig)' : ''}`}
                     className={cn(
                       'h-5 w-5 rounded-full transition-all duration-150',
                       isSelected
                         ? 'ring-2 ring-[#4A5E3A] ring-offset-1 scale-110'
                         : 'ring-1 ring-[#E2DBD0] hover:ring-[#4A5E3A] hover:scale-110',
+                      !available && 'opacity-30',
                     )}
                     style={{ backgroundColor: opt.color }}
-                    aria-label={opt.label}
+                    aria-label={`${opt.label}${!available ? ' – Nicht vorrätig' : ''}`}
                   />
                 )
               }
@@ -221,11 +262,15 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
                   key={opt.id}
                   type="button"
                   onClick={(e) => handlePillClick(e, opt.id)}
+                  title={`${opt.label}${!available ? ' (Nicht vorrätig)' : ''}`}
                   className={cn(
                     'border px-[0.55rem] py-[0.2rem] font-sans text-[11px] tracking-[0.06em] transition-all duration-150 leading-snug',
-                    isSelected
+                    isSelected && available
                       ? 'border-olive bg-olive text-linen'
-                      : 'border-warm-border text-warm-gray hover:border-olive hover:bg-olive hover:text-linen',
+                      : isSelected && !available
+                        ? 'border-warm-border bg-warm-border/30 text-warm-gray line-through'
+                        : 'border-warm-border text-warm-gray hover:border-olive hover:bg-olive hover:text-linen',
+                    !available && !isSelected && 'text-warm-border line-through',
                   )}
                 >
                   {opt.label}
@@ -258,11 +303,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
       {/* Quick-add to cart button — links to product page with selected variant pre-filled */}
       <Link
-        href={
-          product.slug
-            ? `/products/${product.slug}${selectedOptionId ? `?option=${selectedOptionId}` : ''}`
-            : '#'
-        }
+        href={productPageHref}
         className={cn(
           'mt-3 block w-full border border-warm-border py-[0.55rem] text-center font-sans text-[11px] tracking-[0.12em] uppercase text-warm-gray transition-all duration-200',
           'hover:border-terra hover:bg-terra hover:text-linen',
@@ -271,7 +312,11 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         aria-disabled={isOutOfStock}
         tabIndex={isOutOfStock ? -1 : undefined}
       >
-        {isOutOfStock ? 'Ausverkauft' : '+ In den Warenkorb'}
+        {isOutOfStock
+          ? 'Ausverkauft'
+          : selectedOptionId != null && !isOptionAvailable(selectedOptionId)
+            ? 'Benachrichtigen'
+            : '+ In den Warenkorb'}
       </Link>
     </div>
   )

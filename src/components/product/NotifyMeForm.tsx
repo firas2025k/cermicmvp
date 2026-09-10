@@ -63,8 +63,9 @@ export function NotifyMeForm({ productId, productTitle, variantId, variantTitle 
   return (
     <div className="mt-4">
       <p className="mb-3 font-sans text-sm text-warm-gray">
-        Dieses Produkt ist derzeit nicht verfügbar. Wir informieren Sie gerne, sobald es wieder
-        verfügbar ist.
+        {variantTitle
+          ? 'Diese Variante ist derzeit nicht verfügbar. Wir informieren Sie gerne, sobald sie wieder verfügbar ist.'
+          : 'Dieses Produkt ist derzeit nicht verfügbar. Wir informieren Sie gerne, sobald es wieder verfügbar ist.'}
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
