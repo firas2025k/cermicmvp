@@ -8,6 +8,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 type UsageItem = NonNullable<ProductUsageBlockProps['items']>[number]
 
+const AUTO_SCROLL_INTERVAL = 4000
+
 function getItemHref(item: UsageItem): string {
   if (item.linkType === 'product' && item.product) {
     const product = typeof item.product === 'object' ? item.product : null
@@ -16,6 +18,11 @@ function getItemHref(item: UsageItem): string {
     }
   }
   return item.link || '/shop'
+}
+
+function getSlideWidth(el: HTMLDivElement): number {
+  const card = el.querySelector<HTMLElement>('[data-usage-slide]')
+  return card ? card.offsetWidth : el.clientWidth / 3
 }
 
 export function ProductUsageTile({ item }: { item: UsageItem }) {
@@ -75,38 +82,66 @@ export function ProductUsageTile({ item }: { item: UsageItem }) {
 
 export function ProductUsageCarousel({ items }: { items: UsageItem[] }) {
   const trackRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-
-  const syncScrollState = useCallback(() => {
-    const el = trackRef.current
-    if (!el) return
-    setCanScrollLeft(el.scrollLeft > 4)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4)
-  }, [])
-
-  useEffect(() => {
-    syncScrollState()
-    const el = trackRef.current
-    if (!el) return
-    el.addEventListener('scroll', syncScrollState, { passive: true })
-    window.addEventListener('resize', syncScrollState)
-    return () => {
-      el.removeEventListener('scroll', syncScrollState)
-      window.removeEventListener('resize', syncScrollState)
-    }
-  }, [items.length, syncScrollState])
+  const [isPaused, setIsPaused] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const scrollByDir = useCallback((dir: 'left' | 'right') => {
     const el = trackRef.current
     if (!el) return
-    const card = el.querySelector<HTMLElement>('[data-usage-slide]')
-    const amount = card ? card.offsetWidth : el.clientWidth / 3
-    el.scrollBy({ left: dir === 'right' ? amount : -amount, behavior: 'smooth' })
+
+    const amount = getSlideWidth(el)
+    const maxScroll = el.scrollWidth - el.clientWidth
+    const atStart = el.scrollLeft <= 4
+    const atEnd = el.scrollLeft >= maxScroll - 4
+
+    if (dir === 'right') {
+      if (atEnd) {
+        el.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        el.scrollBy({ left: amount, behavior: 'smooth' })
+      }
+      return
+    }
+
+    if (atStart) {
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' })
+    } else {
+      el.scrollBy({ left: -amount, behavior: 'smooth' })
+    }
+  }, [])
+
+  const advanceAuto = useCallback(() => {
+    scrollByDir('right')
+  }, [scrollByDir])
+
+  useEffect(() => {
+    if (isPaused) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      return
+    }
+    timerRef.current = setInterval(advanceAuto, AUTO_SCROLL_INTERVAL)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isPaused, advanceAuto])
+
+  const pauseBriefly = useCallback(() => {
+    setIsPaused(true)
+    window.setTimeout(() => setIsPaused(false), 5000)
   }, [])
 
   return (
-    <div className="relative" aria-label="Unsere Vielfalt">
+    <div
+      className="relative"
+      aria-label="Unsere Vielfalt"
+      aria-roledescription="carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => {
+        window.setTimeout(() => setIsPaused(false), 2000)
+      }}
+    >
       <div
         ref={trackRef}
         className="flex snap-x snap-mandatory overflow-x-auto"
@@ -129,26 +164,28 @@ export function ProductUsageCarousel({ items }: { items: UsageItem[] }) {
         ))}
       </div>
 
-      {canScrollLeft && (
-        <button
-          type="button"
-          aria-label="Vorherige"
-          onClick={() => scrollByDir('left')}
-          className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center border border-warm-border bg-linen/95 text-charcoal shadow-sm transition hover:bg-linen md:flex"
-        >
-          <ChevronLeft className="h-5 w-5" aria-hidden />
-        </button>
-      )}
-      {canScrollRight && (
-        <button
-          type="button"
-          aria-label="Nächste"
-          onClick={() => scrollByDir('right')}
-          className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center border border-warm-border bg-linen/95 text-charcoal shadow-sm transition hover:bg-linen md:flex"
-        >
-          <ChevronRight className="h-5 w-5" aria-hidden />
-        </button>
-      )}
+      <button
+        type="button"
+        aria-label="Vorherige"
+        onClick={() => {
+          scrollByDir('left')
+          pauseBriefly()
+        }}
+        className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-warm-border bg-linen/95 text-charcoal shadow-sm transition hover:border-olive hover:text-olive"
+      >
+        <ChevronLeft className="h-5 w-5" aria-hidden />
+      </button>
+      <button
+        type="button"
+        aria-label="Nächste"
+        onClick={() => {
+          scrollByDir('right')
+          pauseBriefly()
+        }}
+        className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-warm-border bg-linen/95 text-charcoal shadow-sm transition hover:border-olive hover:text-olive"
+      >
+        <ChevronRight className="h-5 w-5" aria-hidden />
+      </button>
     </div>
   )
 }
