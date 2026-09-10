@@ -128,7 +128,7 @@ export const FormBlock: React.FC<
     <section className="bg-linen">
       <div className="mx-auto max-w-xl px-6 py-16 lg:px-10 lg:py-24">
         {enableIntro && introContent && !hasSubmitted && (
-          <div className="inquiry-form-intro mb-10">
+          <div className="inquiry-form-intro mb-10 text-center">
             <RichText data={introContent} enableGutter={false} />
           </div>
         )}
@@ -207,11 +207,11 @@ export const FormBlock: React.FC<
           margin-bottom: 0.75rem;
         }
         .inquiry-form-intro p {
-          font-family: var(--font-sans, 'DM Sans', system-ui, sans-serif);
-          font-size: 1rem;
-          font-weight: 300;
-          color: #8C8680;
-          line-height: 1.7;
+          font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+          font-size: clamp(1.5rem, 2.5vw, 2rem);
+          font-weight: 600;
+          color: #2C2A27;
+          line-height: 1.35;
           margin-bottom: 0.75rem;
         }
         .inquiry-form-intro p:last-child {

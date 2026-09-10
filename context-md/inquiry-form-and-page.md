@@ -100,7 +100,7 @@ Save the form.
 4. **Hero** tab: set type to **None** (no big hero).
 5. **Content** tab → add a **Form Block**.
 6. Select the **Inquiry** form you just created.
-7. Optional: enable intro content, e.g. “Schreiben Sie uns — wir antworten so schnell wie möglich.”
+7. Optional: enable intro content, e.g. “Wir freuen uns auf Ihre Nachricht.”
 8. Set status to **Published** and save.
 
 Open `/anfrage` and confirm the three fields render.
