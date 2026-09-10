@@ -9,6 +9,23 @@
   border: 0;
 }
 
+/* Same self-hosted faces as the Nabea storefront */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 300 500;
+  font-display: swap;
+  src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+}
+
 /* -------------------------------------------------------------------------- */
 /* Nabea admin shell — charcoal / olive look & feel (CSS only)                */
 /* -------------------------------------------------------------------------- */
@@ -21,6 +38,15 @@
   --nabea-warm-border: #e2dbd0;
   --nabea-warm-gray: #8c8680;
   --nabea-surface: #f5f2ec;
+  --nabea-sidebar: #f3eee6;
+  --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+}
+
+html,
+body,
+.template-default {
+  font-family: var(--font-body);
 }
 
 html[data-theme='light'] {
@@ -63,6 +89,18 @@ html[data-theme='dark'] .dashboard {
   padding: 24px 16px 32px;
 }
 
+/* Serif for main admin titles (Nabea display voice) */
+.dashboard h1,
+.dashboard h2,
+.collection-list__header h1,
+.doc-header__title,
+.step-nav__home,
+.app-header .step-nav {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
 /* Header: quieter chrome */
 .app-header {
   border-bottom-color: var(--nabea-warm-border);
@@ -74,35 +112,54 @@ html[data-theme='light'] .app-header__bg {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Sidebar / Nav                                                              */
+/* Sidebar / Nav — warmer panel + distinct per-item pills                     */
 /* -------------------------------------------------------------------------- */
 
 .nav {
-  background: #ffffff;
+  background: var(--nabea-sidebar) !important;
   border-right: 1px solid var(--nabea-warm-border) !important;
   border-left: none !important;
+  box-shadow: inset -1px 0 0 rgba(44, 42, 39, 0.04);
 }
 
 html[data-theme='dark'] .nav {
-  background: var(--theme-elevation-0);
+  background: var(--theme-elevation-50) !important;
   border-right-color: var(--theme-elevation-100) !important;
+  box-shadow: none;
 }
 
 .nav__scroll {
-  gap: 4px;
+  gap: 6px;
+  padding-inline: 12px !important;
+}
+
+.nav__wrap {
+  gap: 2px;
 }
 
 .nav__label,
 .nav-group__toggle {
   color: var(--nabea-warm-gray);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
+  padding-inline: 10px;
+  margin-bottom: 6px;
 }
 
 .nav-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+  padding: 10px 8px 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(226, 219, 208, 0.7);
+}
+
+html[data-theme='dark'] .nav-group {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--theme-elevation-100);
 }
 
 .nav-group__toggle:hover,
@@ -112,38 +169,51 @@ html[data-theme='dark'] .nav {
 
 .nav__link {
   width: 100%;
-  margin: 2px 0;
-  padding-block: 8px !important;
+  margin: 3px 0;
+  padding-block: 9px !important;
   padding-inline: 12px 14px !important;
   border-radius: 10px;
-  color: var(--nabea-warm-gray);
-  font-size: 14px !important;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid transparent;
+  color: var(--nabea-charcoal);
+  font-family: var(--font-body);
+  font-size: 13.5px !important;
   line-height: 1.35 !important;
-  font-weight: 500 !important;
+  font-weight: 450 !important;
   transition:
     background-color 160ms ease,
     color 160ms ease,
+    border-color 160ms ease,
     box-shadow 160ms ease;
+}
+
+html[data-theme='dark'] .nav__link {
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-800);
 }
 
 .nav a.nav__link:hover,
 .nav a.nav__link:focus-visible {
   text-decoration: none !important;
-  background: rgba(74, 94, 58, 0.08);
-  color: var(--nabea-charcoal);
+  background: #ffffff;
+  border-color: rgba(74, 94, 58, 0.28);
+  color: var(--nabea-olive);
+  box-shadow: 0 2px 8px rgba(44, 42, 39, 0.06);
 }
 
 .nav__link.active,
 .nav__link:has(.nav__link-indicator) {
   background: var(--nabea-charcoal) !important;
+  border-color: var(--nabea-charcoal) !important;
   color: var(--nabea-linen) !important;
-  font-weight: 600 !important;
-  box-shadow: 0 6px 16px rgba(44, 42, 39, 0.12);
+  font-weight: 500 !important;
+  box-shadow: 0 6px 16px rgba(44, 42, 39, 0.14);
 }
 
 .nav__link.active:hover,
 .nav__link:has(.nav__link-indicator):hover {
   background: var(--nabea-olive) !important;
+  border-color: var(--nabea-olive) !important;
   color: #ffffff !important;
 }
 
@@ -154,9 +224,9 @@ html[data-theme='dark'] .nav {
 
 .nav__controls {
   gap: 8px;
-  padding-top: 12px;
+  padding: 12px 8px 4px;
   border-top: 1px solid var(--nabea-warm-border);
-  margin-top: 20px;
+  margin-top: 16px;
   width: 100%;
 }
 
@@ -167,8 +237,10 @@ html[data-theme='dark'] .nav__controls {
 .nav__controls a,
 .nav__log-out {
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.72);
   color: var(--nabea-warm-gray);
+  font-family: var(--font-body);
   transition:
     background-color 160ms ease,
     color 160ms ease;
@@ -176,24 +248,23 @@ html[data-theme='dark'] .nav__controls {
 
 .nav__controls a:hover,
 .nav__log-out:hover {
-  background: rgba(74, 94, 58, 0.08);
+  background: #ffffff;
   color: var(--nabea-charcoal);
   text-decoration: none;
-}
-
-html[data-theme='dark'] .nav__link {
-  color: var(--theme-elevation-500);
 }
 
 html[data-theme='dark'] .nav a.nav__link:hover,
 html[data-theme='dark'] .nav a.nav__link:focus-visible {
   background: rgba(107, 127, 90, 0.18);
   color: var(--theme-elevation-1000);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 html[data-theme='dark'] .nav__link.active,
 html[data-theme='dark'] .nav__link:has(.nav__link-indicator) {
   background: var(--nabea-olive) !important;
+  border-color: var(--nabea-olive) !important;
   color: #ffffff !important;
   box-shadow: none;
 }
@@ -210,6 +281,7 @@ html[data-theme='light'] .render-fields {
 html[data-theme='light'] .btn--style-primary {
   background: var(--nabea-charcoal);
   border-color: var(--nabea-charcoal);
+  font-family: var(--font-body);
 }
 
 html[data-theme='light'] .btn--style-primary:hover {
@@ -221,14 +293,12 @@ html[data-theme='light'] .btn--style-primary:hover {
 /* Custom block preview images for Payload CMS block selector                 */
 /* -------------------------------------------------------------------------- */
 
-/* Hide inline SVG placeholders once backgrounds apply */
 .blocks-drawer__default-image svg {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
 }
 
-/* Hero Carousel (includes possible leading space in title) */
 button[title='Hero Carousel'] .blocks-drawer__default-image,
 button[title=' Hero Carousel'] .blocks-drawer__default-image,
 button[title='🖼️ Hero Carousel'] .blocks-drawer__default-image,
@@ -241,7 +311,6 @@ button[title*='Hero Carousel'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Product Carousel */
 button[title='Product Carousel'] .blocks-drawer__default-image,
 button[title=' Product Carousel'] .blocks-drawer__default-image,
 button[title='📦 Product Carousel'] .blocks-drawer__default-image,
@@ -254,7 +323,6 @@ button[title*='Product Carousel'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Category Banner */
 button[title='Category Banner'] .blocks-drawer__default-image,
 button[title=' Category Banner'] .blocks-drawer__default-image,
 button[title='🏷️ Category Banner'] .blocks-drawer__default-image,
@@ -267,7 +335,6 @@ button[title*='Category Banner'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Brand Story */
 button[title='Brand Story'] .blocks-drawer__default-image,
 button[title=' Brand Story'] .blocks-drawer__default-image,
 button[title='📄 Brand Story'] .blocks-drawer__default-image,
@@ -280,7 +347,6 @@ button[title*='Brand Story'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Feature Circles */
 button[title='Feature Circles'] .blocks-drawer__default-image,
 button[title=' Feature Circles'] .blocks-drawer__default-image,
 button[title='⭕ Feature Circles'] .blocks-drawer__default-image,
@@ -293,7 +359,6 @@ button[title*='Feature Circles'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Media Mentions */
 button[title='Media Mentions'] .blocks-drawer__default-image,
 button[title=' Media Mentions'] .blocks-drawer__default-image,
 button[title='📰 Media Mentions'] .blocks-drawer__default-image,
@@ -306,7 +371,6 @@ button[title*='Media Mentions'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Partner Logos */
 button[title='Partner Logos'] .blocks-drawer__default-image,
 button[title=' Partner Logos'] .blocks-drawer__default-image,
 button[title='🤝 Partner Logos'] .blocks-drawer__default-image,
@@ -319,7 +383,6 @@ button[title*='Partner Logos'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Customer Reviews */
 button[title='Customer Reviews'] .blocks-drawer__default-image,
 button[title=' Customer Reviews'] .blocks-drawer__default-image,
 button[title='⭐ Customer Reviews'] .blocks-drawer__default-image,
@@ -332,7 +395,6 @@ button[title*='Customer Reviews'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* Product Usage */
 button[title='Product Usage'] .blocks-drawer__default-image,
 button[title=' Product Usage'] .blocks-drawer__default-image,
 button[title='💚 Product Usage'] .blocks-drawer__default-image,
@@ -345,7 +407,6 @@ button[title*='Product Usage'] .blocks-drawer__default-image,
   background-repeat: no-repeat !important;
 }
 
-/* About Us */
 button[title='About Us'] .blocks-drawer__default-image,
 button[title=' About Us'] .blocks-drawer__default-image,
 button[title='👥 About Us'] .blocks-drawer__default-image,
