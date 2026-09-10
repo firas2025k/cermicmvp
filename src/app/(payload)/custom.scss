@@ -290,6 +290,169 @@ html[data-theme='light'] .btn--style-primary:hover {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Collection lists / tables                                                  */
+/* -------------------------------------------------------------------------- */
+
+html[data-theme='light'] .collection-list {
+  --theme-border-color: var(--nabea-warm-border);
+}
+
+.collection-list__header h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--nabea-charcoal);
+}
+
+.collection-list__sub-header,
+.list-controls {
+  gap: 10px;
+}
+
+html[data-theme='light'] .collection-list__search-input,
+html[data-theme='light'] .list-controls__toggle-columns,
+html[data-theme='light'] .list-controls__toggle-where,
+html[data-theme='light'] .list-controls__toggle-sort,
+html[data-theme='light'] .list-controls__toggle-group-by {
+  background: #ffffff;
+  border: 1px solid var(--nabea-warm-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(44, 42, 39, 0.04);
+}
+
+html[data-theme='light'] .collection-list__search-input:focus-within,
+html[data-theme='light'] .list-controls__toggle-columns:hover,
+html[data-theme='light'] .list-controls__toggle-where:hover,
+html[data-theme='light'] .list-controls__toggle-sort:hover,
+html[data-theme='light'] .list-controls__toggle-group-by:hover {
+  border-color: rgba(74, 94, 58, 0.45);
+}
+
+/* Table as a soft white card */
+html[data-theme='light'] .collection-list__tables,
+html[data-theme='light'] .table-wrap {
+  background: #ffffff;
+  border: 1px solid var(--nabea-warm-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(44, 42, 39, 0.05);
+  overflow: hidden;
+}
+
+html[data-theme='light'] .table {
+  margin-bottom: 0;
+  font-family: var(--font-body);
+}
+
+html[data-theme='light'] .table thead th {
+  background: #f8f4ee;
+  color: var(--nabea-warm-gray);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--nabea-warm-border);
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+html[data-theme='light'] .table tbody td {
+  border-bottom: 1px solid rgba(226, 219, 208, 0.7);
+  color: var(--nabea-charcoal);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+html[data-theme='light'] .table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+html[data-theme='light'] .table tbody tr:hover td {
+  background: rgba(74, 94, 58, 0.05);
+}
+
+html[data-theme='light'] .table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--nabea-olive);
+}
+
+html[data-theme='light'] .table a {
+  color: var(--nabea-charcoal);
+  text-decoration-color: rgba(44, 42, 39, 0.25);
+  text-underline-offset: 3px;
+}
+
+html[data-theme='light'] .table a:hover {
+  color: var(--nabea-olive);
+  text-decoration-color: var(--nabea-olive);
+}
+
+/* Pills / badges inside cells */
+html[data-theme='light'] .table .pill,
+html[data-theme='light'] .pill--style-light,
+html[data-theme='light'] .pill--style-light-gray,
+html[data-theme='light'] .pill--style-white {
+  background: var(--nabea-linen);
+  border: 1px solid var(--nabea-warm-border);
+  color: var(--nabea-charcoal);
+  border-radius: 8px;
+  font-family: var(--font-body);
+}
+
+html[data-theme='light'] .pill--style-success {
+  background: rgba(74, 94, 58, 0.12);
+  border-color: rgba(74, 94, 58, 0.25);
+  color: var(--nabea-olive);
+}
+
+html[data-theme='light'] .pill--style-warning {
+  background: rgba(196, 113, 74, 0.12);
+  border-color: rgba(196, 113, 74, 0.25);
+  color: #a85a38;
+}
+
+/* Tabs (All / Trash) */
+html[data-theme='light'] .pill-selector {
+  gap: 6px;
+}
+
+html[data-theme='light'] .pill-selector__pill {
+  background: #ffffff;
+  border: 1px solid var(--nabea-warm-border);
+  border-radius: 999px;
+  color: var(--nabea-warm-gray);
+}
+
+html[data-theme='light'] .pill-selector__pill--selected {
+  background: var(--nabea-charcoal);
+  border-color: var(--nabea-charcoal);
+  color: var(--nabea-linen);
+}
+
+/* Pagination */
+html[data-theme='light'] .page-controls,
+html[data-theme='light'] .paginator {
+  font-family: var(--font-body);
+  color: var(--nabea-warm-gray);
+}
+
+html[data-theme='light'] .paginator__page {
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+html[data-theme='light'] .paginator__page--is-current {
+  background: var(--nabea-charcoal);
+  color: var(--nabea-linen);
+  border-color: var(--nabea-charcoal);
+}
+
+html[data-theme='light'] .paginator__page:hover:not(.paginator__page--is-current) {
+  background: rgba(74, 94, 58, 0.08);
+  color: var(--nabea-olive);
+}
+
+/* Create New / primary list actions already covered by .btn--style-primary */
+
+/* -------------------------------------------------------------------------- */
 /* Custom block preview images for Payload CMS block selector                 */
 /* -------------------------------------------------------------------------- */
 
