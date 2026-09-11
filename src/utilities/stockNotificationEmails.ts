@@ -51,14 +51,49 @@ const wrapEmail = (title: string, bodyHtml: string): string => `
   </head>
   <body style="margin:0;padding:0;background:#F8F4EE;font-family:Georgia,'Times New Roman',serif;color:#2C2A27;">
     <div style="max-width:560px;margin:0 auto;padding:32px 20px;">
-      <p style="margin:0 0 24px;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:#4A5E3A;">Nabea</p>
+      <p style="margin:0 0 24px;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:#4A5E3A;">NABEA</p>
       ${bodyHtml}
-      <p style="margin:32px 0 0;font-size:12px;line-height:1.6;color:#8C8680;">
-        NABEA e.U. · Handmade ceramic &amp; olive wood
-      </p>
     </div>
   </body>
 </html>
+`
+
+const firstName = (ctx: StockNotifyEmailContext): string | null => {
+  const raw = ctx.customerName?.trim()
+  if (!raw) return null
+  return raw.split(/\s+/)[0] || null
+}
+
+const greetingLine = (ctx: StockNotifyEmailContext): string => {
+  const vorname = firstName(ctx)
+  return vorname ? `Hallo ${vorname},` : 'Hallo,'
+}
+
+const customerSignatureText = (withSitzPrefix: boolean): string =>
+  [
+    'Freundliche Grüße',
+    '',
+    'NABEA e.U.',
+    'Amir Tabib',
+    'contact@nabea.at',
+    '',
+    withSitzPrefix ? 'Sitz: Gänserndorf' : 'Gänserndorf',
+    'FN 680429g',
+    'LG Korneuburg',
+  ].join('\n')
+
+const customerSignatureHtml = (withSitzPrefix: boolean): string => `
+  <p style="margin:24px 0 0;font-size:16px;line-height:1.6;">Freundliche Grüße</p>
+  <p style="margin:16px 0 0;font-size:15px;line-height:1.7;">
+    NABEA e.U.<br />
+    Amir Tabib<br />
+    <a href="mailto:contact@nabea.at" style="color:#4A5E3A;">contact@nabea.at</a>
+  </p>
+  <p style="margin:16px 0 0;font-size:12px;line-height:1.6;color:#8C8680;">
+    ${withSitzPrefix ? 'Sitz: Gänserndorf' : 'Gänserndorf'}<br />
+    FN 680429g<br />
+    LG Korneuburg
+  </p>
 `
 
 export function buildCustomerRequestConfirmationEmail(ctx: StockNotifyEmailContext): {
@@ -67,16 +102,16 @@ export function buildCustomerRequestConfirmationEmail(ctx: StockNotifyEmailConte
   text: string
 } {
   const label = productLabel(ctx)
-  const greeting = ctx.customerName?.trim()
-    ? `Hallo ${ctx.customerName.trim()},`
-    : 'Hallo,'
-  const subject = 'Wir haben Ihre Benachrichtigungsanfrage erhalten'
+  const greeting = greetingLine(ctx)
+  const subject = 'NABEA – Benachrichtigung aktiviert'
   const text = [
     greeting,
     '',
-    `Vielen Dank. Wir benachrichtigen Sie, sobald „${label}“ wieder verfügbar ist.`,
+    `vielen Dank für Ihr Interesse an ${label}.`,
     '',
-    'Ihr Nabea-Team',
+    'Wir haben Ihre E-Mail-Adresse vorgemerkt und benachrichtigen Sie, sobald das Produkt wieder verfügbar ist.',
+    '',
+    customerSignatureText(false),
   ].join('\n')
 
   const html = wrapEmail(
@@ -84,10 +119,12 @@ export function buildCustomerRequestConfirmationEmail(ctx: StockNotifyEmailConte
     `
       <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">${escapeHtml(greeting)}</p>
       <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
-        Vielen Dank. Wir benachrichtigen Sie, sobald
-        <strong>${escapeHtml(label)}</strong> wieder verfügbar ist.
+        vielen Dank für Ihr Interesse an <strong>${escapeHtml(label)}</strong>.
       </p>
-      <p style="margin:0;font-size:16px;line-height:1.6;">Ihr Nabea-Team</p>
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+        Wir haben Ihre E-Mail-Adresse vorgemerkt und benachrichtigen Sie, sobald das Produkt wieder verfügbar ist.
+      </p>
+      ${customerSignatureHtml(false)}
     `,
   )
 
@@ -146,19 +183,20 @@ export function buildBackInStockEmail(ctx: StockNotifyEmailContext): {
 } {
   const label = productLabel(ctx)
   const url = productUrl(ctx)
-  const greeting = ctx.customerName?.trim()
-    ? `Hallo ${ctx.customerName.trim()},`
-    : 'Hallo,'
-  const subject = `Wieder verfügbar: ${label}`
+  const greeting = greetingLine(ctx)
+  const subject = 'NABEA – Ihr Wunschprodukt ist wieder vorrätig'
   const text = [
     greeting,
     '',
-    `Gute Nachrichten: „${label}“ ist wieder verfügbar.`,
-    url ? `Jetzt ansehen: ${url}` : null,
+    `gute Nachrichten: ${label} ist wieder vorrätig.`,
     '',
-    'Ihr Nabea-Team',
+    'Sie können das Produkt ab sofort wieder in unserem Onlineshop bestellen.',
+    '',
+    url || null,
+    '',
+    customerSignatureText(true),
   ]
-    .filter(Boolean)
+    .filter((line) => line !== null)
     .join('\n')
 
   const html = wrapEmail(
@@ -166,18 +204,24 @@ export function buildBackInStockEmail(ctx: StockNotifyEmailContext): {
     `
       <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">${escapeHtml(greeting)}</p>
       <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
-        Gute Nachrichten: <strong>${escapeHtml(label)}</strong> ist wieder verfügbar.
+        gute Nachrichten: <strong>${escapeHtml(label)}</strong> ist wieder vorrätig.
+      </p>
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+        Sie können das Produkt ab sofort wieder in unserem Onlineshop bestellen.
       </p>
       ${
         url
-          ? `<p style="margin:0 0 24px;">
+          ? `<p style="margin:0 0 8px;font-size:16px;line-height:1.6;">
+              <a href="${escapeHtml(url)}" style="color:#4A5E3A;">${escapeHtml(url)}</a>
+            </p>
+            <p style="margin:0 0 24px;">
               <a href="${escapeHtml(url)}" style="display:inline-block;padding:12px 20px;background:#2C2A27;color:#F8F4EE;text-decoration:none;font-family:system-ui,sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">
                 Zum Produkt
               </a>
             </p>`
           : ''
       }
-      <p style="margin:0;font-size:16px;line-height:1.6;">Ihr Nabea-Team</p>
+      ${customerSignatureHtml(true)}
     `,
   )
 
