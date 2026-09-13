@@ -21,7 +21,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 type Args = {
   params: Promise<{
@@ -210,13 +210,7 @@ export default async function ProductPage({ params }: Args) {
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Left: sticky gallery */}
             <div className="lg:sticky lg:top-24 lg:self-start">
-              <Suspense
-                fallback={
-                  <div className="aspect-square w-full bg-[#EDE8DD]" />
-                }
-              >
-                {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
-              </Suspense>
+              {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
             </div>
 
             {/* Right: product info */}
