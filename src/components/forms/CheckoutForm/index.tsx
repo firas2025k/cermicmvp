@@ -5,8 +5,13 @@ import { Button } from '@/components/ui/button'
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, FormEvent } from 'react'
-import { useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
+import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import { Address } from '@/payload-types'
+import {
+  clearPendingCheckout,
+  confirmPaidOrderWithRetry,
+  savePendingCheckout,
+} from '@/utilities/confirmStripeOrderClient'
 
 type Props = {
   customerEmail?: string
@@ -26,80 +31,126 @@ export const CheckoutForm: React.FC<Props> = ({
   const [isLoading, setIsLoading] = React.useState(false)
   const router = useRouter()
   const { clearCart } = useCart()
-  const { confirmOrder } = usePayments()
+
+  const finishOrder = useCallback(
+    async (paymentIntentID: string) => {
+      const result = await confirmPaidOrderWithRetry({
+        paymentIntentID,
+        customerEmail,
+      })
+
+      clearPendingCheckout()
+      clearCart()
+      try {
+        localStorage.removeItem('cart')
+        localStorage.removeItem('cart_secret')
+      } catch {
+        // ignore
+      }
+
+      const redirectUrl = `/orders/${result.orderID}${customerEmail ? `?email=${encodeURIComponent(customerEmail)}` : ''}`
+      router.push(redirectUrl)
+    },
+    [clearCart, customerEmail, router],
+  )
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
+      setError(null)
       setIsLoading(true)
       setProcessingPayment(true)
 
-      if (stripe && elements) {
-        try {
-          const returnUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/confirm-order${customerEmail ? `?email=${customerEmail}` : ''}`
+      if (!stripe || !elements) {
+        setIsLoading(false)
+        setProcessingPayment(false)
+        return
+      }
 
-          const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
-            confirmParams: {
-              return_url: returnUrl,
-              payment_method_data: {
-                billing_details: {
-                  email: customerEmail,
-                  phone: billingAddress?.phone,
-                  address: {
-                    line1: billingAddress?.addressLine1,
-                    line2: billingAddress?.addressLine2,
-                    city: billingAddress?.city,
-                    state: billingAddress?.state,
-                    postal_code: billingAddress?.postalCode,
-                    country: billingAddress?.country,
-                  },
+      try {
+        // Survive Safari / 3DS redirects that drop in-memory cart state
+        let cartID: string | null = null
+        let cartSecret: string | null = null
+        try {
+          cartID = localStorage.getItem('cart')
+          cartSecret = localStorage.getItem('cart_secret')
+        } catch {
+          // ignore
+        }
+        savePendingCheckout({
+          customerEmail,
+          cartID,
+          cartSecret,
+        })
+
+        const returnUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/checkout/confirm-order${customerEmail ? `?email=${encodeURIComponent(customerEmail)}` : ''}`
+
+        const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
+          confirmParams: {
+            return_url: returnUrl,
+            payment_method_data: {
+              billing_details: {
+                email: customerEmail,
+                phone: billingAddress?.phone,
+                address: {
+                  line1: billingAddress?.addressLine1,
+                  line2: billingAddress?.addressLine2,
+                  city: billingAddress?.city,
+                  state: billingAddress?.state,
+                  postal_code: billingAddress?.postalCode,
+                  country: billingAddress?.country,
                 },
               },
             },
-            elements,
-            redirect: 'if_required',
-          })
+          },
+          elements,
+          redirect: 'if_required',
+        })
 
-          if (paymentIntent && paymentIntent.status === 'succeeded') {
-            try {
-              const confirmResult = await confirmOrder('stripe', {
-                additionalData: {
-                  paymentIntentID: paymentIntent.id,
-                  ...(customerEmail ? { customerEmail } : {}),
-                },
-              })
-
-              if (
-                confirmResult &&
-                typeof confirmResult === 'object' &&
-                'orderID' in confirmResult &&
-                confirmResult.orderID
-              ) {
-                const redirectUrl = `/orders/${confirmResult.orderID}${customerEmail ? `?email=${customerEmail}` : ''}`
-
-                // Clear the cart after successful payment
-                clearCart()
-
-                // Redirect to order confirmation page
-                router.push(redirectUrl)
-              }
-            } catch (err) {
-              console.log({ err })
-              const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
-              setError(`Fehler bei der Bestellbestätigung: ${msg}`)
-              setIsLoading(false)
-            }
-          }
-          if (stripeError?.message) {
-            setError(stripeError.message)
-            setIsLoading(false)
-          }
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
-          setError(`Fehler bei der Zahlungsübermittlung: ${msg}`)
+        if (stripeError) {
+          setError(stripeError.message || 'Zahlung fehlgeschlagen.')
           setIsLoading(false)
           setProcessingPayment(false)
+          return
         }
+
+        if (paymentIntent?.status === 'succeeded' && paymentIntent.id) {
+          savePendingCheckout({
+            customerEmail,
+            cartID,
+            cartSecret,
+            paymentIntentID: paymentIntent.id,
+          })
+
+          try {
+            await finishOrder(paymentIntent.id)
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
+            setError(
+              `Die Zahlung war erfolgreich, aber die Bestätigung ist fehlgeschlagen: ${msg}. Bitte nicht erneut bezahlen — kontaktiere uns unter contact@nabea.at und nenne die Zahlungs-ID ${paymentIntent.id}.`,
+            )
+            setIsLoading(false)
+            setProcessingPayment(false)
+          }
+          return
+        }
+
+        // 3DS / redirect methods leave this page; ConfirmOrder finishes the order.
+        if (
+          paymentIntent?.status === 'requires_action' ||
+          paymentIntent?.status === 'processing'
+        ) {
+          return
+        }
+
+        setError('Zahlung konnte nicht abgeschlossen werden. Bitte versuche es erneut.')
+        setIsLoading(false)
+        setProcessingPayment(false)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Etwas ist schiefgelaufen.'
+        setError(`Fehler bei der Zahlungsübermittlung: ${msg}`)
+        setIsLoading(false)
+        setProcessingPayment(false)
       }
     },
     [
@@ -114,9 +165,7 @@ export const CheckoutForm: React.FC<Props> = ({
       billingAddress?.state,
       billingAddress?.postalCode,
       billingAddress?.country,
-      confirmOrder,
-      clearCart,
-      router,
+      finishOrder,
     ],
   )
 

@@ -4,19 +4,9 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import React, { Suspense } from 'react'
 import { ConfirmOrder } from '@/components/checkout/ConfirmOrder'
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
-
-export default async function ConfirmOrderPage({
-  searchParams: searchParamsPromise,
-}: {
-  searchParams: SearchParams
-}) {
-  const searchParams = await searchParamsPromise
-
-  const paymentIntent = searchParams.paymentId
-
+export default async function ConfirmOrderPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8F4EE' }}>
+    <div className="flex min-h-screen items-center justify-center" style={{ background: '#F8F4EE' }}>
       <Suspense
         fallback={
           <div className="text-center">
