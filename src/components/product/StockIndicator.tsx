@@ -43,10 +43,21 @@ export const StockIndicator: React.FC<Props> = ({ product }) => {
     return null
   }
 
-  return (
-    <div className="uppercase font-mono text-sm font-medium text-gray-500">
-      {stockQuantity < 10 && stockQuantity > 0 && <p>Nur noch {stockQuantity} auf Lager</p>}
-      {(stockQuantity === 0 || !stockQuantity) && <p>Nicht vorrätig</p>}
-    </div>
-  )
+  if (stockQuantity < 10 && stockQuantity > 0) {
+    return (
+      <p className="font-sans text-[11px] font-medium tracking-[0.14em] text-olive uppercase">
+        Nur noch {stockQuantity} auf Lager
+      </p>
+    )
+  }
+
+  if (stockQuantity === 0 || !stockQuantity) {
+    return (
+      <p className="font-sans text-[11px] font-medium tracking-[0.14em] text-warm-gray uppercase">
+        Nicht vorrätig
+      </p>
+    )
+  }
+
+  return null
 }

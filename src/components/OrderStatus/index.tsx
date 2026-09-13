@@ -15,18 +15,19 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export const OrderStatus: React.FC<Props> = ({ status, className }) => {
+  const label = status ? STATUS_LABELS[status] ?? status : ''
+
   return (
     <div
       className={cn(
-        'text-xs tracking-[0.1em] font-mono uppercase py-0 px-2 rounded w-fit',
+        'w-fit border border-warm-border bg-linen px-2.5 py-1 font-sans text-[10px] font-medium tracking-[0.14em] text-charcoal uppercase',
         className,
-        {
-          'bg-primary/10': status === 'processing',
-          'bg-success': status === 'completed',
-        },
+        status === 'completed' && 'border-olive/40 bg-olive/10 text-olive',
+        status === 'cancelled' && 'border-warm-border text-warm-gray',
+        status === 'refunded' && 'border-warm-border text-warm-gray',
       )}
     >
-      {STATUS_LABELS[status] ?? status}
+      {label}
     </div>
   )
 }

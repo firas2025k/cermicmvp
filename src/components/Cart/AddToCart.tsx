@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import type { Product, Variant } from '@/payload-types'
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
@@ -166,18 +165,17 @@ export function AddToCart({ product }: Props) {
   }, [selectedVariant, cart?.items, product])
 
   return (
-    <Button
+    <button
       aria-label="In den Warenkorb"
-      variant="default"
       className={clsx(
-        'w-full rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white',
-        { 'opacity-60 cursor-not-allowed': disabled },
+        'h-[50px] w-full border border-charcoal bg-charcoal px-6 py-3 font-sans text-xs font-medium tracking-[0.12em] text-linen uppercase transition-colors hover:bg-transparent hover:text-charcoal',
+        { 'cursor-not-allowed opacity-50 hover:bg-charcoal hover:text-linen': disabled },
       )}
       disabled={disabled}
       onClick={addToCart}
       type="submit"
     >
       In den Warenkorb
-    </Button>
+    </button>
   )
 }

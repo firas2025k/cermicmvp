@@ -57,44 +57,48 @@ export const ProductItem: React.FC<Props> = ({
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex items-stretch justify-stretch h-20 w-20 p-2 rounded-lg border">
-        <div className="relative w-full h-full">
+      <div className="flex h-20 w-20 shrink-0 items-stretch justify-stretch border border-warm-border bg-[#EDE8DD] p-1.5">
+        <div className="relative h-full w-full">
           {image && typeof image !== 'string' && (
-            <Media className="" fill imgClassName="rounded-lg object-cover" resource={image} />
+            <Media className="" fill imgClassName="object-cover" resource={image} />
           )}
         </div>
       </div>
-      <div className="flex grow justify-between items-center">
+      <div className="flex grow items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="font-medium text-lg">
-            <Link href={itemURL}>{title}</Link>
+          <p className="font-serif text-lg text-charcoal">
+            <Link href={itemURL} className="transition-colors hover:text-olive">
+              {title}
+            </Link>
           </p>
           {variant && (
-            <p className="text-sm font-mono text-primary/50 tracking-[0.1em]">
+            <p className="font-sans text-xs tracking-[0.08em] text-warm-gray">
               {variant.options
                 ?.map((option) => {
                   if (typeof option === 'object') return option.label
                   return null
                 })
+                .filter(Boolean)
                 .join(', ')}
             </p>
           )}
-          <div>
-            {'x'}
-            {quantity}
-          </div>
+          {quantity != null ? (
+            <p className="font-sans text-xs text-warm-gray">× {quantity}</p>
+          ) : null}
         </div>
 
-        {itemPrice && quantity && (
+        {itemPrice && quantity ? (
           <div className="text-right">
-            <p className="font-medium text-lg">Zwischensumme</p>
+            <p className="mb-0.5 font-sans text-[10px] tracking-[0.12em] text-warm-gray uppercase">
+              Zwischensumme
+            </p>
             <Price
-              className="font-mono text-primary/50 text-sm"
+              className="font-serif text-base text-charcoal"
               amount={itemPrice * quantity}
               currencyCode={currencyCode}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   )

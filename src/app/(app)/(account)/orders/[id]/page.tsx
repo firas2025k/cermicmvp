@@ -2,12 +2,10 @@ import type { Order } from '@/payload-types'
 import type { Metadata } from 'next'
 
 import { Price } from '@/components/Price'
-import { Button } from '@/components/ui/button'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ChevronLeftIcon } from 'lucide-react'
 import { ProductItem } from '@/components/ProductItem'
 import { headers as getHeaders } from 'next/headers.js'
 import configPromise from '@payload-config'
@@ -105,54 +103,77 @@ export default async function Order({ params, searchParams }: PageProps) {
     notFound()
   }
 
+  const orderDate = (() => {
+    try {
+      return new Date(order.createdAt).toLocaleDateString('de-AT', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    } catch {
+      return formatDateTime({ date: order.createdAt })
+    }
+  })()
+
   return (
-    <div className="">
-      <div className="flex gap-8 justify-between items-center mb-6">
+    <div className="pb-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {user ? (
-          <div className="flex gap-4">
-            <Button asChild variant="ghost">
-              <Link href="/orders">
-                <ChevronLeftIcon />
-                All orders
-              </Link>
-            </Button>
-          </div>
+          <Link
+            href="/orders"
+            className="font-sans text-xs tracking-[0.12em] text-warm-gray uppercase transition-colors hover:text-charcoal"
+          >
+            ← Alle Bestellungen
+          </Link>
         ) : (
-          <div></div>
+          <Link
+            href="/shop"
+            className="font-sans text-xs tracking-[0.12em] text-warm-gray uppercase transition-colors hover:text-charcoal"
+          >
+            ← Weiter einkaufen
+          </Link>
         )}
 
-        <h1 className="text-sm uppercase font-mono px-2 bg-primary/10 rounded tracking-[0.07em]">
-          <span className="">{`Bestellung #${order.id}`}</span>
-        </h1>
+        <p className="border border-charcoal bg-charcoal px-3 py-1.5 font-sans text-[10px] font-medium tracking-[0.14em] text-linen uppercase">
+          Bestellung #{order.id}
+        </p>
       </div>
 
-      <div className="bg-card border rounded-lg px-6 py-4 flex flex-col gap-12">
-        <div className="flex flex-col gap-6 lg:flex-row lg:justify-between">
-          <div className="">
-            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Bestelldatum</p>
-            <p className="text-lg">
-              <time dateTime={order.createdAt}>
-                {formatDateTime({ date: order.createdAt, format: 'MMMM dd, yyyy' })}
-              </time>
+      <div className="border border-warm-border bg-white">
+        <div className="grid gap-8 border-b border-warm-border px-6 py-6 sm:grid-cols-3 lg:px-8">
+          <div>
+            <p className="mb-2 font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+              Bestelldatum
+            </p>
+            <p className="font-serif text-lg text-charcoal">
+              <time dateTime={order.createdAt}>{orderDate}</time>
             </p>
           </div>
 
-          <div className="">
-            <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Gesamt</p>
-            {order.amount && <Price className="text-lg" amount={order.amount} />}
+          <div>
+            <p className="mb-2 font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+              Gesamt
+            </p>
+            {order.amount ? (
+              <Price className="font-serif text-lg text-charcoal" amount={order.amount} />
+            ) : null}
           </div>
 
-          {order.status && (
-            <div className="grow max-w-1/3">
-              <p className="font-mono uppercase text-primary/50 mb-1 text-sm">Status</p>
-              <OrderStatus className="text-sm" status={order.status} />
+          {order.status ? (
+            <div>
+              <p className="mb-2 font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+                Status
+              </p>
+              <OrderStatus status={order.status} />
             </div>
-          )}
+          ) : null}
         </div>
 
-        {order.items && (
-          <div>
-            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Artikel</h2>
+        {order.items ? (
+          <div className="border-b border-warm-border px-6 py-6 lg:px-8">
+            <h2 className="mb-5 font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+              Artikel
+            </h2>
             <ul className="flex flex-col gap-6">
               {order.items?.map((item, index) => {
                 if (typeof item.product === 'string') {
@@ -160,7 +181,11 @@ export default async function Order({ params, searchParams }: PageProps) {
                 }
 
                 if (!item.product || typeof item.product !== 'object') {
-                  return <div key={index}>Dieser Artikel ist nicht mehr verfügbar.</div>
+                  return (
+                    <li key={index} className="font-sans text-sm text-warm-gray">
+                      Dieser Artikel ist nicht mehr verfügbar.
+                    </li>
+                  )
                 }
 
                 const variant =
@@ -178,16 +203,19 @@ export default async function Order({ params, searchParams }: PageProps) {
               })}
             </ul>
           </div>
-        )}
+        ) : null}
 
-        {order.shippingAddress && (
-          <div>
-            <h2 className="font-mono text-primary/50 mb-4 uppercase text-sm">Lieferadresse</h2>
-
-            {/* @ts-expect-error - some kind of type hell */}
-            <AddressItem address={order.shippingAddress} hideActions />
+        {order.shippingAddress ? (
+          <div className="px-6 py-6 lg:px-8">
+            <h2 className="mb-5 font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+              Lieferadresse
+            </h2>
+            <div className="font-sans text-sm leading-relaxed text-charcoal [&_p]:font-sans [&_p]:text-sm [&_p]:font-normal [&_p]:text-charcoal [&_p.font-medium]:font-medium">
+              {/* @ts-expect-error - some kind of type hell */}
+              <AddressItem address={order.shippingAddress} hideActions />
+            </div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   )
