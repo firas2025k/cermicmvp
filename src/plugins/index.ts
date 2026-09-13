@@ -12,6 +12,7 @@ import { adminOrCustomerOwner } from '@/access/adminOrCustomerOwner'
 import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
 import { customerOnlyFieldAccess } from '@/access/customerOnlyFieldAccess'
 import { CartsCollection } from '@/collections/Carts'
+import { OrdersCollection } from '@/collections/Orders'
 import { ProductsCollection } from '@/collections/Products'
 import { VariantsCollection } from '@/collections/Variants'
 import { VariantOptionsCollection } from '@/collections/VariantOptions'
@@ -101,6 +102,9 @@ export const plugins: Plugin[] = [
     },
     carts: {
       cartsCollectionOverride: CartsCollection,
+    },
+    orders: {
+      ordersCollectionOverride: OrdersCollection,
     },
     // Server-side Stripe adapter registers POST /api/payments/stripe/initiate and webhooks.
     // Without this, paymentMethods defaults to [] and those routes return 404.
