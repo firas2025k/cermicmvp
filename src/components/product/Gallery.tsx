@@ -48,10 +48,10 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
   const activeImage = gallery[current]?.image
 
   return (
-    <div className="flex gap-3.5">
-      {/* Thumbnail column */}
+    <div className="flex min-w-0 flex-col-reverse gap-3.5 lg:flex-row">
+      {/* Thumbnails: horizontal on mobile, vertical column on desktop */}
       {gallery.length > 1 && (
-        <div className="flex w-[84px] flex-shrink-0 flex-col gap-2">
+        <div className="flex w-full gap-2 overflow-x-auto lg:w-[84px] lg:shrink-0 lg:flex-col lg:overflow-visible">
           {gallery.map((item, i) => {
             if (typeof item.image !== 'object' || !item.image?.url) return null
             return (
@@ -61,7 +61,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
                 onClick={() => setCurrent(i)}
                 aria-label={`Bild ${i + 1} ansehen`}
                 className={cn(
-                  'h-[84px] w-[84px] flex-shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200',
+                  'h-[72px] w-[72px] shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200 lg:h-[84px] lg:w-[84px]',
                   i === current
                     ? 'border-2 border-charcoal'
                     : 'border-2 border-transparent hover:border-warm-border',
@@ -80,8 +80,8 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
         </div>
       )}
 
-      {/* Main image */}
-      <div className="group relative flex-1 overflow-hidden bg-[#EDE8DD]" style={{ aspectRatio: '1' }}>
+      {/* Main image — full-width square so height never collapses on narrow viewports */}
+      <div className="group relative aspect-square w-full min-w-0 overflow-hidden bg-[#EDE8DD]">
         {activeImage && typeof activeImage === 'object' && activeImage.url ? (
           <Image
             src={activeImage.url}
@@ -93,8 +93,8 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
           />
         ) : null}
 
-        {/* Zoom hint */}
-        <span className="absolute bottom-3 right-3 bg-[rgba(248,244,238,0.92)] px-2.5 py-1.5 font-sans text-[10px] font-semibold tracking-[0.1em] uppercase text-charcoal opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none select-none">
+        {/* Zoom hint — hover-only, hide on coarse pointers */}
+        <span className="pointer-events-none absolute right-3 bottom-3 hidden select-none bg-[rgba(248,244,238,0.92)] px-2.5 py-1.5 font-sans text-[10px] font-semibold tracking-[0.1em] text-charcoal uppercase opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:block">
           Hover to zoom
         </span>
       </div>
