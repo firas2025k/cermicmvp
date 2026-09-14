@@ -79,6 +79,7 @@ export interface Config {
     media: Media;
     'stock-notifications': StockNotification;
     discounts: Discount;
+    invoices: Invoice;
     forms: Form;
     'form-submissions': FormSubmission;
     addresses: Address;
@@ -118,6 +119,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     'stock-notifications': StockNotificationsSelect<false> | StockNotificationsSelect<true>;
     discounts: DiscountsSelect<false> | DiscountsSelect<true>;
+    invoices: InvoicesSelect<false> | InvoicesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
@@ -1281,6 +1283,47 @@ export interface Discount {
   createdAt: string;
 }
 /**
+ * Austrian Rechnungen generated after checkout. Download the PDF from the pdf field, or export a date range via GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoices".
+ */
+export interface Invoice {
+  id: number;
+  number: string;
+  order: number | Order;
+  customerEmail?: string | null;
+  issuedAt: string;
+  currency?: 'EUR' | null;
+  /**
+   * Gross total in cents (inkl. MwSt.).
+   */
+  amountGross: number;
+  amountNet: number;
+  amountTax: number;
+  /**
+   * Currently 0 (Gratis) until shipping is stored on orders.
+   */
+  shippingCents?: number | null;
+  lineItems?:
+    | {
+        title: string;
+        variantTitle?: string | null;
+        quantity: number;
+        unitPriceCents: number;
+        lineTotalCents: number;
+        imageUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Downloadable Rechnung PDF.
+   */
+  pdf?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
@@ -1348,6 +1391,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'discounts';
         value: number | Discount;
+      } | null)
+    | ({
+        relationTo: 'invoices';
+        value: number | Invoice;
       } | null)
     | ({
         relationTo: 'forms';
@@ -1702,6 +1749,35 @@ export interface DiscountsSelect<T extends boolean = true> {
   startDate?: T;
   endDate?: T;
   enabled?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invoices_select".
+ */
+export interface InvoicesSelect<T extends boolean = true> {
+  number?: T;
+  order?: T;
+  customerEmail?: T;
+  issuedAt?: T;
+  currency?: T;
+  amountGross?: T;
+  amountNet?: T;
+  amountTax?: T;
+  shippingCents?: T;
+  lineItems?:
+    | T
+    | {
+        title?: T;
+        variantTitle?: T;
+        quantity?: T;
+        unitPriceCents?: T;
+        lineTotalCents?: T;
+        imageUrl?: T;
+        id?: T;
+      };
+  pdf?: T;
   updatedAt?: T;
   createdAt?: T;
 }

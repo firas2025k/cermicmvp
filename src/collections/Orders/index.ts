@@ -52,6 +52,11 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
 
   return {
     ...defaultCollection,
+    admin: {
+      ...defaultCollection.admin,
+      description:
+        'Customer orders. Rechnungen (invoice PDFs) are stored under Shop → Invoices after checkout.',
+    },
     hooks: {
       ...defaultCollection.hooks,
       afterChange: afterChangeChain,

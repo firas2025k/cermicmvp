@@ -96,7 +96,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
       )}
 
       {/* Main image — full-width square; always in SSR HTML (not behind Suspense) */}
-      <div className="relative aspect-square w-full min-w-0 overflow-hidden bg-[#EDE8DD]">
+      <div className="group relative aspect-square w-full min-w-0 overflow-hidden bg-[#EDE8DD]">
         {activeImage && typeof activeImage === 'object' && activeImage.url ? (
           <Image
             src={activeImage.url}
