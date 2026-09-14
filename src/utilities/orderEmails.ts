@@ -1,5 +1,5 @@
 import type { Order, Product, User, Variant } from '@/payload-types'
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 
 import { createOrderInvoice, buildInvoiceLineSnapshots, type InvoiceLineSnapshot } from '@/utilities/createOrderInvoice'
 import { absoluteUrl } from '@/utilities/absoluteUrl'
@@ -494,7 +494,11 @@ export function buildOrderEmailContext(
 }
 
 /** Customer Bestellbestätigung (+ PDF) and shop alert after an order is created. */
-export async function sendOrderEmails(payload: Payload, order: Order): Promise<void> {
+export async function sendOrderEmails(
+  payload: Payload,
+  order: Order,
+  options?: { req?: PayloadRequest },
+): Promise<void> {
   const customerEmail = resolveCustomerEmail(order)
   const shopTo = getOrderNotificationAdminEmail()
 
@@ -503,7 +507,9 @@ export async function sendOrderEmails(payload: Payload, order: Order): Promise<v
   let lineItems: OrderLineItem[] = snapshotsToEmailItems(buildInvoiceLineSnapshots(order))
 
   try {
-    const created = await createOrderInvoice(payload, order)
+    // Pass `req` so invoice/media inserts run in the same DB transaction as order create
+    // (otherwise FK to orders fails while the order row is still uncommitted).
+    const created = await createOrderInvoice(payload, order, { req: options?.req })
     invoiceNumber = created.invoice.number
     pdfAttachment = {
       filename: created.pdfFilename,

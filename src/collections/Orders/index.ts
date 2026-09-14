@@ -18,12 +18,14 @@ const sendOrderConfirmationEmails: CollectionAfterChangeHook<Order> = async ({
     let order = doc
 
     // Resolve product/variant titles for the email body.
+    // Must pass `req` so the read sees the uncommitted order in the same DB transaction.
     try {
       order = (await req.payload.findByID({
         collection: 'orders',
         id: doc.id,
         depth: 2,
         overrideAccess: true,
+        req,
       })) as Order
     } catch (err) {
       req.payload.logger.error(
@@ -32,7 +34,7 @@ const sendOrderConfirmationEmails: CollectionAfterChangeHook<Order> = async ({
       )
     }
 
-    await sendOrderEmails(req.payload, order)
+    await sendOrderEmails(req.payload, order, { req })
   } catch (err) {
     req.payload.logger.error(
       { err, orderId: doc.id },

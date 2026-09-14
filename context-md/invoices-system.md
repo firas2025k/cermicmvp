@@ -74,6 +74,10 @@ Also required for email: `RESEND_API_KEY`, `RESEND_FROM_ADDRESS`, optional `ORDE
 - LG Korneuburg
 - UID from `INVOICE_SELLER_UID` (e.g. `ATU83282528`)
 
+## Known failure (fixed 2026-09-14)
+
+Invoice create must pass Payload `req` into nested `create` / `findByID` calls so they share the order-create DB transaction. Without that, Postgres rejects `invoices.order_id` (FK) while the order is still uncommitted → email sends without PDF and Invoices admin stays empty.
+
 ## PDF totals / payment (client-confirmed)
 
 - Versandkosten: amount or **Kostenlos**
