@@ -13,7 +13,7 @@ function defaultDateRange(): { from: string; to: string } {
 
 /**
  * Invoices list toolbar: export PDFs as a ZIP for a date range.
- * Uses the logged-in admin session cookie against /api/invoices/export.
+ * Fetches with credentials so errors stay in the admin UI (no blank 500 page).
  */
 export function InvoiceExportPanel() {
   const defaults = useMemo(() => defaultDateRange(), [])
@@ -22,7 +22,7 @@ export function InvoiceExportPanel() {
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
-  const onExport = () => {
+  const onExport = async () => {
     setError(null)
     if (!from || !to) {
       setError('Please choose both from and to dates.')
@@ -34,10 +34,36 @@ export function InvoiceExportPanel() {
     }
 
     setPending(true)
-    const url = `/api/invoices/export?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
-    // Full navigation keeps the admin auth cookie and triggers a file download.
-    window.location.assign(url)
-    window.setTimeout(() => setPending(false), 1500)
+    try {
+      const url = `/api/invoices/export?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+      const res = await fetch(url, { credentials: 'include' })
+
+      if (!res.ok) {
+        let message = `Export failed (${res.status}).`
+        try {
+          const data = (await res.json()) as { message?: string }
+          if (data.message) message = data.message
+        } catch {
+          // non-JSON error body
+        }
+        setError(message)
+        return
+      }
+
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = objectUrl
+      link.download = `nabea-rechnungen-${from}_${to}.zip`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(objectUrl)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Export failed.')
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -107,7 +133,9 @@ export function InvoiceExportPanel() {
         </label>
         <button
           type="button"
-          onClick={onExport}
+          onClick={() => {
+            void onExport()
+          }}
           disabled={pending}
           style={{
             padding: '10px 16px',
