@@ -19,6 +19,11 @@ import { CheckoutForm } from '@/components/forms/CheckoutForm'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Address } from '@/payload-types'
+import {
+  calculateShippingCents,
+  formatShippingLabel,
+  orderTotalCents,
+} from '@/utilities/shipping'
 import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
 import { toast } from 'sonner'
 
@@ -72,6 +77,9 @@ export const CheckoutPage: React.FC = () => {
   const [isProcessingPayment, setProcessingPayment] = useState(false)
 
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
+  const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
+  const shippingCents = calculateShippingCents(subtotalCents)
+  const totalCents = orderTotalCents(subtotalCents)
 
   const canGoToPayment = Boolean(
     (email || user) && billingAddress && (billingAddressSameAsShipping || shippingAddress),
@@ -590,7 +598,7 @@ export const CheckoutPage: React.FC = () => {
                 Zwischensumme
               </span>
               <Price
-                amount={cart?.subtotal || 0}
+                amount={subtotalCents}
                 currencyCode="EUR"
                 className="font-sans text-sm"
               />
@@ -600,7 +608,7 @@ export const CheckoutPage: React.FC = () => {
                 Versand
               </span>
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
-                Wird im nächsten Schritt berechnet
+                {formatShippingLabel(shippingCents)}
               </span>
             </div>
             <div
@@ -611,13 +619,13 @@ export const CheckoutPage: React.FC = () => {
                 Gesamt
               </span>
               <Price
-                amount={cart?.subtotal || 0}
+                amount={totalCents}
                 currencyCode="EUR"
                 className="font-serif text-lg font-light"
               />
             </div>
             <p className="font-sans text-[10px]" style={{ color: WARM_GRAY }}>
-              inkl. MwSt. soweit zutreffend
+              inkl. MwSt. Versand: Kostenlos ab 50,00 €, sonst 6,90 €.
             </p>
           </div>
         </div>

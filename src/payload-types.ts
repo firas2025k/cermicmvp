@@ -238,6 +238,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Customer orders. Rechnungen (invoice PDFs) are stored under Shop → Invoices after checkout.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "orders".
  */
@@ -270,6 +272,10 @@ export interface Order {
   status?: OrderStatus;
   amount?: number | null;
   currency?: 'EUR' | null;
+  /**
+   * Versandkosten in cents at confirm time (€6.90 under €50 subtotal, otherwise 0 / Kostenlos).
+   */
+  shippingAmount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1283,7 +1289,7 @@ export interface Discount {
   createdAt: string;
 }
 /**
- * Austrian Rechnungen generated after checkout. Download the PDF from the pdf field, or export a date range via GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD.
+ * Austrian Rechnungen generated after checkout. Use Export below for a date-range ZIP, or open a row to download a single PDF.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "invoices".
@@ -1302,7 +1308,7 @@ export interface Invoice {
   amountNet: number;
   amountTax: number;
   /**
-   * Currently 0 (Gratis) until shipping is stored on orders.
+   * Currently 0 (Kostenlos) until paid shipping is stored on orders.
    */
   shippingCents?: number | null;
   lineItems?:
@@ -2108,6 +2114,7 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   amount?: T;
   currency?: T;
+  shippingAmount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2251,7 +2258,7 @@ export interface Header {
    */
   cartSettings?: {
     /**
-     * Order value in euros required for free shipping.
+     * Display-only free-shipping bar threshold in euros. Charged shipping is fixed in code: €6.90 under €50 cart subtotal, free at €50+.
      */
     freeShippingThreshold?: number | null;
     /**

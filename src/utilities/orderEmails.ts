@@ -505,6 +505,10 @@ export async function sendOrderEmails(
   let invoiceNumber: string | null = null
   let pdfAttachment: EmailAttachment | undefined
   let lineItems: OrderLineItem[] = snapshotsToEmailItems(buildInvoiceLineSnapshots(order))
+  let shippingCents =
+    typeof order.shippingAmount === 'number' && Number.isFinite(order.shippingAmount)
+      ? Math.max(0, Math.round(order.shippingAmount))
+      : 0
 
   try {
     // Pass `req` so invoice/media inserts run in the same DB transaction as order create
@@ -514,6 +518,9 @@ export async function sendOrderEmails(
     pdfAttachment = {
       filename: created.pdfFilename,
       content: created.pdfBuffer,
+    }
+    if (typeof created.invoice.shippingCents === 'number') {
+      shippingCents = Math.max(0, Math.round(created.invoice.shippingCents))
     }
     if (created.invoice.lineItems?.length) {
       lineItems = snapshotsToEmailItems(
@@ -537,7 +544,7 @@ export async function sendOrderEmails(
   const ctx = buildOrderEmailContext(order, customerEmail || 'unbekannt', {
     items: lineItems,
     invoiceNumber,
-    shippingCents: 0,
+    shippingCents,
   })
 
   if (customerEmail) {

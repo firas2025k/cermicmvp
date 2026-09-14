@@ -31,6 +31,30 @@ const getStripe = (): Stripe => {
   })
 }
 
+/** Resolve shipping cents from PI metadata (preferred) or safe legacy fallbacks. */
+export function resolveShippingAmountFromPaymentIntent(paymentIntent: {
+  amount: number
+  metadata?: Stripe.Metadata | null
+}): number {
+  const meta = paymentIntent.metadata || {}
+  const rawShipping = meta.shippingCents
+  if (rawShipping != null && rawShipping !== '') {
+    const parsed = Number.parseInt(rawShipping, 10)
+    if (Number.isFinite(parsed) && parsed >= 0) return parsed
+  }
+
+  const rawProduct = meta.productSubtotalCents
+  if (rawProduct != null && rawProduct !== '') {
+    const product = Number.parseInt(rawProduct, 10)
+    if (Number.isFinite(product) && product >= 0) {
+      return Math.max(0, paymentIntent.amount - product)
+    }
+  }
+
+  // Legacy PaymentIntents charged product subtotal only — no shipping on the order.
+  return 0
+}
+
 /**
  * Confirm a paid Stripe PaymentIntent into a Payload order.
  * Does not depend on browser cart state — uses PI metadata + transaction record.
@@ -102,11 +126,14 @@ export async function confirmStripeOrder({
     paymentIntent.receipt_email ||
     ''
 
+  const shippingAmount = resolveShippingAmountFromPaymentIntent(paymentIntent)
+
   const orderData: Record<string, unknown> = {
     amount: paymentIntent.amount,
     currency: paymentIntent.currency.toUpperCase(),
     items: cartItemsSnapshot,
     shippingAddress,
+    shippingAmount,
     status: 'processing',
     transactions: [transaction.id],
   }

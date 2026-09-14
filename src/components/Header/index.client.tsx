@@ -24,7 +24,8 @@ export function HeaderClient({ header, categories = [] }: Props) {
   const menu = header?.navItems || []
 
   const cartSettings: CartSettings = {
-    freeShippingThresholdEuros: header?.cartSettings?.freeShippingThreshold ?? 80,
+    freeShippingThresholdEuros:
+      header?.cartSettings?.freeShippingThreshold ?? 50,
     freeShippingText: header?.cartSettings?.freeShippingText ?? 'Kostenloser Versand ab',
     freeShippingReachedText: header?.cartSettings?.freeShippingReachedText ?? 'Kostenloser Versand!',
   }

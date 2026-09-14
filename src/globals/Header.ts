@@ -107,9 +107,10 @@ export const Header: GlobalConfig = {
           name: 'freeShippingThreshold',
           type: 'number',
           label: 'Free Shipping Threshold (€)',
-          defaultValue: 80,
+          defaultValue: 50,
           admin: {
-            description: 'Order value in euros required for free shipping.',
+            description:
+              'Display-only free-shipping bar threshold in euros. Charged shipping is fixed in code: €6.90 under €50 cart subtotal, free at €50+.',
           },
         },
         {

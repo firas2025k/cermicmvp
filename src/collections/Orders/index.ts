@@ -52,6 +52,8 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
     sendOrderConfirmationEmails as CollectionAfterChangeHook,
   ]
 
+  const existingFields = defaultCollection.fields ?? []
+
   return {
     ...defaultCollection,
     admin: {
@@ -59,6 +61,21 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
       description:
         'Customer orders. Rechnungen (invoice PDFs) are stored under Shop → Invoices after checkout.',
     },
+    fields: [
+      ...existingFields,
+      {
+        name: 'shippingAmount',
+        type: 'number',
+        label: 'Shipping (cents)',
+        defaultValue: 0,
+        admin: {
+          readOnly: true,
+          description:
+            'Versandkosten in cents at confirm time (€6.90 under €50 subtotal, otherwise 0 / Kostenlos).',
+          position: 'sidebar',
+        },
+      },
+    ],
     hooks: {
       ...defaultCollection.hooks,
       afterChange: afterChangeChain,

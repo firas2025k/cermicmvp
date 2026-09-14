@@ -23,7 +23,7 @@ Collection: **Shop → Invoices** (`src/collections/Invoices.ts`)
 | `customerEmail`, `issuedAt` | Snapshot |
 | `amountGross` / `amountNet` / `amountTax` | Cents; MwSt reverse-calc from brutto (`darin enthaltene MwSt.`) |
 | `lineItems` | Title, variant, qty, unit/line cents, image URL |
-| `shippingCents` | Currently `0` (shown as **Kostenlos**) |
+| `shippingCents` | From order: €6.90 under €50 subtotal, else `0` (**Kostenlos**) |
 | `pdf` | Upload → media |
 
 Access: **admin only**.
@@ -81,5 +81,8 @@ Invoice create must pass Payload `req` into nested `create` / `findByID` calls s
 
 ## Out of scope / follow-ups
 
-- Paid shipping €6.90 under €50 — see [`implementation-prompts/2026-09-14-paid-shipping.md`](./implementation-prompts/2026-09-14-paid-shipping.md)
 - Answers archive: [`invoice-client-questions.md`](./invoice-client-questions.md)
+
+## Shipping on invoices (2026-09-14)
+
+Shipping is no longer always **Kostenlos**. Flat €6.90 when order product subtotal is under €50; free at €50+. Stored on `orders.shipping_amount` and snapshotted to `invoices.shipping_cents`. See [`implementation-prompts/2026-09-14-paid-shipping.md`](./implementation-prompts/2026-09-14-paid-shipping.md).

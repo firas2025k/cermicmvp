@@ -272,7 +272,10 @@ export async function createOrderInvoice(
   const year = issuedAt.getFullYear()
   const vatRate = getInvoiceVatRate()
   const lineItems = buildInvoiceLineSnapshots(order)
-  const shippingCents = 0
+  const shippingCents =
+    typeof order.shippingAmount === 'number' && Number.isFinite(order.shippingAmount)
+      ? Math.max(0, Math.round(order.shippingAmount))
+      : 0
   const { amountNet, amountTax, amountGross } = splitGrossAmount(
     typeof order.amount === 'number' ? order.amount : 0,
     vatRate,

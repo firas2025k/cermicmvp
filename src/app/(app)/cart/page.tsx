@@ -4,13 +4,21 @@ import { DeleteItemButton } from '@/components/Cart/DeleteItemButton'
 import { EditItemQuantityButton } from '@/components/Cart/EditItemQuantityButton'
 import { Price } from '@/components/Price'
 import { Product } from '@/payload-types'
+import {
+  DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
+  calculateShippingCents,
+  formatShippingLabel,
+  orderTotalCents,
+} from '@/utilities/shipping'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 function useCartSettings() {
-  const [thresholdCents, setThresholdCents] = useState(8000)
+  const [thresholdCents, setThresholdCents] = useState(
+    DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS * 100,
+  )
   const [shippingLabel, setShippingLabel] = useState('Kostenloser Versand ab')
   const [reachedLabel, setReachedLabel] = useState('Kostenloser Versand!')
 
@@ -31,10 +39,13 @@ function useCartSettings() {
 
 export default function CartPage() {
   const { cart } = useCart()
-  const { thresholdCents: FREE_SHIPPING_THRESHOLD_CENTS, shippingLabel, reachedLabel } = useCartSettings()
+  const { thresholdCents: FREE_SHIPPING_THRESHOLD_CENTS, shippingLabel, reachedLabel } =
+    useCartSettings()
 
   const hasItems = (cart?.items?.length ?? 0) > 0
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
+  const shippingCents = calculateShippingCents(subtotalCents)
+  const totalCents = orderTotalCents(subtotalCents)
   const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
   const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
 
@@ -239,20 +250,39 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <div
-                  className="flex items-center justify-between py-4 border-t border-b mb-6"
-                  style={{ borderColor: '#E2DBD0' }}
-                >
-                  <p className="font-sans text-sm tracking-wide uppercase" style={{ color: '#2C2A27' }}>
-                    Zwischensumme
-                  </p>
-                  {subtotalCents > 0 && (
-                    <Price
-                      amount={subtotalCents}
-                      currencyCode="EUR"
-                      className="font-serif text-xl font-light"
-                    />
-                  )}
+                <div className="space-y-3 py-4 border-t border-b mb-6" style={{ borderColor: '#E2DBD0' }}>
+                  <div className="flex items-center justify-between">
+                    <p className="font-sans text-sm tracking-wide uppercase" style={{ color: '#2C2A27' }}>
+                      Zwischensumme
+                    </p>
+                    {subtotalCents > 0 && (
+                      <Price
+                        amount={subtotalCents}
+                        currencyCode="EUR"
+                        className="font-serif text-xl font-light"
+                      />
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
+                      Versand
+                    </p>
+                    <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
+                      {formatShippingLabel(shippingCents)}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid #E2DBD0' }}>
+                    <p className="font-sans text-sm tracking-wide uppercase" style={{ color: '#2C2A27' }}>
+                      Gesamt
+                    </p>
+                    {totalCents > 0 && (
+                      <Price
+                        amount={totalCents}
+                        currencyCode="EUR"
+                        className="font-serif text-xl font-light"
+                      />
+                    )}
+                  </div>
                 </div>
 
                 <Link
@@ -272,7 +302,7 @@ export default function CartPage() {
                 </Link>
 
                 <p className="font-sans text-[10px] text-center mt-4" style={{ color: '#8C8680' }}>
-                  Steuern und Versand werden an der Kasse berechnet
+                  Preise inkl. MwSt. Versand: Kostenlos ab 50,00 €, sonst 6,90 €.
                 </p>
               </div>
             </div>

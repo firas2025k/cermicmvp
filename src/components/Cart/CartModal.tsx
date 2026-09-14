@@ -10,12 +10,18 @@ import { createPortal } from 'react-dom'
 
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
+import {
+  DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
+  calculateShippingCents,
+  formatShippingLabel,
+  orderTotalCents,
+} from '@/utilities/shipping'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
 import { CartSettings } from './index'
 import { OpenCartButton } from './OpenCart'
 
-const DEFAULT_THRESHOLD_CENTS = 8000
+const DEFAULT_THRESHOLD_CENTS = DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS * 100
 const DEFAULT_SHIPPING_TEXT = 'Kostenloser Versand ab'
 const DEFAULT_REACHED_TEXT = 'Kostenloser Versand!'
 
@@ -63,6 +69,8 @@ export function CartModal({
   const reachedLabel = freeShippingReachedText ?? DEFAULT_REACHED_TEXT
 
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
+  const shippingCents = calculateShippingCents(subtotalCents)
+  const totalCents = orderTotalCents(subtotalCents)
   const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
   const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
   const hasItems = (cart?.items?.length ?? 0) > 0
@@ -267,12 +275,26 @@ export function CartModal({
               </div>
             </div>
 
-            {/* Zwischensumme */}
-            <div className="flex items-center justify-between mb-5">
+            {/* Totals */}
+            <div className="flex items-center justify-between mb-2">
               <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Zwischensumme</p>
               {subtotalCents > 0 && (
                 <Price
                   amount={subtotalCents}
+                  currencyCode="EUR"
+                  className="font-serif text-xl font-light text-charcoal"
+                />
+              )}
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-sans text-xs text-warm-gray">Versand</p>
+              <p className="font-sans text-xs text-warm-gray">{formatShippingLabel(shippingCents)}</p>
+            </div>
+            <div className="flex items-center justify-between mb-5">
+              <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Gesamt</p>
+              {totalCents > 0 && (
+                <Price
+                  amount={totalCents}
                   currencyCode="EUR"
                   className="font-serif text-xl font-light text-charcoal"
                 />

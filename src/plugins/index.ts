@@ -19,6 +19,7 @@ import { VariantOptionsCollection } from '@/collections/VariantOptions'
 import { VariantTypesCollection } from '@/collections/VariantTypes'
 import { Page, Product } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { withShippingOnStripeAdapter } from '@/utilities/stripeInitiatePaymentWithShipping'
 
 const generateTitle: GenerateTitle<Product | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Nabea` : 'Nabea'
@@ -110,11 +111,14 @@ export const plugins: Plugin[] = [
     // Without this, paymentMethods defaults to [] and those routes return 404.
     payments: {
       paymentMethods: [
-        stripeAdapter({
-          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
-          secretKey: process.env.STRIPE_SECRET_KEY || '',
-          webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET || '',
-        }),
+        withShippingOnStripeAdapter(
+          stripeAdapter({
+            publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
+            secretKey: process.env.STRIPE_SECRET_KEY || '',
+            webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET || '',
+          }),
+          process.env.STRIPE_SECRET_KEY || '',
+        ),
       ],
     },
   }),

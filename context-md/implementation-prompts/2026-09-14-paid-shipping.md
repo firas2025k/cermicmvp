@@ -1,8 +1,16 @@
 # Implementation prompt: Paid shipping (€6.90 under €50 / free at €50+)
 
-**Status:** planned (not started)  
+**Status:** implemented  
 **Date:** 2026-09-14  
 **Depends on:** Rechnung + order email system (already shipped)
+
+## Shipped (code)
+
+- Charge rule in `src/utilities/shipping.ts` (5000 / 690)
+- Stripe initiate wrapper adds shipping to PI amount + metadata
+- `orders.shipping_amount` column + `shippingAmount` field; Neon migration applied on `payload-neon`
+- Invoice + email use order shipping; cart / CartModal / checkout show Versand + Gesamt
+- Header free-shipping bar default/fallback **50** (display-only)
 
 ## Goal
 
