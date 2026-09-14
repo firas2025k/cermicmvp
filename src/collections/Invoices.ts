@@ -9,11 +9,15 @@ export const Invoices: CollectionConfig = {
     useAsTitle: 'number',
     defaultColumns: ['number', 'order', 'customerEmail', 'issuedAt', 'amountGross', 'pdf'],
     description:
-      'Austrian Rechnungen generated after checkout. Download the PDF from the pdf field, or export a date range via GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD.',
+      'Austrian Rechnungen generated after checkout. Use Export below for a date-range ZIP, or open a row to download a single PDF.',
+    components: {
+      beforeListTable: ['@/components/admin/InvoiceExportPanel#InvoiceExportPanel'],
+    },
   },
   access: {
     read: adminOnly,
-    create: adminOnly,
+    // Invoices are created by the order pipeline — no manual create in admin UI intent.
+    create: () => false,
     update: adminOnly,
     delete: adminOnly,
   },

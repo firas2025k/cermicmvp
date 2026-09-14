@@ -53,15 +53,7 @@ Also required for email: `RESEND_API_KEY`, `RESEND_FROM_ADDRESS`, optional `ORDE
 ## Download / export
 
 - **Single PDF:** Payload Admin → Shop → Invoices → open row → download via the `pdf` media field.
-- **Date-range ZIP (admin session required):**
-
-  `GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD`
-
-  Example: `https://nabea.at/api/invoices/export?from=2026-01-01&to=2026-03-31`
-
-  Must be logged in as an admin in the same browser (or send the Payload auth cookie).
-
-  Retain PDFs/records **7 years** for accounting (process/ops; export stays available).
+- **Date-range ZIP:** On the Invoices list, use **Export Rechnungen (ZIP)** (from / to + Download ZIP). Same endpoint: `GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD` (admin session required).
 
 ## Seller block on PDF (client-confirmed)
 

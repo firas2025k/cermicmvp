@@ -19,6 +19,7 @@ import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { DiscountStatusField as DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff } from '@/components/admin/DiscountStatus'
+import { InvoiceExportPanel as InvoiceExportPanel_2f889b8e7ab9dee56117da75e61aae4b } from '@/components/admin/InvoiceExportPanel'
 import { VariantDeleteCell as VariantDeleteCell_de6dbb444563e18971822baa752ac617 } from '@/components/admin/VariantDeleteCell'
 import { VariantOptionsSelector as VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
 import { PriceCell as PriceCell_e27bf7b8cc50640dcdd584767b8eac3c } from '@payloadcms/plugin-ecommerce/client'
@@ -54,6 +55,7 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@/components/admin/DiscountStatus#DiscountStatusField": DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff,
+  "@/components/admin/InvoiceExportPanel#InvoiceExportPanel": InvoiceExportPanel_2f889b8e7ab9dee56117da75e61aae4b,
   "@/components/admin/VariantDeleteCell#VariantDeleteCell": VariantDeleteCell_de6dbb444563e18971822baa752ac617,
   "@payloadcms/plugin-ecommerce/rsc#VariantOptionsSelector": VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb,
   "@payloadcms/plugin-ecommerce/client#PriceCell": PriceCell_e27bf7b8cc50640dcdd584767b8eac3c,

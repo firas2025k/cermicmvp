@@ -281,12 +281,27 @@ html[data-theme='light'] .render-fields {
 html[data-theme='light'] .btn--style-primary {
   background: var(--nabea-charcoal);
   border-color: var(--nabea-charcoal);
+  color: var(--nabea-linen);
   font-family: var(--font-body);
 }
 
-html[data-theme='light'] .btn--style-primary:hover {
+html[data-theme='light'] .btn--style-primary:hover,
+html[data-theme='light'] .btn--style-primary:focus-visible {
   background: var(--nabea-olive);
   border-color: var(--nabea-olive);
+  color: #ffffff;
+}
+
+/* Payload sometimes nests label text; keep it light on charcoal primaries */
+html[data-theme='light'] .btn--style-primary,
+html[data-theme='light'] .btn--style-primary .btn__label,
+html[data-theme='light'] .btn--style-primary span {
+  color: inherit;
+}
+
+html[data-theme='light'] .btn--style-primary:disabled,
+html[data-theme='light'] .btn--style-primary[disabled] {
+  color: rgba(248, 244, 238, 0.7);
 }
 
 /* -------------------------------------------------------------------------- */
