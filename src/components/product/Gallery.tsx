@@ -74,7 +74,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
 
       {/* Thumbnails: horizontal slider on mobile, vertical slider on desktop */}
       {hasThumbs && (
-        <div className="flex w-full gap-2 overflow-x-auto lg:h-0 lg:min-h-full lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
+        <div className="scrollbar-hide flex w-full gap-2 overflow-x-auto lg:h-0 lg:min-h-full lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
           {gallery.map((item, i) => {
             if (typeof item.image !== 'object' || !item.image?.url) return null
             return (
@@ -82,6 +82,8 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
                 key={`${item.image.id ?? i}-thumb`}
                 type="button"
                 onClick={() => setCurrent(i)}
+                onMouseEnter={() => setCurrent(i)}
+                onFocus={() => setCurrent(i)}
                 aria-label={`Bild ${i + 1} ansehen`}
                 className={cn(
                   'h-[72px] w-[72px] shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200 lg:h-[84px] lg:w-[84px]',
