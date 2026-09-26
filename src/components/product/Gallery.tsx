@@ -58,15 +58,23 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
   const [current, setCurrent] = useState(0)
   const activeImage = gallery[current]?.image
 
+  const hasThumbs = gallery.length > 1
+
   return (
-    <div className="flex min-w-0 flex-col-reverse gap-3.5 lg:flex-row">
+    <div
+      className={cn(
+        'flex min-w-0 flex-col-reverse gap-3.5',
+        // Desktop: main square sets row height; thumbs scroll inside that height
+        hasThumbs && 'lg:grid lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-3.5',
+      )}
+    >
       <Suspense fallback={null}>
         <GallerySearchSync gallery={gallery} onMatch={setCurrent} />
       </Suspense>
 
-      {/* Thumbnails: horizontal on mobile, vertical column on desktop */}
-      {gallery.length > 1 && (
-        <div className="flex w-full gap-2 overflow-x-auto lg:w-[84px] lg:shrink-0 lg:flex-col lg:overflow-visible">
+      {/* Thumbnails: horizontal slider on mobile, vertical slider on desktop */}
+      {hasThumbs && (
+        <div className="flex w-full gap-2 overflow-x-auto lg:h-0 lg:min-h-full lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
           {gallery.map((item, i) => {
             if (typeof item.image !== 'object' || !item.image?.url) return null
             return (
@@ -95,7 +103,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
         </div>
       )}
 
-      {/* Main image — full-width square; always in SSR HTML (not behind Suspense) */}
+      {/* Main image — fixed square size regardless of thumbnail count */}
       <div className="group relative aspect-square w-full min-w-0 overflow-hidden bg-[#EDE8DD]">
         {activeImage && typeof activeImage === 'object' && activeImage.url ? (
           <Image
