@@ -1,5 +1,6 @@
 'use client'
 
+import { ensureGuestCart } from '@/utilities/addToCart'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import React, { useCallback, useState } from 'react'
 
@@ -20,6 +21,8 @@ function readCartSecret(): string | undefined {
   return localStorage.getItem('cart_secret') || undefined
 }
 
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
 export function CouponForm({ email, className }: CouponFormProps) {
   const { cart, refreshCart } = useCart()
   const cartWithCoupon = cart as CartCouponFields | undefined
@@ -35,19 +38,34 @@ export function CouponForm({ email, className }: CouponFormProps) {
   const apply = useCallback(
     async (event: React.FormEvent) => {
       event.preventDefault()
-      if (!cartWithCoupon?.id || pending) return
+      if (pending) return
 
       setPending(true)
       setError(null)
 
       try {
+        let cartId = cartWithCoupon?.id != null ? String(cartWithCoupon.id) : null
+        let secret = readCartSecret()
+
+        if (!cartId) {
+          const ensured = await ensureGuestCart()
+          if (!ensured.ok) {
+            setError('Warenkorb konnte nicht erstellt werden.')
+            return
+          }
+          cartId = ensured.cartId
+          secret = ensured.secret || readCartSecret()
+          await refreshCart()
+          await wait(40)
+        }
+
         const res = await fetch('/api/coupons/apply', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             code,
-            cartId: cartWithCoupon.id,
-            secret: readCartSecret(),
+            cartId,
+            secret,
             ...(email ? { email } : {}),
           }),
         })

@@ -1,6 +1,6 @@
 'use client'
 
-import { Price } from '@/components/Price'
+import { PromoPrice } from '@/components/Price/PromoPrice'
 import { getOptionsForProductByType } from '@/lib/productVariants'
 import type { Media, Product, VariantType } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
@@ -348,7 +348,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
       {/* Price — "Ab …" only when variant prices actually differ */}
       {hasVariantPrices && selectedOptionId === null && lowestVariantPrice !== null ? (
         lowestVariantPrice !== highestVariantPrice ? (
-          <Price
+          <PromoPrice
             as="p"
             lowestAmount={lowestVariantPrice}
             highestAmount={highestVariantPrice!}
@@ -357,7 +357,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
             className="mb-1 font-sans text-sm font-medium text-charcoal"
           />
         ) : (
-          <Price
+          <PromoPrice
             as="p"
             amount={lowestVariantPrice}
             currencyCode="EUR"
@@ -365,7 +365,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           />
         )
       ) : typeof displayedPrice === 'number' ? (
-        <Price
+        <PromoPrice
           as="p"
           amount={displayedPrice}
           compareAtAmount={displayedCompareAt ?? undefined}

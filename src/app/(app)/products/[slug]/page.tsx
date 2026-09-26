@@ -6,6 +6,7 @@ import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
 import { GeneralProductFaq } from '@/components/product/GeneralProductFaq'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
+import { PromoPrice } from '@/components/Price/PromoPrice'
 import configPromise from '@payload-config'
 import { absoluteUrl } from '@/utilities/absoluteUrl'
 import { getCachedGlobal } from '@/utilities/getGlobals'
@@ -246,12 +247,6 @@ export default async function ProductPage({ params }: Args) {
 function RelatedProducts({ products }: { products: Product[] }) {
   if (!products.length) return null
 
-  // Prices are stored in cents — divide by 100 for display
-  const formatEURLocal = (cents?: number | null) =>
-    typeof cents === 'number'
-      ? `${(cents / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
-      : ''
-
   return (
     <section className="bg-linen border-t-2 border-charcoal">
       <div className="container py-16">
@@ -316,9 +311,18 @@ function RelatedProducts({ products }: { products: Product[] }) {
                     <p className="mb-1 font-serif text-base text-charcoal transition-colors group-hover:text-olive">
                       {product.title}
                     </p>
-                    <p className="font-sans text-sm font-bold text-charcoal">
-                      {formatEURLocal(product.priceInEUR)}
-                    </p>
+                    {typeof product.priceInEUR === 'number' && (
+                      <PromoPrice
+                        as="p"
+                        amount={product.priceInEUR}
+                        compareAtAmount={
+                          typeof product.compareAtPriceInEUR === 'number'
+                            ? product.compareAtPriceInEUR
+                            : undefined
+                        }
+                        className="font-sans text-sm font-bold text-charcoal"
+                      />
+                    )}
                   </div>
                 </Link>
               </li>

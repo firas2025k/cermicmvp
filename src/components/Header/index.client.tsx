@@ -1,4 +1,5 @@
 'use client'
+import { ActiveFixedCouponChip } from '@/components/Cart/ActiveFixedCouponChip'
 import { Cart, CartSettings } from '@/components/Cart'
 import { OpenCartButton } from '@/components/Cart/OpenCart'
 import Link from 'next/link'
@@ -104,7 +105,10 @@ export function HeaderClient({ header, categories = [] }: Props) {
               </svg>
             </Link>
             <Suspense fallback={<OpenCartButton />}>
-              <Cart {...cartSettings} />
+              <div className="flex items-center gap-2">
+                <ActiveFixedCouponChip className="hidden sm:inline-flex items-center gap-2 border px-2 py-1" />
+                <Cart {...cartSettings} />
+              </div>
             </Suspense>
           </div>
         </div>

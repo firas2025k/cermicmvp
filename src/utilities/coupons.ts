@@ -83,6 +83,41 @@ export const resolveCartCouponDiscountCents = (cart: {
   return Math.max(0, toCentsAmount(cart.couponDiscountCents))
 }
 
+export type ActiveCartCoupon = {
+  code: string
+  type: CouponType
+  value: number
+}
+
+/** Active coupon snapshot from cart (for browse-wide preview UI). */
+export const getActiveCartCoupon = (cart: {
+  couponCode?: string | null
+  couponType?: string | null
+  couponValue?: unknown
+} | null | undefined): ActiveCartCoupon | null => {
+  if (!cart) return null
+  const code = typeof cart.couponCode === 'string' ? cart.couponCode.trim() : ''
+  if (!code) return null
+  const type = cart.couponType === 'percentage' || cart.couponType === 'fixed' ? cart.couponType : null
+  const value = toCentsAmount(cart.couponValue)
+  if (!type || value <= 0) return null
+  return { code, type, value }
+}
+
+/**
+ * Preview a merchandise price with an active percentage coupon.
+ * Fixed coupons do not rewrite per-product prices (checkout banner only).
+ */
+export const previewPriceWithCouponCents = (
+  baseCents: number,
+  coupon: ActiveCartCoupon | null | undefined,
+): number => {
+  const base = Math.max(0, Math.round(baseCents) || 0)
+  if (!coupon || coupon.type !== 'percentage' || base <= 0) return base
+  const pct = Math.min(99, Math.max(1, Math.round(coupon.value)))
+  return Math.max(0, Math.round((base * (100 - pct)) / 100))
+}
+
 export const calculateTotalsWithCoupon = (
   merchandiseSubtotalCents: number,
   couponDiscountCents: number,
@@ -177,19 +212,24 @@ export async function validateCouponForCart({
   }
 
   const subtotal = Math.max(0, Math.round(merchandiseSubtotalCents) || 0)
-  if (
-    typeof coupon.minOrderCents === 'number' &&
-    Number.isFinite(coupon.minOrderCents) &&
-    coupon.minOrderCents > 0 &&
-    subtotal < coupon.minOrderCents
-  ) {
-    const minEuros = (coupon.minOrderCents / 100).toLocaleString('de-AT', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
-    return {
-      ok: false,
-      error: `Mindestbestellwert für diesen Code: ${minEuros} €.`,
+
+  // Empty cart / early apply: attach the code now; enforce min-order once there is merchandise
+  // (and again at payment initiate).
+  if (subtotal > 0) {
+    if (
+      typeof coupon.minOrderCents === 'number' &&
+      Number.isFinite(coupon.minOrderCents) &&
+      coupon.minOrderCents > 0 &&
+      subtotal < coupon.minOrderCents
+    ) {
+      const minEuros = (coupon.minOrderCents / 100).toLocaleString('de-AT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+      return {
+        ok: false,
+        error: `Mindestbestellwert für diesen Code: ${minEuros} €.`,
+      }
     }
   }
 
@@ -223,7 +263,7 @@ export async function validateCouponForCart({
   }
 
   const discountCents = calculateCouponDiscountCents(subtotal, coupon)
-  if (discountCents <= 0) {
+  if (subtotal > 0 && discountCents <= 0) {
     return { ok: false, error: 'Dieser Code ergibt für den aktuellen Warenkorb keinen Rabatt.' }
   }
 

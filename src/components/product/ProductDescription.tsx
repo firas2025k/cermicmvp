@@ -1,7 +1,7 @@
 'use client'
 
 import { AddToCart } from '@/components/Cart/AddToCart'
-import { Price } from '@/components/Price'
+import { PromoPrice } from '@/components/Price/PromoPrice'
 import type { Product, Variant } from '@/payload-types'
 import { useCurrency } from '@payloadcms/plugin-ecommerce/client/react'
 import { useSearchParams } from 'next/navigation'
@@ -182,7 +182,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
       {(amount > 0 || (lowestAmount > 0 && highestAmount > 0)) && (
         hasVariantPrices && !selectedVariantID && lowestAmount > 0 ? (
           lowestAmount !== highestAmount ? (
-            <Price
+            <PromoPrice
               as="p"
               lowestAmount={lowestAmount}
               highestAmount={highestAmount}
@@ -191,7 +191,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
               className="font-serif text-3xl font-normal text-charcoal"
             />
           ) : (
-            <Price
+            <PromoPrice
               as="p"
               amount={lowestAmount}
               currencyCode="EUR"
@@ -199,7 +199,7 @@ export function ProductDescription({ product, categoryLabel }: Props) {
             />
           )
         ) : amount > 0 ? (
-          <Price
+          <PromoPrice
             as="p"
             amount={amount}
             compareAtAmount={compareAtAmount ?? undefined}

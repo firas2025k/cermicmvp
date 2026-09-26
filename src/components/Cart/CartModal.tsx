@@ -130,6 +130,12 @@ export function CartModal({
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
             <p className="font-serif text-xl font-light text-warm-gray">Dein Warenkorb ist leer</p>
+            <div className="w-full max-w-xs">
+              <p className="font-sans text-xs text-center text-warm-gray mb-2">
+                Gutscheincode schon jetzt einlösen
+              </p>
+              <CouponForm />
+            </div>
             <button
               onClick={closeCart}
               className="font-sans text-xs tracking-widest uppercase px-6 py-3 border border-olive text-olive hover:bg-olive hover:text-linen transition-all duration-200"

@@ -14,7 +14,7 @@ const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, 
  * Persist cart id/secret and nudge same-tab listeners so EcommerceProvider
  * can re-bind before refreshCart runs.
  */
-function persistCartId(cartId: string, secret?: string | null): void {
+export function persistCartId(cartId: string, secret?: string | null): void {
   localStorage.setItem('cart', cartId)
   if (secret) {
     localStorage.setItem('cart_secret', secret)
@@ -32,6 +32,59 @@ function persistCartId(cartId: string, secret?: string | null): void {
     )
   } catch {
     // StorageEvent construction can fail in some environments; localStorage write is enough.
+  }
+}
+
+/**
+ * Create an empty guest cart (no items) for early coupon apply.
+ */
+export async function ensureGuestCart(): Promise<
+  { ok: true; cartId: string; secret?: string | null; created: boolean } | { ok: false; error: string }
+> {
+  const existingId = localStorage.getItem('cart')
+  if (existingId) {
+    return {
+      ok: true,
+      cartId: existingId,
+      secret: localStorage.getItem('cart_secret'),
+      created: false,
+    }
+  }
+
+  try {
+    const res = await fetch('/api/carts?depth=0', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currency: 'EUR',
+        items: [],
+      }),
+    })
+    const body = await res.text()
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: `Create-cart error (${res.status}): ${body.slice(0, 300)}`,
+      }
+    }
+
+    const data = JSON.parse(body) as { doc?: { id?: number | string; secret?: string | null } }
+    const newCartID = data?.doc?.id
+    if (!newCartID) {
+      return {
+        ok: false,
+        error: `Create-cart: no cart id returned. Response: ${JSON.stringify(data).slice(0, 300)}`,
+      }
+    }
+
+    persistCartId(String(newCartID), data.doc?.secret)
+    return { ok: true, cartId: String(newCartID), secret: data.doc?.secret, created: true }
+  } catch (err) {
+    return {
+      ok: false,
+      error: `Create-cart network error: ${err instanceof Error ? err.message : String(err)}`,
+    }
   }
 }
 
