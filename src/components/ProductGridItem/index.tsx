@@ -114,12 +114,10 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     return Math.min(...prices)
   }, [variantDocs])
 
-  const lowestVariantCompareAt = useMemo(() => {
+  const highestVariantPrice = useMemo(() => {
     if (!variantDocs.length) return null
-    const comparePrices: number[] = variantDocs
-      .map((v: any) => v.compareAtPriceInEUR as number)
-      .filter((p: number) => typeof p === 'number' && p > 0)
-    return comparePrices.length > 0 ? Math.min(...comparePrices) : null
+    const prices: number[] = variantDocs.map((v: any) => v.priceInEUR as number)
+    return Math.max(...prices)
   }, [variantDocs])
 
   const hasVariantPrices = variantDocs.length > 0
@@ -281,16 +279,25 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         </div>
       )}
 
-      {/* Price */}
+      {/* Price — "Ab …" only when variant prices actually differ */}
       {hasVariantPrices && selectedOptionId === null && lowestVariantPrice !== null ? (
-        <Price
-          as="p"
-          lowestAmount={lowestVariantPrice}
-          highestAmount={lowestVariantPrice + 1}
-          showFrom
-          currencyCode="EUR"
-          className="mb-1 font-sans text-sm font-medium text-charcoal"
-        />
+        lowestVariantPrice !== highestVariantPrice ? (
+          <Price
+            as="p"
+            lowestAmount={lowestVariantPrice}
+            highestAmount={highestVariantPrice!}
+            showFrom
+            currencyCode="EUR"
+            className="mb-1 font-sans text-sm font-medium text-charcoal"
+          />
+        ) : (
+          <Price
+            as="p"
+            amount={lowestVariantPrice}
+            currencyCode="EUR"
+            className="mb-1 font-sans text-sm font-medium text-charcoal"
+          />
+        )
       ) : typeof displayedPrice === 'number' ? (
         <Price
           as="p"

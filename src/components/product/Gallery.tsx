@@ -56,7 +56,6 @@ const GallerySearchSync: React.FC<{
 
 export const Gallery: React.FC<Props> = ({ gallery }) => {
   const [current, setCurrent] = useState(0)
-  const activeImage = gallery[current]?.image
 
   const hasThumbs = gallery.length > 1
 
@@ -105,18 +104,25 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
         </div>
       )}
 
-      {/* Main image — fixed square size regardless of thumbnail count */}
+      {/* Main image — stacked crossfade so hover swaps feel smooth */}
       <div className="group relative aspect-square w-full min-w-0 overflow-hidden bg-[#EDE8DD]">
-        {activeImage && typeof activeImage === 'object' && activeImage.url ? (
-          <Image
-            src={activeImage.url}
-            alt={activeImage.alt ?? ''}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-          />
-        ) : null}
+        {gallery.map((item, i) => {
+          if (typeof item.image !== 'object' || !item.image?.url) return null
+          return (
+            <Image
+              key={`${item.image.id ?? i}-main`}
+              src={item.image.url}
+              alt={item.image.alt ?? ''}
+              fill
+              className={cn(
+                'object-cover transition-opacity duration-500 ease-in-out',
+                i === current ? 'opacity-100' : 'opacity-0',
+              )}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority={i === 0}
+            />
+          )
+        })}
       </div>
     </div>
   )

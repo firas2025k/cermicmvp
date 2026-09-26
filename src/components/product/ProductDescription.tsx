@@ -178,17 +178,26 @@ export function ProductDescription({ product, categoryLabel }: Props) {
         {product.title}
       </h1>
 
-      {/* Price */}
+      {/* Price — "Ab …" only when variant prices actually differ */}
       {(amount > 0 || (lowestAmount > 0 && highestAmount > 0)) && (
         hasVariantPrices && !selectedVariantID && lowestAmount > 0 ? (
-          <Price
-            as="p"
-            lowestAmount={lowestAmount}
-            highestAmount={highestAmount}
-            showFrom
-            currencyCode="EUR"
-            className="font-serif text-3xl font-normal text-charcoal"
-          />
+          lowestAmount !== highestAmount ? (
+            <Price
+              as="p"
+              lowestAmount={lowestAmount}
+              highestAmount={highestAmount}
+              showFrom
+              currencyCode="EUR"
+              className="font-serif text-3xl font-normal text-charcoal"
+            />
+          ) : (
+            <Price
+              as="p"
+              amount={lowestAmount}
+              currencyCode="EUR"
+              className="font-serif text-3xl font-normal text-charcoal"
+            />
+          )
         ) : amount > 0 ? (
           <Price
             as="p"
