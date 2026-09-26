@@ -14,16 +14,14 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react'
 
 import { AddressItem } from '@/components/addresses/AddressItem'
 import { CreateAddressModal } from '@/components/addresses/CreateAddressModal'
+import { CouponForm } from '@/components/Cart/CouponForm'
 import { CheckoutAddresses } from '@/components/checkout/CheckoutAddresses'
 import { CheckoutForm } from '@/components/forms/CheckoutForm'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Address } from '@/payload-types'
-import {
-  calculateShippingCents,
-  formatShippingLabel,
-  orderTotalCents,
-} from '@/utilities/shipping'
+import { calculateTotalsWithCoupon } from '@/utilities/coupons'
+import { formatShippingLabel } from '@/utilities/shipping'
 import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
 import { toast } from 'sonner'
 
@@ -78,8 +76,13 @@ export const CheckoutPage: React.FC = () => {
 
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const shippingCents = calculateShippingCents(subtotalCents)
-  const totalCents = orderTotalCents(subtotalCents)
+  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
+    ?.couponDiscountCents
+  const couponDiscountCents =
+    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
+  const shippingCents = totals.shippingCents
+  const totalCents = totals.chargeTotalCents
 
   const canGoToPayment = Boolean(
     (email || user) && billingAddress && (billingAddressSameAsShipping || shippingAddress),
@@ -593,6 +596,7 @@ export const CheckoutPage: React.FC = () => {
             className="space-y-2 pt-5"
             style={{ borderTop: `1px solid ${WARM_BORDER}` }}
           >
+            <CouponForm email={email || user?.email || undefined} className="mb-4" />
             <div className="flex justify-between">
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
                 Zwischensumme
@@ -603,6 +607,20 @@ export const CheckoutPage: React.FC = () => {
                 className="font-sans text-sm"
               />
             </div>
+            {couponDiscountCents > 0 && (
+              <div className="flex justify-between">
+                <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
+                  Rabatt
+                </span>
+                <span className="font-sans text-sm" style={{ color: OLIVE }}>
+                  −{(couponDiscountCents / 100).toLocaleString('de', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  &nbsp;€
+                </span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="font-sans text-sm" style={{ color: WARM_GRAY }}>
                 Versand

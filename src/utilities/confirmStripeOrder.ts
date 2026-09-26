@@ -128,6 +128,49 @@ export async function confirmStripeOrder({
 
   const shippingAmount = resolveShippingAmountFromPaymentIntent(paymentIntent)
 
+  // Prefer cart coupon snapshot; fall back to PaymentIntent metadata.
+  let couponSnapshot: {
+    appliedCoupon?: number | string | null
+    couponCode?: string | null
+    couponDiscountCents?: number | null
+    couponType?: string | null
+    couponValue?: number | null
+  } = {}
+
+  try {
+    const cartDoc = await payload.findByID({
+      collection: 'carts',
+      id: cartID,
+      depth: 0,
+      overrideAccess: true,
+      ...(req ? { req } : {}),
+    })
+    if (cartDoc) {
+      couponSnapshot = {
+        appliedCoupon:
+          typeof cartDoc.appliedCoupon === 'object' && cartDoc.appliedCoupon
+            ? cartDoc.appliedCoupon.id
+            : cartDoc.appliedCoupon,
+        couponCode: cartDoc.couponCode ?? null,
+        couponDiscountCents:
+          typeof cartDoc.couponDiscountCents === 'number' ? cartDoc.couponDiscountCents : 0,
+        couponType: cartDoc.couponType ?? null,
+        couponValue: typeof cartDoc.couponValue === 'number' ? cartDoc.couponValue : null,
+      }
+    }
+  } catch {
+    // Cart may already be gone; use PI metadata below.
+  }
+
+  if (!couponSnapshot.couponCode && paymentIntent.metadata?.couponCode) {
+    const metaDiscount = Number.parseInt(paymentIntent.metadata.couponDiscountCents || '0', 10)
+    couponSnapshot = {
+      ...couponSnapshot,
+      couponCode: paymentIntent.metadata.couponCode,
+      couponDiscountCents: Number.isFinite(metaDiscount) ? metaDiscount : 0,
+    }
+  }
+
   const orderData: Record<string, unknown> = {
     amount: paymentIntent.amount,
     currency: paymentIntent.currency.toUpperCase(),
@@ -136,6 +179,7 @@ export async function confirmStripeOrder({
     shippingAmount,
     status: 'processing',
     transactions: [transaction.id],
+    ...couponSnapshot,
   }
 
   if (userId != null) {

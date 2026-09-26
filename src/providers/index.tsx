@@ -29,6 +29,11 @@ export const Providers: React.FC<{
                   items: true,
                   subtotal: true,
                   currency: true,
+                  couponCode: true,
+                  couponDiscountCents: true,
+                  couponType: true,
+                  couponValue: true,
+                  appliedCoupon: true,
                 },
                 populate: {
                   products: {

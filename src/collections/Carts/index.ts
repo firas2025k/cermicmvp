@@ -2,6 +2,56 @@ import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 
 export const CartsCollection: CollectionOverride = ({ defaultCollection }) => ({
   ...defaultCollection,
+  fields: [
+    ...(defaultCollection.fields ?? []),
+    {
+      name: 'appliedCoupon',
+      type: 'relationship',
+      relationTo: 'coupons',
+      label: 'Applied coupon',
+      admin: {
+        description: 'Coupon currently applied to this cart.',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'couponCode',
+      type: 'text',
+      label: 'Coupon code snapshot',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'couponDiscountCents',
+      type: 'number',
+      label: 'Coupon discount (cents)',
+      defaultValue: 0,
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'couponType',
+      type: 'text',
+      label: 'Coupon type snapshot',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'couponValue',
+      type: 'number',
+      label: 'Coupon value snapshot',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+    },
+  ],
   hooks: {
     ...defaultCollection?.hooks,
     beforeChange: [
@@ -27,4 +77,3 @@ export const CartsCollection: CollectionOverride = ({ defaultCollection }) => ({
     ],
   },
 })
-

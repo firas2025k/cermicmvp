@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from '@/collections/Categories'
 import { CategoryProductOrder } from '@/collections/CategoryProductOrder'
+import { Coupons } from '@/collections/Coupons'
 import { Discounts } from '@/collections/Discounts'
 import { Invoices } from '@/collections/Invoices'
 import { Media } from '@/collections/Media'
@@ -54,6 +55,7 @@ export default buildConfig({
     Media,
     StockNotifications,
     Discounts,
+    Coupons,
     Invoices,
   ],
   db: postgresAdapter({

@@ -45,10 +45,62 @@ const sendOrderConfirmationEmails: CollectionAfterChangeHook<Order> = async ({
   return doc
 }
 
+/**
+ * Increment coupon usage once when an order that used a coupon is created.
+ */
+const incrementCouponUsage: CollectionAfterChangeHook<Order> = async ({
+  doc,
+  operation,
+  req,
+  context,
+}) => {
+  if (operation !== 'create') return doc
+  if (context?.skipCouponUsageIncrement) return doc
+
+  const couponId =
+    typeof doc.appliedCoupon === 'object' && doc.appliedCoupon
+      ? doc.appliedCoupon.id
+      : doc.appliedCoupon
+
+  if (couponId == null) return doc
+
+  try {
+    const coupon = await req.payload.findByID({
+      collection: 'coupons',
+      id: couponId,
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+
+    const current =
+      typeof coupon.usageCount === 'number' && Number.isFinite(coupon.usageCount)
+        ? coupon.usageCount
+        : 0
+
+    await req.payload.update({
+      collection: 'coupons',
+      id: couponId,
+      data: { usageCount: current + 1 },
+      overrideAccess: true,
+      req,
+      context: { ...context, skipCouponUsageIncrement: true },
+    })
+  } catch (err) {
+    req.payload.logger.error(
+      { err, orderId: doc.id, couponId },
+      '[coupons] Failed to increment usageCount',
+    )
+  }
+
+  return doc
+}
+
 export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
   const existingAfter = defaultCollection.hooks?.afterChange
   const afterChangeChain: CollectionAfterChangeHook[] = [
     ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
+    incrementCouponUsage as CollectionAfterChangeHook,
     sendOrderConfirmationEmails as CollectionAfterChangeHook,
   ]
 
@@ -72,6 +124,53 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
           readOnly: true,
           description:
             'Versandkosten in cents at confirm time (€6.90 under €50 subtotal, otherwise 0 / Kostenlos).',
+          position: 'sidebar',
+        },
+      },
+      {
+        name: 'appliedCoupon',
+        type: 'relationship',
+        relationTo: 'coupons',
+        label: 'Applied coupon',
+        admin: {
+          readOnly: true,
+          position: 'sidebar',
+        },
+      },
+      {
+        name: 'couponCode',
+        type: 'text',
+        label: 'Coupon code',
+        admin: {
+          readOnly: true,
+          position: 'sidebar',
+        },
+      },
+      {
+        name: 'couponDiscountCents',
+        type: 'number',
+        label: 'Coupon discount (cents)',
+        defaultValue: 0,
+        admin: {
+          readOnly: true,
+          position: 'sidebar',
+        },
+      },
+      {
+        name: 'couponType',
+        type: 'text',
+        label: 'Coupon type',
+        admin: {
+          readOnly: true,
+          position: 'sidebar',
+        },
+      },
+      {
+        name: 'couponValue',
+        type: 'number',
+        label: 'Coupon value',
+        admin: {
+          readOnly: true,
           position: 'sidebar',
         },
       },

@@ -1,14 +1,14 @@
 'use client'
 
+import { CouponForm } from '@/components/Cart/CouponForm'
 import { DeleteItemButton } from '@/components/Cart/DeleteItemButton'
 import { EditItemQuantityButton } from '@/components/Cart/EditItemQuantityButton'
 import { Price } from '@/components/Price'
 import { Product } from '@/payload-types'
+import { calculateTotalsWithCoupon } from '@/utilities/coupons'
 import {
   DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
-  calculateShippingCents,
   formatShippingLabel,
-  orderTotalCents,
 } from '@/utilities/shipping'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
@@ -44,10 +44,16 @@ export default function CartPage() {
 
   const hasItems = (cart?.items?.length ?? 0) > 0
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const shippingCents = calculateShippingCents(subtotalCents)
-  const totalCents = orderTotalCents(subtotalCents)
-  const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
-  const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
+  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
+    ?.couponDiscountCents
+  const couponDiscountCents =
+    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
+  const shippingCents = totals.shippingCents
+  const totalCents = totals.chargeTotalCents
+  const payableForShipping = totals.payableMerchandiseCents
+  const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - payableForShipping
+  const shippingPct = Math.min((payableForShipping / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
 
   return (
     <div className="min-h-screen" style={{ background: '#F8F4EE' }}>
@@ -251,6 +257,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="space-y-3 py-4 border-t border-b mb-6" style={{ borderColor: '#E2DBD0' }}>
+                  <CouponForm className="mb-1" />
                   <div className="flex items-center justify-between">
                     <p className="font-sans text-sm tracking-wide uppercase" style={{ color: '#2C2A27' }}>
                       Zwischensumme
@@ -263,6 +270,21 @@ export default function CartPage() {
                       />
                     )}
                   </div>
+                  {couponDiscountCents > 0 && (
+                    <div className="flex items-center justify-between">
+                      <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
+                        Rabatt
+                      </p>
+                      <p className="font-sans text-sm" style={{ color: '#4A5E3A' }}>
+                        −
+                        {(couponDiscountCents / 100).toLocaleString('de', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                        &nbsp;€
+                      </p>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <p className="font-sans text-sm" style={{ color: '#8C8680' }}>
                       Versand

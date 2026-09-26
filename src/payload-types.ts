@@ -79,6 +79,7 @@ export interface Config {
     media: Media;
     'stock-notifications': StockNotification;
     discounts: Discount;
+    coupons: Coupon;
     invoices: Invoice;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -119,6 +120,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     'stock-notifications': StockNotificationsSelect<false> | StockNotificationsSelect<true>;
     discounts: DiscountsSelect<false> | DiscountsSelect<true>;
+    coupons: CouponsSelect<false> | CouponsSelect<true>;
     invoices: InvoicesSelect<false> | InvoicesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -276,6 +278,11 @@ export interface Order {
    * Versandkosten in cents at confirm time (€6.90 under €50 subtotal, otherwise 0 / Kostenlos).
    */
   shippingAmount?: number | null;
+  appliedCoupon?: (number | null) | Coupon;
+  couponCode?: string | null;
+  couponDiscountCents?: number | null;
+  couponType?: string | null;
+  couponValue?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1154,6 +1161,69 @@ export interface Cart {
   status?: ('active' | 'purchased' | 'abandoned') | null;
   subtotal?: number | null;
   currency?: 'EUR' | null;
+  /**
+   * Coupon currently applied to this cart.
+   */
+  appliedCoupon?: (number | null) | Coupon;
+  couponCode?: string | null;
+  couponDiscountCents?: number | null;
+  couponType?: string | null;
+  couponValue?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Rabattcodes (% off) und Geld-Gutscheine (fester €-Betrag) für Warenkorb und Kasse.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons".
+ */
+export interface Coupon {
+  id: number;
+  /**
+   * Kunden geben diesen Code ein (z.B. NABEA2026). Wird automatisch in Großbuchstaben gespeichert.
+   */
+  code: string;
+  /**
+   * Prozent = Discount code. Fester Betrag = Geld-Gutschein in Cent.
+   */
+  type: 'percentage' | 'fixed';
+  /**
+   * Bei Prozent: 1–99. Bei Gutschein: Betrag in Cent (z.B. 2000 = 20,00 €).
+   */
+  value: number;
+  /**
+   * Aus = Code kann nicht eingelöst werden.
+   */
+  enabled?: boolean | null;
+  /**
+   * Leer = sofort gültig.
+   */
+  startsAt?: string | null;
+  /**
+   * Leer = kein Ablaufdatum.
+   */
+  endsAt?: string | null;
+  /**
+   * Leer = unbegrenzt. Für Einmal-Gutschein: 1.
+   */
+  usageLimit?: number | null;
+  /**
+   * Wird automatisch bei erfolgreicher Bestellung erhöht.
+   */
+  usageCount?: number | null;
+  /**
+   * Leer = kein zusätzliches Limit pro E-Mail.
+   */
+  perCustomerLimit?: number | null;
+  /**
+   * Optional. z.B. 5000 = mindestens 50,00 € Warenkorb-Zwischensumme.
+   */
+  minOrderCents?: number | null;
+  /**
+   * Nur für Admins, z.B. „Kulanz defekte Verpackung“.
+   */
+  note?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1397,6 +1467,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'discounts';
         value: number | Discount;
+      } | null)
+    | ({
+        relationTo: 'coupons';
+        value: number | Coupon;
       } | null)
     | ({
         relationTo: 'invoices';
@@ -1760,6 +1834,25 @@ export interface DiscountsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons_select".
+ */
+export interface CouponsSelect<T extends boolean = true> {
+  code?: T;
+  type?: T;
+  value?: T;
+  enabled?: T;
+  startsAt?: T;
+  endsAt?: T;
+  usageLimit?: T;
+  usageCount?: T;
+  perCustomerLimit?: T;
+  minOrderCents?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "invoices_select".
  */
 export interface InvoicesSelect<T extends boolean = true> {
@@ -2077,6 +2170,11 @@ export interface CartsSelect<T extends boolean = true> {
   status?: T;
   subtotal?: T;
   currency?: T;
+  appliedCoupon?: T;
+  couponCode?: T;
+  couponDiscountCents?: T;
+  couponType?: T;
+  couponValue?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2115,6 +2213,11 @@ export interface OrdersSelect<T extends boolean = true> {
   amount?: T;
   currency?: T;
   shippingAmount?: T;
+  appliedCoupon?: T;
+  couponCode?: T;
+  couponDiscountCents?: T;
+  couponType?: T;
+  couponValue?: T;
   updatedAt?: T;
   createdAt?: T;
 }

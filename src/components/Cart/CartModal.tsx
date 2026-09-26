@@ -10,12 +10,12 @@ import { createPortal } from 'react-dom'
 
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
+import { calculateTotalsWithCoupon } from '@/utilities/coupons'
 import {
   DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
-  calculateShippingCents,
   formatShippingLabel,
-  orderTotalCents,
 } from '@/utilities/shipping'
+import { CouponForm } from './CouponForm'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
 import { CartSettings } from './index'
@@ -69,10 +69,16 @@ export function CartModal({
   const reachedLabel = freeShippingReachedText ?? DEFAULT_REACHED_TEXT
 
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const shippingCents = calculateShippingCents(subtotalCents)
-  const totalCents = orderTotalCents(subtotalCents)
-  const shippingPct = Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
-  const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents
+  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
+    ?.couponDiscountCents
+  const couponDiscountCents =
+    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
+  const shippingCents = totals.shippingCents
+  const totalCents = totals.chargeTotalCents
+  const payableForShipping = totals.payableMerchandiseCents
+  const shippingPct = Math.min((payableForShipping / FREE_SHIPPING_THRESHOLD_CENTS) * 100, 100)
+  const remainingCents = FREE_SHIPPING_THRESHOLD_CENTS - payableForShipping
   const hasItems = (cart?.items?.length ?? 0) > 0
 
   // ─── Drawer markup (rendered via portal into document.body) ───────────────
@@ -275,6 +281,8 @@ export function CartModal({
               </div>
             </div>
 
+            <CouponForm className="mb-4" />
+
             {/* Totals */}
             <div className="flex items-center justify-between mb-2">
               <p className="font-sans text-sm tracking-wide uppercase text-charcoal">Zwischensumme</p>
@@ -286,6 +294,19 @@ export function CartModal({
                 />
               )}
             </div>
+            {couponDiscountCents > 0 && (
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-sans text-xs text-warm-gray">Rabatt</p>
+                <p className="font-sans text-xs" style={{ color: '#4A5E3A' }}>
+                  −
+                  {(couponDiscountCents / 100).toLocaleString('de', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  &nbsp;€
+                </p>
+              </div>
+            )}
             <div className="flex items-center justify-between mb-2">
               <p className="font-sans text-xs text-warm-gray">Versand</p>
               <p className="font-sans text-xs text-warm-gray">{formatShippingLabel(shippingCents)}</p>
