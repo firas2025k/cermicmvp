@@ -4,35 +4,28 @@ import React from 'react'
 import { useFormFields } from '@payloadcms/ui'
 
 export function DiscountStatusField() {
-  const { fields } = useFormFields()
-
-  const enabled = fields.enabled?.value as boolean
-  const startDate = fields.startDate?.value as string | undefined
-  const endDate = fields.endDate?.value as string | undefined
+  const enabled = useFormFields(([fields]) => fields.enabled?.value as boolean | undefined)
+  const startDate = useFormFields(([fields]) => fields.startDate?.value as string | undefined)
+  const endDate = useFormFields(([fields]) => fields.endDate?.value as string | undefined)
 
   const now = new Date()
   const start = startDate ? new Date(startDate) : null
   const end = endDate ? new Date(endDate) : null
 
-  let status: 'active' | 'scheduled' | 'ended' | 'disabled' = 'disabled'
-  let label = ''
-  let colorClass = ''
+  let label = 'Disabled'
+  let colorClass = 'text-warm-gray bg-gray-100'
 
   if (!enabled) {
-    status = 'disabled'
     label = 'Disabled'
     colorClass = 'text-warm-gray bg-gray-100'
   } else if (start && start > now) {
-    status = 'scheduled'
     const daysUntil = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
     label = `Starts in ${daysUntil} day${daysUntil === 1 ? '' : 's'}`
     colorClass = 'text-blue-700 bg-blue-100'
   } else if (end && end < now) {
-    status = 'ended'
     label = 'Ended'
     colorClass = 'text-gray-600 bg-gray-200'
-  } else if ((start && start <= now) && (!end || end >= now)) {
-    status = 'active'
+  } else if (start && start <= now && (!end || end >= now)) {
     if (end) {
       const daysLeft = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       label = `Active - ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
@@ -40,6 +33,10 @@ export function DiscountStatusField() {
       label = 'Active'
     }
     colorClass = 'text-olive bg-green-100'
+  } else if (enabled && !start) {
+    // Enabled but start date not filled yet on create form
+    label = 'Set a start date'
+    colorClass = 'text-warm-gray bg-gray-100'
   }
 
   return (
