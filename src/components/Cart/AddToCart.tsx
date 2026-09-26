@@ -5,10 +5,11 @@ import type { Product, Variant } from '@/payload-types'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { useCartOpen } from '@/providers/CartOpen'
+import { addItemToCart, refreshCartAfterAdd } from '@/utilities/addToCart'
 
 type Props = {
   product: Product
@@ -18,6 +19,9 @@ export function AddToCart({ product }: Props) {
   const { cart, refreshCart } = useCart()
   const { openCart } = useCartOpen()
   const searchParams = useSearchParams()
+  const [isAdding, setIsAdding] = useState(false)
+  const cartRef = useRef(cart)
+  cartRef.current = cart
 
   const variants = product.variants?.docs || []
 
@@ -33,107 +37,42 @@ export function AddToCart({ product }: Props) {
     return undefined
   }, [product.enableVariants, searchParams, variants])
 
-  const addToCart = useCallback(
+  const handleAddToCart = useCallback(
     async (e: React.FormEvent<HTMLButtonElement>) => {
       e.preventDefault()
+      if (isAdding) return
 
-      const targetProductID = product.id
-      const targetVariantID = selectedVariant?.id ?? undefined
-      const cartID = localStorage.getItem('cart')
-      const secret = localStorage.getItem('cart_secret') || undefined
-
-      // ── PATH A: existing cart — try /add-item ────────────────────────────
-      if (cartID) {
-        let responseText = ''
-        let status = 0
-        try {
-          const res = await fetch(`/api/carts/${cartID}/add-item`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              item: { product: targetProductID, variant: targetVariantID },
-              quantity: 1,
-              secret,
-            }),
-          })
-          status = res.status
-          responseText = await res.text()
-
-          let parsed: { success?: boolean } | null = null
-          try { parsed = JSON.parse(responseText) } catch { parsed = null }
-
-          if (res.ok && parsed?.success) {
-            await refreshCart()
-            toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
-            openCart()
-            return
-          }
-
-          // add-item failed — show exact error without reload
-          const shortBody = responseText.slice(0, 300)
-          console.error('[AddToCart] add-item failed', { status, body: responseText })
-          toast.error(`Add-item error (${status}): ${shortBody}`, { duration: 60_000 })
-        } catch (err) {
-          console.error('[AddToCart] add-item threw', err)
-          toast.error(
-            `Add-item network error: ${err instanceof Error ? err.message : String(err)}`,
-            { duration: 60_000 },
-          )
-        }
-        return
-      }
-
-      // ── PATH B: no cart yet — create one via POST /api/carts ────────────
+      setIsAdding(true)
       try {
-        const res = await fetch('/api/carts?depth=2', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            currency: 'EUR',
-            items: [{ product: targetProductID, variant: targetVariantID, quantity: 1 }],
-          }),
+        const result = await addItemToCart({
+          productId: product.id,
+          variantId: selectedVariant?.id,
         })
-        const body = await res.text()
-        if (!res.ok) {
-          console.error('[AddToCart] POST /api/carts failed', { status: res.status, body })
-          toast.error(`Create-cart error (${res.status}): ${body.slice(0, 300)}`, {
-            duration: 60_000,
-          })
+
+        if (!result.ok) {
+          console.error('[AddToCart]', result.error)
+          toast.error(result.error, { duration: 60_000 })
           return
         }
-        const data = JSON.parse(body) as { doc?: { id?: number | string; secret?: string | null } }
-        const newCartID = data?.doc?.id
-        if (!newCartID) {
-          console.error('[AddToCart] no cart id in response', data)
-          toast.error(`Create-cart: no cart id returned. Response: ${JSON.stringify(data).slice(0, 300)}`, {
-            duration: 60_000,
-          })
-          return
-        }
-        localStorage.setItem('cart', String(newCartID))
-        if (data?.doc?.secret) {
-          localStorage.setItem('cart_secret', data.doc.secret)
-        } else {
-          localStorage.removeItem('cart_secret')
-        }
-        console.log('[AddToCart] cart created', { newCartID })
-        await refreshCart()
+
+        await refreshCartAfterAdd({
+          refreshCart,
+          getCart: () => cartRef.current,
+          expectedCartId: result.cartId,
+        })
+
         toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()
-      } catch (err) {
-        console.error('[AddToCart] POST /api/carts threw', err)
-        toast.error(
-          `Create-cart network error: ${err instanceof Error ? err.message : String(err)}`,
-          { duration: 60_000 },
-        )
+      } finally {
+        setIsAdding(false)
       }
     },
-    [cart?.items, openCart, product.id, refreshCart, selectedVariant?.id],
+    [isAdding, openCart, product.id, refreshCart, selectedVariant?.id],
   )
 
   const disabled = useMemo<boolean>(() => {
+    if (isAdding) return true
+
     const existingItem = cart?.items?.find((item) => {
       const productID = typeof item.product === 'object' ? item.product?.id : item.product
       const variantID = item.variant
@@ -162,7 +101,7 @@ export function AddToCart({ product }: Props) {
     }
 
     return false
-  }, [selectedVariant, cart?.items, product])
+  }, [selectedVariant, cart?.items, product, isAdding])
 
   return (
     <button
@@ -172,10 +111,10 @@ export function AddToCart({ product }: Props) {
         { 'cursor-not-allowed opacity-50 hover:bg-charcoal hover:text-linen': disabled },
       )}
       disabled={disabled}
-      onClick={addToCart}
-      type="submit"
+      onClick={handleAddToCart}
+      type="button"
     >
-      In den Warenkorb
+      {isAdding ? 'Wird hinzugefügt…' : 'In den Warenkorb'}
     </button>
   )
 }

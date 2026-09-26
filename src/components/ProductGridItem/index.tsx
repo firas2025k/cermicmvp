@@ -3,10 +3,14 @@
 import { Price } from '@/components/Price'
 import { getOptionsForProductByType } from '@/lib/productVariants'
 import type { Media, Product, VariantType } from '@/payload-types'
+import { useCartOpen } from '@/providers/CartOpen'
+import { addItemToCart, refreshCartAfterAdd } from '@/utilities/addToCart'
 import { cn } from '@/utilities/cn'
+import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 type VariantOptionWithColor = {
   id: number
@@ -51,6 +55,11 @@ function getCategoryLabel(product: Partial<Product>): string | null {
 
 export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const { priceInEUR, compareAtPriceInEUR, title, inventory } = product
+  const { cart, refreshCart } = useCart()
+  const { openCart } = useCartOpen()
+  const cartRef = useRef(cart)
+  cartRef.current = cart
+  const [isAdding, setIsAdding] = useState(false)
 
   const gallery = getPopulatedGallery(product)
   const variantTypes = getPopulatedVariantTypes(product)
@@ -165,6 +174,63 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
     // jump back to the product default / "from" amount.
     setSelectedOptionId(optionId)
   }, [])
+
+  const needsVariantSelection = Boolean(product.enableVariants && variantTypes.length > 0)
+  const selectedVariant =
+    selectedOptionId != null ? findVariantByOptionId(selectedOptionId) : undefined
+  const selectedUnavailable =
+    selectedOptionId != null && !isOptionAvailable(selectedOptionId)
+
+  const handleQuickAdd = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (isAdding || isOutOfStock || !product.id) return
+
+      if (needsVariantSelection && selectedOptionId == null) {
+        toast.error('Bitte zuerst eine Variante wählen.')
+        return
+      }
+
+      if (selectedUnavailable) return
+
+      setIsAdding(true)
+      try {
+        const result = await addItemToCart({
+          productId: product.id,
+          variantId: selectedVariant?.id,
+        })
+
+        if (!result.ok) {
+          console.error('[ProductGridItem] add failed', result.error)
+          toast.error(result.error, { duration: 60_000 })
+          return
+        }
+
+        await refreshCartAfterAdd({
+          refreshCart,
+          getCart: () => cartRef.current,
+          expectedCartId: result.cartId,
+        })
+
+        toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
+        openCart()
+      } finally {
+        setIsAdding(false)
+      }
+    },
+    [
+      isAdding,
+      isOutOfStock,
+      needsVariantSelection,
+      openCart,
+      product.id,
+      refreshCart,
+      selectedOptionId,
+      selectedUnavailable,
+      selectedVariant?.id,
+    ],
+  )
 
   return (
     <div className="product-card group">
@@ -308,23 +374,28 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         />
       ) : null}
 
-      {/* Quick-add to cart button — links to product page with selected variant pre-filled */}
-      <Link
-        href={productPageHref}
-        className={cn(
-          'mt-3 block w-full border border-warm-border py-[0.55rem] text-center font-sans text-[11px] tracking-[0.12em] uppercase text-warm-gray transition-all duration-200',
-          'hover:border-terra hover:bg-terra hover:text-linen',
-          isOutOfStock && 'pointer-events-none opacity-40',
-        )}
-        aria-disabled={isOutOfStock}
-        tabIndex={isOutOfStock ? -1 : undefined}
-      >
-        {isOutOfStock
-          ? 'Ausverkauft'
-          : selectedOptionId != null && !isOptionAvailable(selectedOptionId)
-            ? 'Benachrichtigen'
-            : '+ In den Warenkorb'}
-      </Link>
+      {/* Quick-add — real cart add; image/title above still open the product page */}
+      {selectedUnavailable ? (
+        <Link
+          href={productPageHref}
+          className="mt-3 block w-full border border-warm-border py-[0.55rem] text-center font-sans text-[11px] tracking-[0.12em] uppercase text-warm-gray transition-all duration-200 hover:border-terra hover:bg-terra hover:text-linen"
+        >
+          Benachrichtigen
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={handleQuickAdd}
+          disabled={isOutOfStock || isAdding}
+          className={cn(
+            'mt-3 block w-full border border-warm-border py-[0.55rem] text-center font-sans text-[11px] tracking-[0.12em] uppercase text-warm-gray transition-all duration-200',
+            'hover:border-terra hover:bg-terra hover:text-linen',
+            (isOutOfStock || isAdding) && 'pointer-events-none opacity-40',
+          )}
+        >
+          {isOutOfStock ? 'Ausverkauft' : isAdding ? 'Wird hinzugefügt…' : '+ In den Warenkorb'}
+        </button>
+      )}
     </div>
   )
 }
