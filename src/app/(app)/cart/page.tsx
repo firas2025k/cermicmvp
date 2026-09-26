@@ -5,7 +5,7 @@ import { DeleteItemButton } from '@/components/Cart/DeleteItemButton'
 import { EditItemQuantityButton } from '@/components/Cart/EditItemQuantityButton'
 import { Price } from '@/components/Price'
 import { Product } from '@/payload-types'
-import { calculateTotalsWithCoupon } from '@/utilities/coupons'
+import { calculateTotalsWithCoupon, resolveCartCouponDiscountCents } from '@/utilities/coupons'
 import {
   DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
   formatShippingLabel,
@@ -44,10 +44,15 @@ export default function CartPage() {
 
   const hasItems = (cart?.items?.length ?? 0) > 0
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
-    ?.couponDiscountCents
-  const couponDiscountCents =
-    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const couponDiscountCents = resolveCartCouponDiscountCents(
+    cart as {
+      subtotal?: unknown
+      couponCode?: string | null
+      couponType?: string | null
+      couponValue?: unknown
+      couponDiscountCents?: unknown
+    } | null,
+  )
   const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
   const shippingCents = totals.shippingCents
   const totalCents = totals.chargeTotalCents

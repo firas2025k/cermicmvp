@@ -10,7 +10,7 @@ import { createPortal } from 'react-dom'
 
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
-import { calculateTotalsWithCoupon } from '@/utilities/coupons'
+import { calculateTotalsWithCoupon, resolveCartCouponDiscountCents } from '@/utilities/coupons'
 import {
   DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
   formatShippingLabel,
@@ -69,10 +69,15 @@ export function CartModal({
   const reachedLabel = freeShippingReachedText ?? DEFAULT_REACHED_TEXT
 
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
-    ?.couponDiscountCents
-  const couponDiscountCents =
-    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const couponDiscountCents = resolveCartCouponDiscountCents(
+    cart as {
+      subtotal?: unknown
+      couponCode?: string | null
+      couponType?: string | null
+      couponValue?: unknown
+      couponDiscountCents?: unknown
+    } | null,
+  )
   const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
   const shippingCents = totals.shippingCents
   const totalCents = totals.chargeTotalCents

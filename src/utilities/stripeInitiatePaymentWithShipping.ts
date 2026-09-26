@@ -69,10 +69,13 @@ export function withShippingOnStripeAdapter(
               typeof validated.coupon.id === 'number'
                 ? validated.coupon.id
                 : Number.parseInt(String(validated.coupon.id), 10)
+            const fullCart = args.data.cart as { items?: unknown }
             await args.req.payload.update({
               collection: 'carts',
               id: cart.id,
               data: {
+                // Keep items so plugin beforeChange does not zero subtotal.
+                ...(Array.isArray(fullCart.items) ? { items: fullCart.items } : {}),
                 appliedCoupon: Number.isFinite(couponId) ? couponId : null,
                 couponCode: validated.coupon.code,
                 couponDiscountCents: validated.discountCents,

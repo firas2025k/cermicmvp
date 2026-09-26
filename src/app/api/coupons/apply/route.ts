@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import {
   calculateTotalsWithCoupon,
   normalizeCouponCode,
+  toCentsAmount,
   validateCouponForCart,
 } from '@/utilities/coupons'
 
@@ -57,8 +58,7 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: 'Warenkorb nicht gefunden oder ungültig.' }, { status: 403 })
   }
 
-  const subtotal =
-    typeof cart.subtotal === 'number' && Number.isFinite(cart.subtotal) ? cart.subtotal : 0
+  const subtotal = toCentsAmount(cart.subtotal)
 
   const result = await validateCouponForCart({
     payload,
@@ -81,10 +81,12 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: 'Ungültiger Gutschein.' }, { status: 500 })
   }
 
+  // Must include `items` — ecommerce plugin beforeChange sets subtotal to 0 if items are omitted.
   const updated = await payload.update({
     collection: 'carts',
     id: cart.id,
     data: {
+      items: cart.items ?? [],
       appliedCoupon: couponId,
       couponCode: result.coupon.code,
       couponDiscountCents: totals.couponDiscountCents,

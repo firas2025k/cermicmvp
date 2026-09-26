@@ -41,6 +41,8 @@ export async function POST(request: Request): Promise<Response> {
     collection: 'carts',
     id: cart.id,
     data: {
+      // Must include `items` — ecommerce plugin beforeChange sets subtotal to 0 if items are omitted.
+      items: cart.items ?? [],
       appliedCoupon: null,
       couponCode: null,
       couponDiscountCents: 0,

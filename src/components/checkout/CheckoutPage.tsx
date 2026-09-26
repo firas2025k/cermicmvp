@@ -20,7 +20,7 @@ import { CheckoutForm } from '@/components/forms/CheckoutForm'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Address } from '@/payload-types'
-import { calculateTotalsWithCoupon } from '@/utilities/coupons'
+import { calculateTotalsWithCoupon, resolveCartCouponDiscountCents } from '@/utilities/coupons'
 import { formatShippingLabel } from '@/utilities/shipping'
 import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
 import { toast } from 'sonner'
@@ -76,10 +76,15 @@ export const CheckoutPage: React.FC = () => {
 
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
-  const rawCouponDiscount = (cart as { couponDiscountCents?: number | null } | null | undefined)
-    ?.couponDiscountCents
-  const couponDiscountCents =
-    typeof rawCouponDiscount === 'number' ? Math.max(0, Math.round(rawCouponDiscount)) : 0
+  const couponDiscountCents = resolveCartCouponDiscountCents(
+    cart as {
+      subtotal?: unknown
+      couponCode?: string | null
+      couponType?: string | null
+      couponValue?: unknown
+      couponDiscountCents?: unknown
+    } | null,
+  )
   const totals = calculateTotalsWithCoupon(subtotalCents, couponDiscountCents)
   const shippingCents = totals.shippingCents
   const totalCents = totals.chargeTotalCents

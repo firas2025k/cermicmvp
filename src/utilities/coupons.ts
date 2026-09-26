@@ -31,6 +31,16 @@ export const normalizeCouponCode = (code: unknown): string => {
   return code.trim().toUpperCase()
 }
 
+/** Coerce Payload/Postgres numeric fields to integer cents. */
+export const toCentsAmount = (value: unknown): number => {
+  if (typeof value === 'number' && Number.isFinite(value)) return Math.round(value)
+  if (typeof value === 'string' && value.trim() !== '') {
+    const n = Number(value)
+    if (Number.isFinite(n)) return Math.round(n)
+  }
+  return 0
+}
+
 export const calculateCouponDiscountCents = (
   merchandiseSubtotalCents: number,
   coupon: Pick<CouponLike, 'type' | 'value'>,
@@ -45,6 +55,32 @@ export const calculateCouponDiscountCents = (
 
   const fixed = Math.max(0, Math.round(coupon.value) || 0)
   return Math.min(subtotal, fixed)
+}
+
+/**
+ * Live cart UI / sync: prefer recalculating from coupon type+value + current subtotal
+ * so Rabatt updates when items change without re-entering the code.
+ */
+export const resolveCartCouponDiscountCents = (cart: {
+  subtotal?: unknown
+  couponCode?: string | null
+  couponType?: string | null
+  couponValue?: unknown
+  couponDiscountCents?: unknown
+} | null | undefined): number => {
+  if (!cart) return 0
+  const code = typeof cart.couponCode === 'string' ? cart.couponCode.trim() : ''
+  if (!code) return 0
+
+  const subtotal = toCentsAmount(cart.subtotal)
+  const type = cart.couponType === 'percentage' || cart.couponType === 'fixed' ? cart.couponType : null
+  const value = toCentsAmount(cart.couponValue)
+
+  if (type && value > 0) {
+    return calculateCouponDiscountCents(subtotal, { type, value })
+  }
+
+  return Math.max(0, toCentsAmount(cart.couponDiscountCents))
 }
 
 export const calculateTotalsWithCoupon = (
