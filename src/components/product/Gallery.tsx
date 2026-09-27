@@ -148,7 +148,13 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
         <GallerySearchSync gallery={slides} onMatch={setCurrent} />
       </Suspense>
 
-      <div className="min-w-0">
+      <div
+        className={cn(
+          'min-w-0',
+          // Full-bleed on mobile/tablet — cancel .container padding-inline (2rem / px-8)
+          'max-lg:-mx-8 max-lg:w-[calc(100%+4rem)]',
+        )}
+      >
         {/* Main image — full-width, swipeable on mobile */}
         <div
           className="relative aspect-square w-full min-w-0 touch-pan-y overflow-hidden bg-[#EDE8DD] select-none"
