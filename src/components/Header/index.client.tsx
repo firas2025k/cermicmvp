@@ -18,7 +18,7 @@ type Props = {
 
 /**
  * Layout matches design-1/shop.html:
- * one row — logo (left) · inline nav (md+) · locale + search + account + cart (right).
+ * one row — logo (left) · inline nav (md+) · search + account + cart (right).
  * Mobile: hamburger + logo (left cluster) · utilities (right).
  */
 export function HeaderClient({ header, categories = [] }: Props) {
@@ -84,15 +84,8 @@ export function HeaderClient({ header, categories = [] }: Props) {
             </nav>
           ) : null}
 
-          {/* Right: locale + search + account + cart */}
+          {/* Right: search + account + cart */}
           <div className="flex shrink-0 items-center gap-4 md:gap-5">
-            <button
-              type="button"
-              className="hidden font-sans text-xs tracking-widest text-warm-gray transition-colors hover:text-olive md:inline"
-              aria-label="Sprache (demnächst)"
-            >
-              DE&nbsp;|&nbsp;<span className="font-medium text-olive">EN</span>
-            </button>
             <HeaderSearch />
             <Link href="/account" className={iconBtnClass} aria-label="Konto">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
