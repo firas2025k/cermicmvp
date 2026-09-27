@@ -35,9 +35,9 @@ export async function Footer() {
   const logoName = footer.brand?.logoName || SITE_NAME
   const tagline =
     footer.brand?.tagline || 'Handgefertigte Olivenholz- und Keramikstücke, mit Sorgfalt in Österreich hergestellt.'
-  const address = footer.contactInfo?.address || 'Wien, Österreich'
-  const email = footer.contactInfo?.email || 'hello@nabea.at'
-  const phone = footer.contactInfo?.phone
+  const address = footer.contactInfo?.address?.trim() || null
+  const email = footer.contactInfo?.email?.trim() || 'hello@nabea.at'
+  const phone = footer.contactInfo?.phone?.trim() || null
   const socialLinks = footer.socialLinks || []
   const legalLinks = footer.legalLinks || []
   const newsletter = footer.newsletter
@@ -175,11 +175,7 @@ export async function Footer() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="font-sans text-xs" style={{ color: 'rgba(248,244,238,0.3)' }}>
-              Handgefertigt mit Sorgfalt · Wien, Österreich
-            </p>
-          )}
+          ) : null}
         </div>
 
         <div

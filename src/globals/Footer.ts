@@ -41,7 +41,9 @@ export const Footer: GlobalConfig = {
           name: 'address',
           type: 'text',
           label: 'Address',
-          defaultValue: 'Wien, Österreich',
+          admin: {
+            description: 'Optional. Leave empty to hide the address line in the footer.',
+          },
         },
         {
           name: 'email',

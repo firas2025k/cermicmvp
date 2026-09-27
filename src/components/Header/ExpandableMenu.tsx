@@ -175,9 +175,6 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
               <Link href="/contact" onClick={closeMenu} className={menuLinkClass}>
                 Kontakt
               </Link>
-              <Link href="/care-instructions" onClick={closeMenu} className={menuLinkClass}>
-                Pflegehinweise
-              </Link>
             </div>
           </div>
         </div>
