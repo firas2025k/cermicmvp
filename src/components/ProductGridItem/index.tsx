@@ -4,7 +4,7 @@ import { PromoPrice } from '@/components/Price/PromoPrice'
 import { getOptionsForProductByType } from '@/lib/productVariants'
 import type { Media, Product, VariantType } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
-import { waitForStoredCartBinding } from '@/utilities/addToCart'
+import { addProductWithPlugin } from '@/utilities/addToCart'
 import { cn } from '@/utilities/cn'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
@@ -196,15 +196,12 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
       setIsAdding(true)
       try {
-        await waitForStoredCartBinding(() => cartRef.current)
-
-        await addItem(
-          {
-            product: product.id,
-            variant: selectedVariant?.id,
-          },
-          1,
-        )
+        await addProductWithPlugin({
+          addItem,
+          getCart: () => cartRef.current,
+          productId: product.id,
+          variantId: selectedVariant?.id,
+        })
 
         toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()

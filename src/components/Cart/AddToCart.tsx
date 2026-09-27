@@ -9,7 +9,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { useCartOpen } from '@/providers/CartOpen'
-import { waitForStoredCartBinding } from '@/utilities/addToCart'
+import { addProductWithPlugin } from '@/utilities/addToCart'
 
 type Props = {
   product: Product
@@ -44,17 +44,13 @@ export function AddToCart({ product }: Props) {
 
       setIsAdding(true)
       try {
-        // Let mount hydration bind an existing localStorage cart before addItem,
-        // otherwise a quick tap on mobile can create a second empty-looking cart.
-        await waitForStoredCartBinding(() => cartRef.current)
-
-        await addItem(
-          {
-            product: product.id,
-            variant: selectedVariant?.id,
-          },
-          1,
-        )
+        // Plugin addItem swallows failures — verify the line landed in the cart.
+        await addProductWithPlugin({
+          addItem,
+          getCart: () => cartRef.current,
+          productId: product.id,
+          variantId: selectedVariant?.id,
+        })
 
         toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()

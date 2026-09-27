@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom'
 import { Product } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
 import { calculateTotalsWithCoupon, resolveCartCouponDiscountCents } from '@/utilities/coupons'
+import { shouldSkipPluginCartRefresh } from '@/utilities/addToCart'
 import {
   DEFAULT_FREE_SHIPPING_THRESHOLD_EUROS,
   formatShippingLabel,
@@ -42,9 +43,14 @@ export function CartModal({
 
   // Re-fetch when the drawer opens so mobile sees the latest items even if a
   // prior refresh raced ahead of provider cartID binding.
+  // Guest carts: plugin refreshCart omits the secret and 403s — skip it; state
+  // from addItem is already correct.
   useEffect(() => {
     if (!isOpen) return
-    void refreshCart()
+    if (shouldSkipPluginCartRefresh()) return
+    void Promise.resolve(refreshCart()).catch(() => {
+      // Ignore refresh failures so the drawer still shows in-memory cart state.
+    })
   }, [isOpen, refreshCart])
 
   useEffect(() => {
