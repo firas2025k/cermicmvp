@@ -82,6 +82,20 @@ export const Content: Block = {
       },
     },
     {
+      name: 'alignment',
+      type: 'select',
+      label: 'Alignment',
+      defaultValue: 'left',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+      admin: {
+        description: 'Aligns the title, description, and column text.',
+      },
+    },
+    {
       name: 'columns',
       type: 'array',
       admin: {

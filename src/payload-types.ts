@@ -473,6 +473,9 @@ export interface VariantType {
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
+  /**
+   * Optional. Leave empty if you only want buttons.
+   */
   richText?: {
     root: {
       type: string;
@@ -507,6 +510,10 @@ export interface CallToActionBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Where the button(s) sit in the section.
+   */
+  buttonAlignment?: ('left' | 'center' | 'right') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta';
@@ -559,6 +566,9 @@ export interface Page {
   };
   layout: (
     | {
+        /**
+         * Optional. Leave empty if you only want buttons.
+         */
         richText?: {
           root: {
             type: string;
@@ -593,6 +603,10 @@ export interface Page {
               id?: string | null;
             }[]
           | null;
+        /**
+         * Where the button(s) sit in the section.
+         */
+        buttonAlignment?: ('left' | 'center' | 'right') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'cta';
@@ -606,6 +620,10 @@ export interface Page {
          * Optional short intro under the title.
          */
         description?: string | null;
+        /**
+         * Aligns the title, description, and column text.
+         */
+        alignment?: ('left' | 'center' | 'right') | null;
         columns?:
           | {
               size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -1076,6 +1094,10 @@ export interface ContentBlock {
    * Optional short intro under the title.
    */
   description?: string | null;
+  /**
+   * Aligns the title, description, and column text.
+   */
+  alignment?: ('left' | 'center' | 'right') | null;
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -1716,6 +1738,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  buttonAlignment?: T;
   id?: T;
   blockName?: T;
 }
@@ -1726,6 +1749,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
 export interface ContentBlockSelect<T extends boolean = true> {
   title?: T;
   description?: T;
+  alignment?: T;
   columns?:
     | T
     | {

@@ -23,6 +23,8 @@ import * as migration_20260926_000001_coupons from './20260926_000001_coupons';
 import * as migration_20260927_000001_dual_image_story from './20260927_000001_dual_image_story';
 import * as migration_20260927_000002_pages_image_text from './20260927_000002_pages_image_text';
 import * as migration_20260927_000003_content_title_description from './20260927_000003_content_title_description';
+import * as migration_20260927_000004_content_alignment from './20260927_000004_content_alignment';
+import * as migration_20260927_000005_cta_button_alignment from './20260927_000005_cta_button_alignment';
 
 export const migrations = [
   {
@@ -149,5 +151,15 @@ export const migrations = [
     up: migration_20260927_000003_content_title_description.up,
     down: migration_20260927_000003_content_title_description.down,
     name: '20260927_000003_content_title_description',
+  },
+  {
+    up: migration_20260927_000004_content_alignment.up,
+    down: migration_20260927_000004_content_alignment.down,
+    name: '20260927_000004_content_alignment',
+  },
+  {
+    up: migration_20260927_000005_cta_button_alignment.up,
+    down: migration_20260927_000005_cta_button_alignment.down,
+    name: '20260927_000005_cta_button_alignment',
   },
 ];

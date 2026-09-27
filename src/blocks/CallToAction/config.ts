@@ -16,6 +16,11 @@ export const CallToAction: Block = {
     {
       name: 'richText',
       type: 'richText',
+      required: false,
+      label: 'Title / text',
+      admin: {
+        description: 'Optional. Leave empty if you only want buttons.',
+      },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [
@@ -26,7 +31,6 @@ export const CallToAction: Block = {
           ]
         },
       }),
-      label: false,
     },
     linkGroup({
       appearances: ['default', 'outline'],
@@ -34,6 +38,20 @@ export const CallToAction: Block = {
         maxRows: 2,
       },
     }),
+    {
+      name: 'buttonAlignment',
+      type: 'select',
+      label: 'Button alignment',
+      defaultValue: 'right',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+      admin: {
+        description: 'Where the button(s) sit in the section.',
+      },
+    },
   ],
   labels: {
     plural: 'Calls to Action',
