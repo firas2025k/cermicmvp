@@ -63,6 +63,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         compareAtPriceInEUR: true,
         categories: true,
         enableVariants: true,
+        inventory: true,
       },
       populate: {
         variants: {
@@ -118,6 +119,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
             compareAtPriceInEUR: true,
             categories: true,
             enableVariants: true,
+            inventory: true,
           },
           populate: {
             variants: {
@@ -133,6 +135,41 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         const orderedProducts = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)
         products = await applyDiscountsToProducts(orderedProducts, payload)
       }
+    } else if (products.length > 0) {
+      // Relationship populate can omit inventory; re-fetch so stock badges are correct.
+      const ids = products.map((p) => p.id)
+      const payload = await getPayload({ config: configPromise })
+      const found = await payload.find({
+        collection: 'products',
+        draft: false,
+        overrideAccess: false,
+        depth: 2,
+        where: { id: { in: ids } },
+        limit: ids.length,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          gallery: true,
+          priceInEUR: true,
+          compareAtPriceInEUR: true,
+          categories: true,
+          enableVariants: true,
+          inventory: true,
+        },
+        populate: {
+          variants: {
+            title: true,
+            priceInEUR: true,
+            compareAtPriceInEUR: true,
+            inventory: true,
+            options: true,
+          },
+        },
+      })
+      const byId = new Map(found.docs.map((p) => [p.id, p]))
+      const orderedProducts = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)
+      products = await applyDiscountsToProducts(orderedProducts, payload)
     }
 
     return products

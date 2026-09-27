@@ -9,14 +9,14 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { useCartOpen } from '@/providers/CartOpen'
-import { addItemToCart, refreshCartAfterAdd } from '@/utilities/addToCart'
+import { waitForStoredCartBinding } from '@/utilities/addToCart'
 
 type Props = {
   product: Product
 }
 
 export function AddToCart({ product }: Props) {
-  const { cart, refreshCart } = useCart()
+  const { addItem, cart } = useCart()
   const { openCart } = useCartOpen()
   const searchParams = useSearchParams()
   const [isAdding, setIsAdding] = useState(false)
@@ -44,30 +44,29 @@ export function AddToCart({ product }: Props) {
 
       setIsAdding(true)
       try {
-        const result = await addItemToCart({
-          productId: product.id,
-          variantId: selectedVariant?.id,
-        })
+        // Let mount hydration bind an existing localStorage cart before addItem,
+        // otherwise a quick tap on mobile can create a second empty-looking cart.
+        await waitForStoredCartBinding(() => cartRef.current)
 
-        if (!result.ok) {
-          console.error('[AddToCart]', result.error)
-          toast.error(result.error, { duration: 60_000 })
-          return
-        }
-
-        await refreshCartAfterAdd({
-          refreshCart,
-          getCart: () => cartRef.current,
-          expectedCartId: result.cartId,
-        })
+        await addItem(
+          {
+            product: product.id,
+            variant: selectedVariant?.id,
+          },
+          1,
+        )
 
         toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Artikel konnte nicht hinzugefügt werden.'
+        console.error('[AddToCart]', err)
+        toast.error(message, { duration: 60_000 })
       } finally {
         setIsAdding(false)
       }
     },
-    [isAdding, openCart, product.id, refreshCart, selectedVariant?.id],
+    [addItem, isAdding, openCart, product.id, selectedVariant?.id],
   )
 
   const disabled = useMemo<boolean>(() => {

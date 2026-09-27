@@ -1189,7 +1189,7 @@ export interface Coupon {
    */
   type: 'percentage' | 'fixed';
   /**
-   * Bei Prozent: 1–99. Bei Gutschein: Betrag in Cent (z.B. 2000 = 20,00 €).
+   * Rabattcode: Prozent 1–99. Gutschein: Betrag in Cent (z.B. 2000 = 20,00 €).
    */
   value: number;
   /**
@@ -2462,6 +2462,7 @@ export interface Homepage {
     | ProductUsageBlock
     | AboutUsBlock
     | InquiryBlock
+    | DualImageStoryBlock
   )[];
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
@@ -2795,6 +2796,35 @@ export interface InquiryBlock {
   blockType: 'inquiry';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DualImageStoryBlock".
+ */
+export interface DualImageStoryBlock {
+  /**
+   * Shown above the images (e.g. NABEA VOR ORT ENTDECKEN).
+   */
+  title: string;
+  /**
+   * Wider image on the left (default ~70% width on desktop).
+   */
+  leftImage: number | Media;
+  /**
+   * Narrower image on the right (remainder of the row).
+   */
+  rightImage: number | Media;
+  /**
+   * Desktop only. Right image uses the remaining width (e.g. 70 → left 70%, right 30%). Mobile stacks full-width.
+   */
+  leftWidthPercent: number;
+  /**
+   * Paragraph shown below the images.
+   */
+  description: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'dualImageStory';
+}
+/**
  * General FAQ block shown on product pages when “Show general FAQ section” is enabled on a product. Choose a Lucide icon visually and edit each label.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2991,6 +3021,7 @@ export interface HomepageSelect<T extends boolean = true> {
         productUsage?: T | ProductUsageBlockSelect<T>;
         aboutUs?: T | AboutUsBlockSelect<T>;
         inquiry?: T | InquiryBlockSelect<T>;
+        dualImageStory?: T | DualImageStoryBlockSelect<T>;
       };
   _status?: T;
   updatedAt?: T;
@@ -3218,6 +3249,19 @@ export interface InquiryBlockSelect<T extends boolean = true> {
   learnMoreLabel?: T;
   learnMoreUrl?: T;
   content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DualImageStoryBlock_select".
+ */
+export interface DualImageStoryBlockSelect<T extends boolean = true> {
+  title?: T;
+  leftImage?: T;
+  rightImage?: T;
+  leftWidthPercent?: T;
+  description?: T;
   id?: T;
   blockName?: T;
 }

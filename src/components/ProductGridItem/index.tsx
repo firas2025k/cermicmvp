@@ -4,7 +4,7 @@ import { PromoPrice } from '@/components/Price/PromoPrice'
 import { getOptionsForProductByType } from '@/lib/productVariants'
 import type { Media, Product, VariantType } from '@/payload-types'
 import { useCartOpen } from '@/providers/CartOpen'
-import { addItemToCart, refreshCartAfterAdd } from '@/utilities/addToCart'
+import { waitForStoredCartBinding } from '@/utilities/addToCart'
 import { cn } from '@/utilities/cn'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
@@ -55,7 +55,7 @@ function getCategoryLabel(product: Partial<Product>): string | null {
 
 export const ProductGridItem: React.FC<Props> = ({ product }) => {
   const { priceInEUR, compareAtPriceInEUR, title, inventory } = product
-  const { cart, refreshCart } = useCart()
+  const { addItem, cart } = useCart()
   const { openCart } = useCartOpen()
   const cartRef = useRef(cart)
   cartRef.current = cart
@@ -196,36 +196,33 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
 
       setIsAdding(true)
       try {
-        const result = await addItemToCart({
-          productId: product.id,
-          variantId: selectedVariant?.id,
-        })
+        await waitForStoredCartBinding(() => cartRef.current)
 
-        if (!result.ok) {
-          console.error('[ProductGridItem] add failed', result.error)
-          toast.error(result.error, { duration: 60_000 })
-          return
-        }
-
-        await refreshCartAfterAdd({
-          refreshCart,
-          getCart: () => cartRef.current,
-          expectedCartId: result.cartId,
-        })
+        await addItem(
+          {
+            product: product.id,
+            variant: selectedVariant?.id,
+          },
+          1,
+        )
 
         toast.success('Artikel wurde zum Warenkorb hinzugefügt.')
         openCart()
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Artikel konnte nicht hinzugefügt werden.'
+        console.error('[ProductGridItem] add failed', err)
+        toast.error(message, { duration: 60_000 })
       } finally {
         setIsAdding(false)
       }
     },
     [
+      addItem,
       isAdding,
       isOutOfStock,
       needsVariantSelection,
       openCart,
       product.id,
-      refreshCart,
       selectedOptionId,
       selectedUnavailable,
       selectedVariant?.id,

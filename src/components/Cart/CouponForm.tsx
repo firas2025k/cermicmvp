@@ -1,5 +1,6 @@
 'use client'
 
+import { notifyCartSessionChanged } from '@/providers/CartSession'
 import { ensureGuestCart } from '@/utilities/addToCart'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import React, { useCallback, useState } from 'react'
@@ -46,17 +47,18 @@ export function CouponForm({ email, className }: CouponFormProps) {
       try {
         let cartId = cartWithCoupon?.id != null ? String(cartWithCoupon.id) : null
         let secret = readCartSecret()
+        // Provider had no cart id — remount after apply so React state matches LS.
+        let needsSessionRebind = !cartId
 
         if (!cartId) {
-          const ensured = await ensureGuestCart()
+          // Defer provider remount until after apply so this form is not unmounted mid-request.
+          const ensured = await ensureGuestCart({ rebind: false })
           if (!ensured.ok) {
             setError('Warenkorb konnte nicht erstellt werden.')
             return
           }
           cartId = ensured.cartId
           secret = ensured.secret || readCartSecret()
-          await refreshCart()
-          await wait(40)
         }
 
         const res = await fetch('/api/coupons/apply', {
@@ -75,7 +77,13 @@ export function CouponForm({ email, className }: CouponFormProps) {
           return
         }
         setCode('')
-        await refreshCart()
+
+        if (needsSessionRebind) {
+          notifyCartSessionChanged()
+          await wait(80)
+        } else {
+          await refreshCart()
+        }
       } catch {
         setError('Code konnte nicht eingelöst werden.')
       } finally {

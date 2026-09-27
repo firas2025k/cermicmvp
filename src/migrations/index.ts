@@ -20,6 +20,7 @@ import * as migration_20260818_000001_about_us_image_position from './20260818_0
 import * as migration_20260818_000002_inquiry_block from './20260818_000002_inquiry_block';
 import * as migration_20260820_132400_add_product_faq_section from './20260820_132400_add_product_faq_section';
 import * as migration_20260926_000001_coupons from './20260926_000001_coupons';
+import * as migration_20260927_000001_dual_image_story from './20260927_000001_dual_image_story';
 
 export const migrations = [
   {
@@ -131,5 +132,10 @@ export const migrations = [
     up: migration_20260926_000001_coupons.up,
     down: migration_20260926_000001_coupons.down,
     name: '20260926_000001_coupons',
+  },
+  {
+    up: migration_20260927_000001_dual_image_story.up,
+    down: migration_20260927_000001_dual_image_story.down,
+    name: '20260927_000001_dual_image_story',
   },
 ];

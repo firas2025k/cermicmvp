@@ -30,7 +30,7 @@ export function CartModal({
   freeShippingText,
   freeShippingReachedText,
 }: CartSettings = {}) {
-  const { cart } = useCart()
+  const { cart, refreshCart } = useCart()
   const { isOpen, setOpen, closeCart } = useCartOpen()
   const pathname = usePathname()
   // Portal requires the DOM to be mounted — skip SSR
@@ -39,6 +39,13 @@ export function CartModal({
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Re-fetch when the drawer opens so mobile sees the latest items even if a
+  // prior refresh raced ahead of provider cartID binding.
+  useEffect(() => {
+    if (!isOpen) return
+    void refreshCart()
+  }, [isOpen, refreshCart])
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {

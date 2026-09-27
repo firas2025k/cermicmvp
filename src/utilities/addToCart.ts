@@ -1,3 +1,5 @@
+import { notifyCartSessionChanged } from '@/providers/CartSession'
+
 export type AddToCartInput = {
   productId: number | string
   variantId?: number | string
@@ -11,36 +13,37 @@ export type AddToCartResult =
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 /**
- * Persist cart id/secret and nudge same-tab listeners so EcommerceProvider
- * can re-bind before refreshCart runs.
+ * Write cart id/secret to localStorage without remounting the ecommerce provider.
  */
-export function persistCartId(cartId: string, secret?: string | null): void {
+export function writeCartIdToStorage(cartId: string, secret?: string | null): void {
   localStorage.setItem('cart', cartId)
   if (secret) {
     localStorage.setItem('cart_secret', secret)
   } else {
     localStorage.removeItem('cart_secret')
   }
+}
 
-  try {
-    window.dispatchEvent(
-      new StorageEvent('storage', {
-        key: 'cart',
-        newValue: cartId,
-        storageArea: localStorage,
-      }),
-    )
-  } catch {
-    // StorageEvent construction can fail in some environments; localStorage write is enough.
-  }
+/**
+ * Persist cart id/secret and remount EcommerceProvider so React cartID
+ * matches localStorage (plugin refreshCart is a no-op when cartID is unset).
+ */
+export function persistCartId(cartId: string, secret?: string | null): void {
+  writeCartIdToStorage(cartId, secret)
+  notifyCartSessionChanged()
 }
 
 /**
  * Create an empty guest cart (no items) for early coupon apply.
+ * Pass `rebind: false` when the caller will remount after a later API call
+ * (avoids unmounting the in-flight coupon form).
  */
-export async function ensureGuestCart(): Promise<
+export async function ensureGuestCart(options?: {
+  rebind?: boolean
+}): Promise<
   { ok: true; cartId: string; secret?: string | null; created: boolean } | { ok: false; error: string }
 > {
+  const rebind = options?.rebind !== false
   const existingId = localStorage.getItem('cart')
   if (existingId) {
     return {
@@ -78,93 +81,12 @@ export async function ensureGuestCart(): Promise<
       }
     }
 
-    persistCartId(String(newCartID), data.doc?.secret)
+    if (rebind) {
+      persistCartId(String(newCartID), data.doc?.secret)
+    } else {
+      writeCartIdToStorage(String(newCartID), data.doc?.secret)
+    }
     return { ok: true, cartId: String(newCartID), secret: data.doc?.secret, created: true }
-  } catch (err) {
-    return {
-      ok: false,
-      error: `Create-cart network error: ${err instanceof Error ? err.message : String(err)}`,
-    }
-  }
-}
-
-/**
- * Add a line item via the Payload ecommerce cart API.
- * Creates a cart when none exists in localStorage.
- */
-export async function addItemToCart({
-  productId,
-  variantId,
-  quantity = 1,
-}: AddToCartInput): Promise<AddToCartResult> {
-  const cartID = localStorage.getItem('cart')
-  const secret = localStorage.getItem('cart_secret') || undefined
-
-  if (cartID) {
-    try {
-      const res = await fetch(`/api/carts/${cartID}/add-item`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          item: { product: productId, variant: variantId },
-          quantity,
-          secret,
-        }),
-      })
-      const responseText = await res.text()
-      let parsed: { success?: boolean } | null = null
-      try {
-        parsed = JSON.parse(responseText)
-      } catch {
-        parsed = null
-      }
-
-      if (res.ok && parsed?.success) {
-        return { ok: true, cartId: cartID, created: false }
-      }
-
-      return {
-        ok: false,
-        error: `Add-item error (${res.status}): ${responseText.slice(0, 300)}`,
-      }
-    } catch (err) {
-      return {
-        ok: false,
-        error: `Add-item network error: ${err instanceof Error ? err.message : String(err)}`,
-      }
-    }
-  }
-
-  try {
-    const res = await fetch('/api/carts?depth=2', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        currency: 'EUR',
-        items: [{ product: productId, variant: variantId, quantity }],
-      }),
-    })
-    const body = await res.text()
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: `Create-cart error (${res.status}): ${body.slice(0, 300)}`,
-      }
-    }
-
-    const data = JSON.parse(body) as { doc?: { id?: number | string; secret?: string | null } }
-    const newCartID = data?.doc?.id
-    if (!newCartID) {
-      return {
-        ok: false,
-        error: `Create-cart: no cart id returned. Response: ${JSON.stringify(data).slice(0, 300)}`,
-      }
-    }
-
-    persistCartId(String(newCartID), data.doc?.secret)
-    return { ok: true, cartId: String(newCartID), created: true }
   } catch (err) {
     return {
       ok: false,
@@ -179,8 +101,49 @@ type CartLike = {
 } | null | undefined
 
 /**
- * Refresh cart context after a successful add. Retries so a newly created
- * cart id in localStorage is picked up before the drawer opens.
+ * Wait for EcommerceProvider to finish hydrating a cart id already in
+ * localStorage. Prevents plugin addItem from creating a second cart when the
+ * user taps quickly on a slow mobile connection before mount hydration finishes.
+ */
+export async function waitForStoredCartBinding(
+  getCart: () => CartLike,
+  attempts = 25,
+): Promise<void> {
+  if (typeof window === 'undefined') return
+  const lsId = localStorage.getItem('cart')
+  if (!lsId) return
+
+  for (let i = 0; i < attempts; i++) {
+    const cart = getCart()
+    if (cart?.id != null) return
+    await wait(40)
+  }
+}
+
+/**
+ * Wait until EcommerceProvider has hydrated the expected cart from localStorage
+ * after a session remount (e.g. ensureGuestCart created a new cart).
+ */
+export async function waitForCartHydration(options: {
+  getCart: () => CartLike
+  expectedCartId: string
+  attempts?: number
+}): Promise<boolean> {
+  const { getCart, expectedCartId, attempts = 20 } = options
+
+  for (let i = 0; i < attempts; i++) {
+    const cart = getCart()
+    if (cart?.id != null && String(cart.id) === String(expectedCartId)) {
+      return true
+    }
+    await wait(50)
+  }
+
+  return false
+}
+
+/**
+ * Refresh cart context after a mutation. Retries briefly for slow mobile networks.
  */
 export async function refreshCartAfterAdd(options: {
   refreshCart: () => Promise<unknown> | unknown
@@ -188,18 +151,16 @@ export async function refreshCartAfterAdd(options: {
   expectedCartId?: string
   attempts?: number
 }): Promise<void> {
-  const { refreshCart, getCart, expectedCartId, attempts = 4 } = options
+  const { refreshCart, getCart, expectedCartId, attempts = 6 } = options
 
   for (let i = 0; i < attempts; i++) {
     await refreshCart()
-    // Let React commit the provider update before we inspect cart state.
     await wait(40)
 
     const cart = getCart()
     const hasItems = Array.isArray(cart?.items) && cart.items.length > 0
     const idMatches =
-      !expectedCartId ||
-      (cart?.id != null && String(cart.id) === String(expectedCartId))
+      !expectedCartId || (cart?.id != null && String(cart.id) === String(expectedCartId))
 
     if (hasItems && idMatches) return
   }

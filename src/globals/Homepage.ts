@@ -12,6 +12,7 @@ import { CustomerReviewsBlock } from '@/blocks/CustomerReviews/config'
 import { ProductUsageBlock } from '@/blocks/ProductUsage/config'
 import { AboutUsBlock } from '@/blocks/AboutUs/config'
 import { InquiryBlock } from '@/blocks/Inquiry/config'
+import { DualImageStoryBlock } from '@/blocks/DualImageStory/config'
 import { getServerSideURL } from '@/utilities/getURL'
 import { revalidateHomepage } from './hooks/revalidateHomepage'
 
@@ -45,6 +46,7 @@ export const Homepage: GlobalConfig = {
         ProductUsageBlock,
         AboutUsBlock,
         InquiryBlock,
+        DualImageStoryBlock,
       ],
       required: true,
     },
