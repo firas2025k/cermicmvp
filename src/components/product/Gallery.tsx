@@ -2,7 +2,6 @@
 
 import type { Product } from '@/payload-types'
 import { cn } from '@/utilities/cn'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import type { DefaultDocumentIDType } from 'payload'
@@ -83,7 +82,7 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
   )
 
   const slideCount = slides.length
-  const hasThumbs = slideCount > 1
+  const hasMultiple = slideCount > 1
   const safeIndex = slideCount === 0 ? 0 : Math.min(current, slideCount - 1)
 
   const goTo = useCallback(
@@ -97,27 +96,27 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
   const goPrev = useCallback(() => goTo(safeIndex - 1), [goTo, safeIndex])
   const goNext = useCallback(() => goTo(safeIndex + 1), [goTo, safeIndex])
 
-  // Keep the active thumbnail visible in the horizontal/vertical strip
+  // Keep the active desktop thumbnail visible in the vertical strip
   useEffect(() => {
     const root = thumbsRef.current
-    if (!root || !hasThumbs) return
+    if (!root || !hasMultiple) return
     const thumb = root.querySelector<HTMLElement>(`[data-thumb-index="${safeIndex}"]`)
     thumb?.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
       inline: 'nearest',
     })
-  }, [safeIndex, hasThumbs])
+  }, [safeIndex, hasMultiple])
 
   const onTouchStart = (e: React.TouchEvent) => {
-    if (!hasThumbs) return
+    if (!hasMultiple) return
     const touch = e.touches[0]
     touchStartX.current = touch.clientX
     touchStartY.current = touch.clientY
   }
 
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (!hasThumbs || touchStartX.current == null || touchStartY.current == null) return
+    if (!hasMultiple || touchStartX.current == null || touchStartY.current == null) return
 
     const touch = e.changedTouches[0]
     const deltaX = touch.clientX - touchStartX.current
@@ -141,79 +140,76 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
     <div
       className={cn(
         'flex min-w-0 flex-col gap-3',
-        // Desktop: thumbs left, main right (reverse of previous flex-col-reverse)
-        hasThumbs && 'lg:grid lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-3.5',
+        // Desktop: thumbs left, main right
+        hasMultiple && 'lg:grid lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-3.5',
       )}
     >
       <Suspense fallback={null}>
         <GallerySearchSync gallery={slides} onMatch={setCurrent} />
       </Suspense>
 
-      {/* Main image — swipeable on touch devices */}
-      <div
-        className="group relative aspect-square w-full min-w-0 touch-pan-y overflow-hidden bg-[#EDE8DD] select-none"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        role="region"
-        aria-roledescription="Karussell"
-        aria-label="Produktbilder"
-      >
-        {slides.map((item, i) => (
-          <Image
-            key={`main-${i}`}
-            src={item.image.url}
-            alt={item.image.alt ?? ''}
-            fill
-            draggable={false}
-            className={cn(
-              'pointer-events-none object-cover transition-opacity duration-500 ease-in-out',
-              i === safeIndex ? 'opacity-100' : 'opacity-0',
-            )}
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority={i === 0}
-          />
-        ))}
+      <div className="min-w-0">
+        {/* Main image — full-width, swipeable on mobile */}
+        <div
+          className="relative aspect-square w-full min-w-0 touch-pan-y overflow-hidden bg-[#EDE8DD] select-none"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          role="region"
+          aria-roledescription="Karussell"
+          aria-label="Produktbilder"
+        >
+          {slides.map((item, i) => (
+            <Image
+              key={`main-${i}`}
+              src={item.image.url}
+              alt={item.image.alt ?? ''}
+              fill
+              draggable={false}
+              className={cn(
+                'pointer-events-none object-cover transition-opacity duration-500 ease-in-out',
+                i === safeIndex ? 'opacity-100' : 'opacity-0',
+              )}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority={i === 0}
+            />
+          ))}
+        </div>
 
-        {hasThumbs && (
-          <>
-            {/* Counter — mobile/tablet, matches reference (bottom-left) */}
-            <p
-              className="pointer-events-none absolute bottom-3 left-3 z-10 font-sans text-xs font-medium tracking-wide text-charcoal lg:hidden"
-              aria-live="polite"
-            >
-              <span className="rounded-sm bg-linen/90 px-2 py-1 shadow-sm">
-                {safeIndex + 1} / {slideCount}
-              </span>
-            </p>
-
-            {/* Prev / next — large tap targets, mobile/tablet (bottom-right) */}
-            <div className="absolute bottom-3 right-3 z-10 flex gap-2 lg:hidden">
-              <button
-                type="button"
-                onClick={goPrev}
-                aria-label="Vorheriges Bild"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-warm-border/60 bg-linen/90 text-charcoal shadow-sm transition-colors active:bg-linen"
-              >
-                <ChevronLeft className="h-5 w-5" aria-hidden />
-              </button>
-              <button
-                type="button"
-                onClick={goNext}
-                aria-label="Nächstes Bild"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-warm-border/60 bg-linen/90 text-charcoal shadow-sm transition-colors active:bg-linen"
-              >
-                <ChevronRight className="h-5 w-5" aria-hidden />
-              </button>
-            </div>
-          </>
+        {/* Mobile/tablet: pill + dot indicators under the image (no thumbnails) */}
+        {hasMultiple && (
+          <div
+            className="mt-3 flex items-center justify-center gap-1.5 lg:hidden"
+            role="tablist"
+            aria-label="Bildauswahl"
+          >
+            {slides.map((_, i) => {
+              const isActive = i === safeIndex
+              return (
+                <button
+                  key={`dot-${i}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-label={`Bild ${i + 1} von ${slideCount}`}
+                  onClick={() => goTo(i)}
+                  className={cn(
+                    'rounded-full transition-all duration-300',
+                    isActive
+                      ? 'h-1.5 w-5 bg-charcoal'
+                      : 'h-1.5 w-1.5 bg-warm-border hover:bg-warm-gray',
+                  )}
+                />
+              )
+            })}
+          </div>
         )}
       </div>
 
-      {/* Thumbnails: horizontal on mobile, vertical on desktop */}
-      {hasThumbs && (
+      {/* Desktop only: vertical thumbnail strip */}
+      {hasMultiple && (
         <div
           ref={thumbsRef}
-          className="scrollbar-hide flex w-full gap-2 overflow-x-auto lg:order-first lg:h-0 lg:min-h-full lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto"
+          className="scrollbar-hide hidden lg:order-first lg:flex lg:h-0 lg:min-h-full lg:flex-col lg:gap-2 lg:overflow-x-hidden lg:overflow-y-auto"
         >
           {slides.map((item, i) => (
             <button
@@ -221,17 +217,12 @@ export const Gallery: React.FC<Props> = ({ gallery }) => {
               type="button"
               data-thumb-index={i}
               onClick={() => goTo(i)}
-              onMouseEnter={() => {
-                // Desktop-only hover preview; mobile relies on tap / swipe / arrows
-                if (typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches) {
-                  goTo(i)
-                }
-              }}
+              onMouseEnter={() => goTo(i)}
               onFocus={() => goTo(i)}
               aria-label={`Bild ${i + 1} ansehen`}
               aria-current={i === safeIndex ? 'true' : undefined}
               className={cn(
-                'h-16 w-16 shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200 sm:h-[72px] sm:w-[72px] lg:h-[84px] lg:w-[84px]',
+                'h-[84px] w-[84px] shrink-0 overflow-hidden bg-[#EDE8DD] transition-all duration-200',
                 i === safeIndex
                   ? 'border-2 border-charcoal'
                   : 'border-2 border-transparent hover:border-warm-border',
