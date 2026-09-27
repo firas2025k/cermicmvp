@@ -45,7 +45,7 @@ export const DualImageStoryBlockComponent: React.FC<DualImageStoryBlockProps> = 
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
         {title ? (
-          <h2 className="mb-8 lg:mb-10 font-sans text-sm md:text-base font-medium tracking-[0.14em] uppercase text-charcoal">
+          <h2 className="mb-8 lg:mb-10 font-serif text-4xl lg:text-5xl font-light text-charcoal leading-tight">
             {title}
           </h2>
         ) : null}
