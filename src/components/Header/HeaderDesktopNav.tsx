@@ -92,7 +92,7 @@ export function HeaderDesktopNav({ menu, categories = [] }: Props) {
             link.type === 'custom'
               ? link.url
               : link.reference?.value && typeof link.reference.value === 'object'
-                ? `/${link.reference.relationTo}/${link.reference.value.slug}`
+                ? `${link.reference.relationTo !== 'pages' ? `/${link.reference.relationTo}` : ''}/${link.reference.value.slug}`
                 : link.url
 
           const pathActive =
