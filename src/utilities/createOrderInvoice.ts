@@ -105,6 +105,57 @@ export function buildInvoiceLineSnapshots(order: Order): InvoiceLineSnapshot[] {
   })
 }
 
+/**
+ * Product sale savings vs compare-at at invoice time (cents).
+ * Line items already use the charged (sale) price; this is the list-price delta.
+ */
+export function resolveOrderProductDiscountCents(order: Order): number {
+  if (!order.items?.length) return 0
+
+  let total = 0
+  for (const item of order.items) {
+    const product =
+      item.product && typeof item.product === 'object' ? (item.product as Product) : null
+    const variant =
+      item.variant && typeof item.variant === 'object' ? (item.variant as Variant) : null
+    const quantity = item.quantity ?? 1
+
+    const chargeCents = Math.round(
+      typeof variant?.priceInEUR === 'number'
+        ? variant.priceInEUR
+        : typeof product?.priceInEUR === 'number'
+          ? product.priceInEUR
+          : 0,
+    )
+    const compareAtCents = Math.round(
+      typeof variant?.compareAtPriceInEUR === 'number'
+        ? variant.compareAtPriceInEUR
+        : typeof product?.compareAtPriceInEUR === 'number'
+          ? product.compareAtPriceInEUR
+          : 0,
+    )
+
+    if (compareAtCents > chargeCents && chargeCents >= 0) {
+      total += (compareAtCents - chargeCents) * quantity
+    }
+  }
+
+  return Math.max(0, total)
+}
+
+export function resolveOrderCouponDiscount(order: Order): {
+  couponCode: string
+  couponDiscountCents: number
+} {
+  const couponCode =
+    typeof order.couponCode === 'string' && order.couponCode.trim() ? order.couponCode.trim() : ''
+  const couponDiscountCents =
+    typeof order.couponDiscountCents === 'number' && Number.isFinite(order.couponDiscountCents)
+      ? Math.max(0, Math.round(order.couponDiscountCents))
+      : 0
+  return { couponCode, couponDiscountCents }
+}
+
 function addressHasStreet(address?: InvoicePdfAddress | null): boolean {
   return Boolean(address?.addressLine1?.trim())
 }
@@ -276,6 +327,8 @@ export async function createOrderInvoice(
     typeof order.shippingAmount === 'number' && Number.isFinite(order.shippingAmount)
       ? Math.max(0, Math.round(order.shippingAmount))
       : 0
+  const productDiscountCents = resolveOrderProductDiscountCents(order)
+  const { couponCode, couponDiscountCents } = resolveOrderCouponDiscount(order)
   const { amountNet, amountTax, amountGross } = splitGrossAmount(
     typeof order.amount === 'number' ? order.amount : 0,
     vatRate,
@@ -298,6 +351,9 @@ export async function createOrderInvoice(
       amountGross,
       vatRate,
       paymentMethodLabel,
+      productDiscountCents,
+      couponCode: couponCode || null,
+      couponDiscountCents,
     })
 
     const media = await createMediaPdf(payload, {

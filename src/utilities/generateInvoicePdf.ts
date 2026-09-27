@@ -37,6 +37,12 @@ export type GenerateInvoicePdfInput = {
   vatRate: number
   /** e.g. "Kreditkarte" or "Online-Zahlung (Stripe)" */
   paymentMethodLabel?: string | null
+  /** Sale-price savings vs compare-at (cents). Shown as Aktionsrabatt. */
+  productDiscountCents?: number
+  /** Applied coupon code, if any. */
+  couponCode?: string | null
+  /** Coupon discount amount (cents). */
+  couponDiscountCents?: number
 }
 
 /** Client-confirmed seller block for Austrian Rechnung. */
@@ -203,20 +209,37 @@ export async function generateInvoicePdf(
   })
   y -= 18
 
-  const summaryLines = [
-    formatInvoiceShippingLabel(input.shippingCents),
-    `Gesamtbetrag: ${formatMoney(input.amountGross)}`,
-    `darin enthaltene MwSt. (${vatPercent}%): ${formatMoney(input.amountTax)}`,
-  ]
+  const merchandiseCents = input.lineItems.reduce((sum, item) => sum + item.lineTotalCents, 0)
+  const productDiscountCents = Math.max(0, Math.round(input.productDiscountCents || 0))
+  const couponDiscountCents = Math.max(0, Math.round(input.couponDiscountCents || 0))
+  const couponCode = input.couponCode?.trim() || ''
+  const listSubtotalCents = merchandiseCents + productDiscountCents
 
-  for (let i = 0; i < summaryLines.length; i++) {
-    const line = summaryLines[i]!
-    const isTotal = i === 1
-    drawText(line, pageWidth - margin - font.widthOfTextAtSize(line, isTotal ? 11 : 10), y, {
-      size: isTotal ? 11 : 10,
-      bold: isTotal,
+  type SummaryLine = { label: string; bold?: boolean }
+  const summaryLines: SummaryLine[] = [
+    { label: `Zwischensumme: ${formatMoney(listSubtotalCents)}` },
+  ]
+  if (productDiscountCents > 0) {
+    summaryLines.push({ label: `Aktionsrabatt: -${formatMoney(productDiscountCents)}` })
+  }
+  if (couponDiscountCents > 0) {
+    const codePart = couponCode ? ` (${couponCode})` : ''
+    summaryLines.push({ label: `Gutschein${codePart}: -${formatMoney(couponDiscountCents)}` })
+  }
+  summaryLines.push({ label: formatInvoiceShippingLabel(input.shippingCents) })
+  summaryLines.push({ label: `Gesamtbetrag: ${formatMoney(input.amountGross)}`, bold: true })
+  summaryLines.push({
+    label: `darin enthaltene MwSt. (${vatPercent}%): ${formatMoney(input.amountTax)}`,
+  })
+
+  for (const line of summaryLines) {
+    const size = line.bold ? 11 : 10
+    const usedFont = line.bold ? fontBold : font
+    drawText(line.label, pageWidth - margin - usedFont.widthOfTextAtSize(line.label, size), y, {
+      size,
+      bold: line.bold,
     })
-    y -= isTotal ? 16 : 14
+    y -= line.bold ? 16 : 14
   }
 
   y -= 20

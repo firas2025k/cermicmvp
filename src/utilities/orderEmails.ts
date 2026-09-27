@@ -1,7 +1,7 @@
 import type { Order, Product, User, Variant } from '@/payload-types'
 import type { Payload, PayloadRequest } from 'payload'
 
-import { createOrderInvoice, buildInvoiceLineSnapshots, type InvoiceLineSnapshot } from '@/utilities/createOrderInvoice'
+import { createOrderInvoice, buildInvoiceLineSnapshots, resolveOrderCouponDiscount, resolveOrderProductDiscountCents, type InvoiceLineSnapshot } from '@/utilities/createOrderInvoice'
 import { absoluteUrl } from '@/utilities/absoluteUrl'
 import { formatEUR } from '@/utilities/formatEUR'
 
@@ -25,6 +25,9 @@ export type OrderEmailContext = {
   amountCents: number
   shippingCents: number
   invoiceNumber?: string | null
+  productDiscountCents?: number
+  couponCode?: string | null
+  couponDiscountCents?: number
 }
 
 const escapeHtml = (value: string): string =>
@@ -175,8 +178,29 @@ const orderItemsTableHtml = (ctx: OrderEmailContext): string => {
       : `<tr><td colspan="4" style="padding:10px 0;font-family:system-ui,sans-serif;font-size:14px;">—</td></tr>`
 
   const subtotal = lineSubtotalCents(ctx.items)
+  const productDiscountCents = Math.max(0, Math.round(ctx.productDiscountCents || 0))
+  const couponDiscountCents = Math.max(0, Math.round(ctx.couponDiscountCents || 0))
+  const couponCode = ctx.couponCode?.trim() || ''
+  const listSubtotal = subtotal + productDiscountCents
   const subtotalDisplay =
-    subtotal > 0 ? formatEUR(subtotal) : formatEUR(Math.max(0, ctx.amountCents - ctx.shippingCents))
+    listSubtotal > 0
+      ? formatEUR(listSubtotal)
+      : formatEUR(Math.max(0, ctx.amountCents - ctx.shippingCents + couponDiscountCents))
+
+  const discountRows = [
+    productDiscountCents > 0
+      ? `<tr>
+        <td style="padding:2px 0;">Aktionsrabatt</td>
+        <td align="right" style="padding:2px 0;">−${escapeHtml(formatEUR(productDiscountCents))}</td>
+      </tr>`
+      : '',
+    couponDiscountCents > 0
+      ? `<tr>
+        <td style="padding:2px 0;">Gutschein${couponCode ? ` (${escapeHtml(couponCode)})` : ''}</td>
+        <td align="right" style="padding:2px 0;">−${escapeHtml(formatEUR(couponDiscountCents))}</td>
+      </tr>`
+      : '',
+  ].join('')
 
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;">
@@ -197,6 +221,7 @@ const orderItemsTableHtml = (ctx: OrderEmailContext): string => {
         <td style="padding:2px 0;">Zwischensumme</td>
         <td align="right" style="padding:2px 0;">${escapeHtml(subtotalDisplay)}</td>
       </tr>
+      ${discountRows}
       <tr>
         <td style="padding:2px 0;">Versandkosten</td>
         <td align="right" style="padding:2px 0;">${escapeHtml(shippingLabel(ctx.shippingCents))}</td>
@@ -222,8 +247,14 @@ export function buildCustomerOrderConfirmationEmail(ctx: OrderEmailContext): {
   const date = formatOrderDate(ctx.createdAt)
   const address = ctx.shippingAddress
   const subtotal = lineSubtotalCents(ctx.items)
+  const productDiscountCents = Math.max(0, Math.round(ctx.productDiscountCents || 0))
+  const couponDiscountCents = Math.max(0, Math.round(ctx.couponDiscountCents || 0))
+  const couponCode = ctx.couponCode?.trim() || ''
+  const listSubtotal = subtotal + productDiscountCents
   const subtotalDisplay =
-    subtotal > 0 ? formatEUR(subtotal) : formatEUR(Math.max(0, ctx.amountCents - ctx.shippingCents))
+    listSubtotal > 0
+      ? formatEUR(listSubtotal)
+      : formatEUR(Math.max(0, ctx.amountCents - ctx.shippingCents + couponDiscountCents))
 
   const text = [
     greeting,
@@ -238,6 +269,10 @@ export function buildCustomerOrderConfirmationEmail(ctx: OrderEmailContext): {
     itemsText(ctx.items),
     '',
     `Zwischensumme: ${subtotalDisplay}`,
+    productDiscountCents > 0 ? `Aktionsrabatt: −${formatEUR(productDiscountCents)}` : null,
+    couponDiscountCents > 0
+      ? `Gutschein${couponCode ? ` (${couponCode})` : ''}: −${formatEUR(couponDiscountCents)}`
+      : null,
     `Versandkosten: ${shippingLabel(ctx.shippingCents)}`,
     `Gesamtbetrag: ${formatEUR(ctx.amountCents)}`,
     'inkl. MwSt.',
@@ -477,8 +512,12 @@ export function buildOrderEmailContext(
     items?: OrderLineItem[]
     invoiceNumber?: string | null
     shippingCents?: number
+    productDiscountCents?: number
+    couponCode?: string | null
+    couponDiscountCents?: number
   },
 ): OrderEmailContext {
+  const coupon = resolveOrderCouponDiscount(order)
   return {
     orderId: order.id,
     createdAt: order.createdAt,
@@ -490,6 +529,10 @@ export function buildOrderEmailContext(
     amountCents: typeof order.amount === 'number' ? order.amount : 0,
     shippingCents: extras?.shippingCents ?? 0,
     invoiceNumber: extras?.invoiceNumber ?? null,
+    productDiscountCents:
+      extras?.productDiscountCents ?? resolveOrderProductDiscountCents(order),
+    couponCode: extras?.couponCode ?? (coupon.couponCode || null),
+    couponDiscountCents: extras?.couponDiscountCents ?? coupon.couponDiscountCents,
   }
 }
 
