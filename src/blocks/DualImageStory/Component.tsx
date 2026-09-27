@@ -60,7 +60,7 @@ export const DualImageStoryBlockComponent: React.FC<DualImageStoryBlockProps> = 
                 src={left.url}
                 alt={left.alt || title || 'Ausstellungsbild'}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes={`(max-width: 768px) 100vw, ${leftPct}vw`}
               />
             ) : null}
@@ -72,7 +72,7 @@ export const DualImageStoryBlockComponent: React.FC<DualImageStoryBlockProps> = 
                 src={right.url}
                 alt={right.alt || title || 'Detailbild'}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes={`(max-width: 768px) 100vw, ${rightPct}vw`}
               />
             ) : null}
