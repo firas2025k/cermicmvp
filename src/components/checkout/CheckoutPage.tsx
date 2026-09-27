@@ -28,6 +28,8 @@ import { toast } from 'sonner'
 const apiKey = `${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`
 const stripe = loadStripe(apiKey)
 
+const GUEST_CHECKOUT_EMAIL_KEY = 'checkout_guest_email'
+
 // ── Shared design tokens ────────────────────────────────────────────────────
 const LINEN    = '#F8F4EE'
 const CHARCOAL = '#2C2A27'
@@ -73,6 +75,7 @@ export const CheckoutPage: React.FC = () => {
   const [billingAddress, setBillingAddress] = useState<Partial<Address>>()
   const [billingAddressSameAsShipping, setBillingAddressSameAsShipping] = useState(true)
   const [isProcessingPayment, setProcessingPayment] = useState(false)
+  const emailInputRef = React.useRef<HTMLInputElement>(null)
 
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
   const subtotalCents = typeof cart?.subtotal === 'number' ? cart.subtotal : 0
@@ -93,6 +96,20 @@ export const CheckoutPage: React.FC = () => {
     (email || user) && billingAddress && (billingAddressSameAsShipping || shippingAddress),
   )
 
+  // Restore guest email after EcommerceProvider remounts (e.g. cart session rebind).
+  useEffect(() => {
+    if (user || typeof window === 'undefined') return
+    try {
+      const saved = sessionStorage.getItem(GUEST_CHECKOUT_EMAIL_KEY)?.trim()
+      if (saved) {
+        setEmail(saved)
+        setEmailEditable(false)
+      }
+    } catch {
+      // sessionStorage may be blocked
+    }
+  }, [user])
+
   useEffect(() => {
     if (!shippingAddress) {
       if (addresses && addresses.length > 0) {
@@ -104,15 +121,29 @@ export const CheckoutPage: React.FC = () => {
     }
   }, [addresses])
 
-  useEffect(() => {
-    return () => {
-      setShippingAddress(undefined)
-      setBillingAddress(undefined)
-      setBillingAddressSameAsShipping(true)
-      setEmail('')
-      setEmailEditable(true)
-    }
+  const isValidGuestEmail = useCallback((value: string) => {
+    const trimmed = value.trim()
+    // Practical check — full RFC validation is unnecessary for enabling checkout.
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
   }, [])
+
+  const continueAsGuest = useCallback(() => {
+    // Prefer the live input value so browser autofill (which may skip onChange) still works.
+    const fromInput = emailInputRef.current?.value ?? email
+    const trimmed = fromInput.trim()
+    if (!isValidGuestEmail(trimmed)) {
+      toast.error('Bitte gib eine gültige E-Mail-Adresse ein.')
+      emailInputRef.current?.focus()
+      return
+    }
+    setEmail(trimmed)
+    setEmailEditable(false)
+    try {
+      sessionStorage.setItem(GUEST_CHECKOUT_EMAIL_KEY, trimmed)
+    } catch {
+      // ignore
+    }
+  }, [email, isValidGuestEmail])
 
   const initiatePaymentIntent = useCallback(
     async (paymentID: string) => {
@@ -230,25 +261,42 @@ export const CheckoutPage: React.FC = () => {
                   E-Mail-Adresse
                 </label>
                 <input
+                  ref={emailInputRef}
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   placeholder="sophie@example.com"
+                  value={email}
                   disabled={!emailEditable}
                   onChange={(e) => setEmail(e.target.value)}
+                  onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && emailEditable) {
+                      e.preventDefault()
+                      continueAsGuest()
+                    }
+                  }}
                   className={fieldInputClass}
                   style={{ borderColor: WARM_BORDER, color: CHARCOAL }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = OLIVE)}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = WARM_BORDER)}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = WARM_BORDER
+                    // Autofill often only commits value on blur
+                    const next = e.currentTarget.value.trim()
+                    if (next !== email) setEmail(next)
+                  }}
                 />
               </div>
 
               {emailEditable ? (
                 <button
-                  disabled={!email}
+                  type="button"
+                  disabled={!email.trim()}
                   onClick={(e) => {
                     e.preventDefault()
-                    setEmailEditable(false)
+                    continueAsGuest()
                   }}
                   className="w-full py-3.5 font-sans text-[0.8rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40"
                   style={{ background: BORDEAUX, color: LINEN }}
@@ -261,9 +309,26 @@ export const CheckoutPage: React.FC = () => {
                   Als Gast fortfahren
                 </button>
               ) : (
-                <p className="font-sans text-xs" style={{ color: OLIVE }}>
-                  ✓ Checkout als {email}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-sans text-xs" style={{ color: OLIVE }}>
+                    ✓ Checkout als {email}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmailEditable(true)
+                      try {
+                        sessionStorage.removeItem(GUEST_CHECKOUT_EMAIL_KEY)
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                    className="font-sans text-xs tracking-[0.12em] uppercase transition-colors"
+                    style={{ color: WARM_GRAY }}
+                  >
+                    Ändern
+                  </button>
+                </div>
               )}
             </div>
           )}
