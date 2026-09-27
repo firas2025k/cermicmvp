@@ -90,10 +90,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
         <div className="space-y-6">
           {/* Categories: always show main + subs (no accordion) */}
           <div className="border border-warm-border bg-white p-3">
-            <p className="px-2 pb-1 font-sans text-xs font-semibold uppercase tracking-wide text-warm-gray">
-              Nach Kategorie einkaufen
-            </p>
-            <div className="mt-1 divide-y divide-warm-border">
+            <div className="divide-y divide-warm-border">
               {topLevel.map((category) => {
                 const subcategories = getSubcategories(category.id, byParent)
 
