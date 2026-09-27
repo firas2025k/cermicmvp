@@ -66,6 +66,22 @@ export const Content: Block = {
   interfaceName: 'ContentBlock',
   fields: [
     {
+      name: 'title',
+      type: 'text',
+      label: 'Title',
+      admin: {
+        description: 'Optional heading shown above the content columns.',
+      },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      label: 'Description',
+      admin: {
+        description: 'Optional short intro under the title.',
+      },
+    },
+    {
       name: 'columns',
       type: 'array',
       admin: {

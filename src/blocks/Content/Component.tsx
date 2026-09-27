@@ -12,7 +12,7 @@ export const ContentBlock: React.FC<
     className?: string
   }
 > = (props) => {
-  const { columns } = props
+  const { columns, title, description, className } = props
 
   const colsSpanClasses = {
     full: '12',
@@ -21,8 +21,25 @@ export const ContentBlock: React.FC<
     twoThirds: '8',
   }
 
+  const hasHeader = Boolean(title || description)
+
   return (
-    <div className="container my-16">
+    <div className={cn('container my-16', className)}>
+      {hasHeader ? (
+        <div className="mb-10 max-w-3xl">
+          {title ? (
+            <h2 className="font-serif text-4xl lg:text-5xl font-light text-charcoal leading-tight mb-4">
+              {title}
+            </h2>
+          ) : null}
+          {description ? (
+            <p className="font-sans text-base font-light leading-relaxed text-warm-gray whitespace-pre-line">
+              {description}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16">
         {columns &&
           columns.length > 0 &&

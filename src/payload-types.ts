@@ -598,6 +598,14 @@ export interface Page {
         blockType: 'cta';
       }
     | {
+        /**
+         * Optional heading shown above the content columns.
+         */
+        title?: string | null;
+        /**
+         * Optional short intro under the title.
+         */
+        description?: string | null;
         columns?:
           | {
               size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -1060,6 +1068,14 @@ export interface Form {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
+  /**
+   * Optional heading shown above the content columns.
+   */
+  title?: string | null;
+  /**
+   * Optional short intro under the title.
+   */
+  description?: string | null;
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -1708,6 +1724,8 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
   columns?:
     | T
     | {
