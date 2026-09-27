@@ -342,7 +342,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
         </div>
       )}
 
-      {/* Price — "Ab …" only when variant prices actually differ */}
+      {/* Price — variant products show "Ab …" from the lowest variant price */}
       {hasVariantPrices && selectedOptionId === null && lowestVariantPrice !== null ? (
         lowestVariantPrice !== highestVariantPrice ? (
           <PromoPrice
@@ -357,6 +357,7 @@ export const ProductGridItem: React.FC<Props> = ({ product }) => {
           <PromoPrice
             as="p"
             amount={lowestVariantPrice}
+            showFrom
             currencyCode="EUR"
             className="mb-1 font-sans text-sm font-medium text-charcoal"
           />

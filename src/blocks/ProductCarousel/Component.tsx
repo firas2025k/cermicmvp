@@ -8,6 +8,36 @@ import React from 'react'
 import { ProductCarousel } from '@/components/ProductCarousel'
 import { getCategoryAndDescendantIds, organizeCategories } from '@/lib/categories'
 
+/** Match shop grid fields so variant products get prices ("Ab …") and stock. */
+const productCarouselSelect = {
+  id: true,
+  title: true,
+  slug: true,
+  gallery: true,
+  priceInEUR: true,
+  compareAtPriceInEUR: true,
+  categories: true,
+  enableVariants: true,
+  inventory: true,
+  variantTypes: true,
+  variants: true,
+} as const
+
+const productCarouselPopulate = {
+  variantTypes: {
+    label: true,
+    name: true,
+    options: true,
+  },
+  variants: {
+    title: true,
+    options: true,
+    priceInEUR: true,
+    compareAtPriceInEUR: true,
+    inventory: true,
+  },
+} as Record<string, unknown>
+
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
 async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[]> {
@@ -54,25 +84,8 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
       depth: 2,
       limit: limit || 100,
       sort: sort || '-createdAt',
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        gallery: true,
-        priceInEUR: true,
-        compareAtPriceInEUR: true,
-        categories: true,
-        enableVariants: true,
-        inventory: true,
-      },
-      populate: {
-        variants: {
-          title: true,
-          priceInEUR: true,
-          compareAtPriceInEUR: true,
-          inventory: true,
-        },
-      },
+      select: productCarouselSelect,
+      populate: productCarouselPopulate,
       ...(uniqueCategoryIds.length > 0
         ? {
             where: {
@@ -110,25 +123,8 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
           depth: 2,
           where: { id: { in: ids } },
           limit: ids.length,
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            gallery: true,
-            priceInEUR: true,
-            compareAtPriceInEUR: true,
-            categories: true,
-            enableVariants: true,
-            inventory: true,
-          },
-          populate: {
-            variants: {
-              title: true,
-              priceInEUR: true,
-              compareAtPriceInEUR: true,
-              inventory: true,
-            },
-          },
+          select: productCarouselSelect,
+          populate: productCarouselPopulate,
         })
         // Restore the admin-selected order
         const byId = new Map(found.docs.map((p) => [p.id, p]))
@@ -136,7 +132,7 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         products = await applyDiscountsToProducts(orderedProducts, payload)
       }
     } else if (products.length > 0) {
-      // Relationship populate can omit inventory; re-fetch so stock badges are correct.
+      // Relationship populate can omit inventory / variants; re-fetch for prices + stock.
       const ids = products.map((p) => p.id)
       const payload = await getPayload({ config: configPromise })
       const found = await payload.find({
@@ -146,26 +142,8 @@ async function fetchProducts(props: ProductCarouselBlockProps): Promise<Product[
         depth: 2,
         where: { id: { in: ids } },
         limit: ids.length,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          gallery: true,
-          priceInEUR: true,
-          compareAtPriceInEUR: true,
-          categories: true,
-          enableVariants: true,
-          inventory: true,
-        },
-        populate: {
-          variants: {
-            title: true,
-            priceInEUR: true,
-            compareAtPriceInEUR: true,
-            inventory: true,
-            options: true,
-          },
-        },
+        select: productCarouselSelect,
+        populate: productCarouselPopulate,
       })
       const byId = new Map(found.docs.map((p) => [p.id, p]))
       const orderedProducts = ids.map((id) => byId.get(id)).filter((p): p is Product => p != null)

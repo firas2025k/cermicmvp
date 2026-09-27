@@ -109,6 +109,7 @@ export function PromoPrice({
               ? compareAtAmount
               : undefined
         }
+        showFrom={showFrom}
         currencyCode={currencyCode}
         className={className}
       />

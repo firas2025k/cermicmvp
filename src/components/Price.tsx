@@ -62,7 +62,11 @@ export const Price = ({
     const isOnSale = typeof compareAtAmount === 'number' && compareAtAmount > amount
     return (
       <Element className={className} suppressHydrationWarning>
-        {isOnSale ? renderSalePrice(amount, compareAtAmount) : formatEUR(amount)}
+        {isOnSale
+          ? renderSalePrice(amount, compareAtAmount)
+          : showFrom
+            ? `Ab ${formatEUR(amount)}`
+            : formatEUR(amount)}
       </Element>
     )
   }
