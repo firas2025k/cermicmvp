@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { CallToActionBlock as CTABlockProps, Page } from '@/payload-types'
 import { RichText } from '@/components/RichText'
 import { cn } from '@/utilities/cn'
+import { lexicalToPlainText } from '@/utilities/lexicalToPlainText'
 
 function resolveHref(link: NonNullable<NonNullable<CTABlockProps['links']>[number]['link']>): string | null {
   if (link.type === 'reference' && typeof link.reference?.value === 'object') {
@@ -27,7 +28,8 @@ export const CallToActionBlock: React.FC<
     className?: string
   }
 > = ({ links, richText, buttonAlignment: buttonAlignmentProp, className }) => {
-  const hasText = Boolean(richText)
+  // Empty Lexical docs are still truthy objects — only count real text.
+  const hasText = lexicalToPlainText(richText).length > 0
   const hasLinks = (links?.length ?? 0) > 0
   if (!hasText && !hasLinks) return null
 
@@ -44,8 +46,7 @@ export const CallToActionBlock: React.FC<
           hasText && buttonAlignment === 'center' && 'items-center text-center',
           hasText && buttonAlignment === 'left' && 'md:flex-row md:items-center md:justify-start md:gap-16',
           hasText && buttonAlignment === 'right' && 'md:flex-row md:items-center md:justify-between md:gap-16',
-          !hasText && 'md:flex-row md:items-center',
-          !hasText && buttonJustify[buttonAlignment],
+          !hasText && cn('md:flex-row md:items-center', buttonJustify[buttonAlignment]),
         )}
       >
         {hasText ? (
