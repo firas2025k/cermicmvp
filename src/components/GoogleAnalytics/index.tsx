@@ -1,6 +1,6 @@
 'use client'
 
-import { GoogleAnalytics, sendGAEvent } from '@next/third-parties/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import {
@@ -11,30 +11,65 @@ import {
 
 type ConsentDetail = { value: CookieConsentValue }
 
-/**
- * Sends page_view on App Router client navigations.
- * Skips the first run — gtag('config') already records the initial load.
- */
-function GAPageViews() {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const isFirstPath = useRef(true)
+type GtagWindow = Window & {
+  dataLayer?: unknown[]
+  gtag?: (...args: unknown[]) => void
+}
 
-  useEffect(() => {
-    if (isFirstPath.current) {
-      isFirstPath.current = false
-      return
-    }
+function trackClientPageView(gaId: string, pagePath: string) {
+  const w = window as GtagWindow
 
-    const query = searchParams?.toString()
-    const pagePath = query ? `${pathname}?${query}` : pathname
-
-    sendGAEvent('event', 'page_view', {
+  // Prefer gtag — this is what GA4 Realtime “Pages” uses for SPA navigations
+  if (typeof w.gtag === 'function') {
+    w.gtag('config', gaId, {
       page_path: pagePath,
       page_location: window.location.href,
       page_title: document.title,
     })
-  }, [pathname, searchParams])
+    return
+  }
+
+  // Queue until gtag.js finishes loading
+  w.dataLayer = w.dataLayer || []
+  w.dataLayer.push([
+    'config',
+    gaId,
+    {
+      page_path: pagePath,
+      page_location: window.location.href,
+      page_title: document.title,
+    },
+  ])
+}
+
+/**
+ * Records App Router client navigations in GA4.
+ * Skips the first path — initial hit comes from gtag('config') in <GoogleAnalytics />.
+ */
+function GAPageViews({ gaId }: { gaId: string }) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const previousPath = useRef<string | null>(null)
+
+  useEffect(() => {
+    const query = searchParams?.toString()
+    const pagePath = query ? `${pathname}?${query}` : pathname
+
+    if (previousPath.current === null) {
+      previousPath.current = pagePath
+      return
+    }
+
+    if (previousPath.current === pagePath) return
+    previousPath.current = pagePath
+
+    // Let Next update document.title after the soft navigation
+    const t = window.setTimeout(() => {
+      trackClientPageView(gaId, pagePath)
+    }, 0)
+
+    return () => window.clearTimeout(t)
+  }, [gaId, pathname, searchParams])
 
   return null
 }
@@ -66,7 +101,7 @@ export function GoogleAnalyticsGate() {
     <>
       <GoogleAnalytics gaId={measurementId} />
       <Suspense fallback={null}>
-        <GAPageViews />
+        <GAPageViews gaId={measurementId} />
       </Suspense>
     </>
   )
