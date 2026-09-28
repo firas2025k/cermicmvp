@@ -15,11 +15,23 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Vercel Image Optimization is returning 402 (quota/payment) in production,
+    // which breaks shop/product images served via /_next/image. Serve originals
+    // from Payload media (/api/media/file/...) until optimization is enabled again.
+    unoptimized: true,
     remotePatterns: [
       // Allow images from Vercel Blob Storage
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nabea.at',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.nabea.at',
       },
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
