@@ -110,16 +110,25 @@ export const CheckoutPage: React.FC = () => {
     }
   }, [user])
 
+  // Only auto-select saved addresses for the logged-in customer who owns them.
+  // Never prefill from a shared/public address list (that was a PII leak path).
   useEffect(() => {
-    if (!shippingAddress) {
-      if (addresses && addresses.length > 0) {
-        const defaultAddress = addresses[0]
-        if (defaultAddress) {
-          setBillingAddress(defaultAddress)
-        }
-      }
+    if (!user?.id) return
+    if (billingAddress || shippingAddress) return
+    if (!addresses || addresses.length === 0) return
+
+    const owned = addresses.find((address) => {
+      const customerId =
+        typeof address.customer === 'object' && address.customer
+          ? address.customer.id
+          : address.customer
+      return customerId === user.id
+    })
+
+    if (owned) {
+      setBillingAddress(owned)
     }
-  }, [addresses])
+  }, [addresses, billingAddress, shippingAddress, user?.id])
 
   const isValidGuestEmail = useCallback((value: string) => {
     const trimmed = value.trim()
