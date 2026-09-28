@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
+import { CookieConsent } from '@/components/CookieConsent'
 import { Footer } from '@/components/Footer'
+import { GoogleAnalyticsGate } from '@/components/GoogleAnalytics'
 import { Header } from '@/components/Header'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { Providers } from '@/providers'
@@ -74,6 +76,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <Header />
           <main>{children}</main>
           <Footer />
+          <CookieConsent />
+          <GoogleAnalyticsGate />
         </Providers>
       </body>
     </html>
