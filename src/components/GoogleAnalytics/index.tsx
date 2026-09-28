@@ -1,8 +1,8 @@
 'use client'
 
-import { GoogleAnalytics } from '@next/third-parties/google'
+import Script from 'next/script'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import {
   COOKIE_CONSENT_EVENT,
   type CookieConsentValue,
@@ -16,62 +16,88 @@ type GtagWindow = Window & {
   gtag?: (...args: unknown[]) => void
 }
 
-function trackClientPageView(gaId: string, pagePath: string) {
+function ensureGtag() {
   const w = window as GtagWindow
+  w.dataLayer = w.dataLayer || []
 
-  // Prefer gtag — this is what GA4 Realtime “Pages” uses for SPA navigations
-  if (typeof w.gtag === 'function') {
-    w.gtag('config', gaId, {
-      page_path: pagePath,
-      page_location: window.location.href,
-      page_title: document.title,
-    })
-    return
+  if (typeof w.gtag !== 'function') {
+    // Mirror Google's snippet: dataLayer must receive an Arguments object
+    w.gtag = function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      w.dataLayer!.push(arguments)
+    }
   }
 
-  // Queue until gtag.js finishes loading
-  w.dataLayer = w.dataLayer || []
-  w.dataLayer.push([
-    'config',
-    gaId,
-    {
-      page_path: pagePath,
-      page_location: window.location.href,
-      page_title: document.title,
-    },
-  ])
+  return w.gtag!
+}
+
+function sendPageView(gaId: string, pagePath: string) {
+  const gtag = ensureGtag()
+  gtag('event', 'page_view', {
+    page_path: pagePath,
+    page_location: window.location.href,
+    page_title: document.title,
+    send_to: gaId,
+  })
+}
+
+function buildPagePath(pathname: string, searchParams: URLSearchParams | null) {
+  const query = searchParams?.toString()
+  return query ? `${pathname}?${query}` : pathname
 }
 
 /**
- * Records App Router client navigations in GA4.
- * Skips the first path — initial hit comes from gtag('config') in <GoogleAnalytics />.
+ * Own the GA4 SPA lifecycle: load gtag once, disable the automatic first hit,
+ * then send page_view for the current route and every App Router navigation.
  */
-function GAPageViews({ gaId }: { gaId: string }) {
+function GATracker({ gaId }: { gaId: string }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const previousPath = useRef<string | null>(null)
+  const pagePath = buildPagePath(pathname, searchParams)
+  const [scriptReady, setScriptReady] = useState(false)
 
   useEffect(() => {
-    const query = searchParams?.toString()
-    const pagePath = query ? `${pathname}?${query}` : pathname
+    const gtag = ensureGtag()
+    gtag('js', new Date())
+    gtag('config', gaId, {
+      send_page_view: false,
+      anonymize_ip: true,
+    })
+  }, [gaId])
 
-    if (previousPath.current === null) {
-      previousPath.current = pagePath
-      return
-    }
+  useEffect(() => {
+    if (scriptReady) return
+    const existing = document.querySelector(
+      `script[src*="googletagmanager.com/gtag/js?id=${gaId}"]`,
+    )
+    if (existing) setScriptReady(true)
+  }, [gaId, scriptReady])
 
-    if (previousPath.current === pagePath) return
-    previousPath.current = pagePath
+  useEffect(() => {
+    if (!scriptReady) return
 
-    // Let Next update document.title after the soft navigation
+    // Wait a tick so Next can update document.title after soft navigation
     const t = window.setTimeout(() => {
-      trackClientPageView(gaId, pagePath)
+      sendPageView(gaId, pagePath)
     }, 0)
 
     return () => window.clearTimeout(t)
-  }, [gaId, pathname, searchParams])
+  }, [gaId, pagePath, scriptReady])
 
-  return null
+  return (
+    <>
+      <Script id="nabea-ga-datalayer" strategy="afterInteractive">
+        {`window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments);};`}
+      </Script>
+      <Script
+        id="nabea-ga-gtag"
+        src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`}
+        strategy="afterInteractive"
+        onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
+      />
+    </>
+  )
 }
 
 export function GoogleAnalyticsGate() {
@@ -98,11 +124,8 @@ export function GoogleAnalyticsGate() {
   }
 
   return (
-    <>
-      <GoogleAnalytics gaId={measurementId} />
-      <Suspense fallback={null}>
-        <GAPageViews gaId={measurementId} />
-      </Suspense>
-    </>
+    <Suspense fallback={null}>
+      <GATracker gaId={measurementId} />
+    </Suspense>
   )
 }
