@@ -6,9 +6,16 @@ import { Message } from '@/components/Message'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
 import React, { Fragment, useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import {
+  nabeaBodyClass,
+  nabeaInputClass,
+  nabeaLabelClass,
+  nabeaPageTitleClass,
+  nabeaPrimaryBtnClass,
+} from '@/blocks/Form/fieldStyles'
+import { cn } from '@/utilities/cn'
 
 type FormData = {
   email: string
@@ -50,40 +57,40 @@ export const ForgotPasswordForm: React.FC = () => {
     <Fragment>
       {!success && (
         <React.Fragment>
-          <h1 className="text-xl mb-4">Passwort vergessen</h1>
-          <div className="prose dark:prose-invert mb-8">
-            <p>
-              {`Gib unten deine E-Mail-Adresse ein. Du erhältst eine E-Mail mit Anweisungen zum Zurücksetzen deines Passworts. `}
-              
-            </p>
-          </div>
-          <form className="max-w-lg" onSubmit={handleSubmit(onSubmit)}>
-            <Message className="mb-8" error={error} />
+          <h1 className={`${nabeaPageTitleClass} mb-3`}>Passwort vergessen</h1>
+          <p className={`${nabeaBodyClass} mb-8`}>
+            Gib unten deine E-Mail-Adresse ein. Du erhältst eine E-Mail mit Anweisungen zum
+            Zurücksetzen deines Passworts.
+          </p>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Message className="mb-6" error={error} />
 
             <FormItem className="mb-8">
-              <Label htmlFor="email" className="mb-2">
+              <Label htmlFor="email" className={cn(nabeaLabelClass, 'mb-2')}>
                 E-Mail-Adresse
               </Label>
               <Input
                 id="email"
+                className={nabeaInputClass}
                 {...register('email', { required: 'Bitte gib deine E-Mail-Adresse ein.' })}
                 type="email"
               />
               {errors.email && <FormError message={errors.email.message} />}
             </FormItem>
 
-            <Button type="submit" variant="default">
-              Passwort vergessen
+            <Button type="submit" variant="default" className={nabeaPrimaryBtnClass}>
+              Link senden
             </Button>
           </form>
         </React.Fragment>
       )}
       {success && (
         <React.Fragment>
-          <h1 className="text-xl mb-4">Anfrage gesendet</h1>
-          <div className="prose dark:prose-invert">
-            <p>Prüfe deine E-Mails — dort findest du einen Link zum sicheren Zurücksetzen deines Passworts.</p>
-          </div>
+          <h1 className={`${nabeaPageTitleClass} mb-3`}>Anfrage gesendet</h1>
+          <p className={nabeaBodyClass}>
+            Prüfe deine E-Mails — dort findest du einen Link zum sicheren Zurücksetzen deines
+            Passworts.
+          </p>
         </React.Fragment>
       )}
     </Fragment>

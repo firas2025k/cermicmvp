@@ -4,11 +4,14 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import React from 'react'
 
 import { LogoutPage } from './LogoutPage'
+import { nabeaCardClass } from '@/blocks/Form/fieldStyles'
 
 export default async function Logout() {
   return (
-    <div className="container max-w-lg my-16">
-      <LogoutPage />
+    <div className="container py-12 sm:py-16">
+      <div className={`mx-auto max-w-lg ${nabeaCardClass}`}>
+        <LogoutPage />
+      </div>
     </div>
   )
 }

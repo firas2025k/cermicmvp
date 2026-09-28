@@ -11,6 +11,15 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import {
+  nabeaBodyClass,
+  nabeaInputClass,
+  nabeaLabelClass,
+  nabeaLinkClass,
+  nabeaOutlineBtnClass,
+  nabeaPrimaryBtnClass,
+} from '@/blocks/Form/fieldStyles'
+import { cn } from '@/utilities/cn'
 
 type FormData = {
   email: string
@@ -45,45 +54,55 @@ export const LoginForm: React.FC = () => {
   )
 
   return (
-    <form className="" onSubmit={handleSubmit(onSubmit)}>
-      <Message className="classes.message" error={error} />
-      <div className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Message className="mb-6" error={error} />
+      <div className="mb-8 flex flex-col gap-6">
         <FormItem>
-          <Label htmlFor="email">E-Mail</Label>
+          <Label htmlFor="email" className={cn(nabeaLabelClass, 'mb-2')}>
+            E-Mail
+          </Label>
           <Input
             id="email"
             type="email"
+            className={nabeaInputClass}
             {...register('email', { required: 'E-Mail ist erforderlich.' })}
           />
           {errors.email && <FormError message={errors.email.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="password">Passwort</Label>
+          <Label htmlFor="password" className={cn(nabeaLabelClass, 'mb-2')}>
+            Passwort
+          </Label>
           <Input
             id="password"
             type="password"
+            className={nabeaInputClass}
             {...register('password', { required: 'Bitte gib ein Passwort ein.' })}
           />
           {errors.password && <FormError message={errors.password.message} />}
         </FormItem>
 
-        <div className="text-primary/70 mb-6 prose prose-a:hover:text-primary dark:prose-invert">
-          <p>
-            Passwort vergessen?{' '}
-            <Link href={`/recover-password${allParams}`}>Hier zurücksetzen</Link>
-          </p>
-        </div>
+        <p className={nabeaBodyClass}>
+          Passwort vergessen?{' '}
+          <Link href={`/forgot-password${allParams}`} className={nabeaLinkClass}>
+            Hier zurücksetzen
+          </Link>
+        </p>
       </div>
 
-      <div className="flex gap-4 justify-between">
-        <Button asChild variant="outline" size="lg">
-          <Link href={`/create-account${allParams}`} className="grow max-w-[50%]">
-            Konto erstellen
-          </Link>
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <Button asChild variant="outline" size="lg" className={cn(nabeaOutlineBtnClass, 'grow')}>
+          <Link href={`/create-account${allParams}`}>Konto erstellen</Link>
         </Button>
-        <Button className="grow" disabled={isLoading} size="lg" type="submit" variant="default">
-          {isLoading ? 'Wird verarbeitet…' : 'Weiter'}
+        <Button
+          className={cn(nabeaPrimaryBtnClass, 'grow')}
+          disabled={isLoading}
+          size="lg"
+          type="submit"
+          variant="default"
+        >
+          {isLoading ? 'Wird verarbeitet…' : 'Anmelden'}
         </Button>
       </div>
     </form>

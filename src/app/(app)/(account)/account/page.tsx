@@ -10,6 +10,13 @@ import { Order } from '@/payload-types'
 import { OrderItem } from '@/components/OrderItem'
 import { getPayload } from 'payload'
 import { redirect } from 'next/navigation'
+import {
+  nabeaBodyClass,
+  nabeaCardClass,
+  nabeaOutlineBtnClass,
+  nabeaPageTitleClass,
+  nabeaSectionTitleClass,
+} from '@/blocks/Form/fieldStyles'
 
 export default async function AccountPage() {
   const headers = await getHeaders()
@@ -39,37 +46,32 @@ export default async function AccountPage() {
     })
 
     orders = ordersResult?.docs || []
-  } catch (error) {
+  } catch (_error) {
     // when deploying this template on Payload Cloud, this page needs to build before the APIs are live
-    // so swallow the error here and simply render the page with fallback data where necessary
-    // in production you may want to redirect to a 404  page or at least log the error somewhere
-    // console.error(error)
   }
 
   return (
     <>
-      <div className="border p-8 rounded-lg bg-primary-foreground">
-        <h1 className="text-3xl font-medium mb-8">Kontoeinstellungen</h1>
+      <div className={nabeaCardClass}>
+        <h1 className={`${nabeaPageTitleClass} mb-8`}>Kontoeinstellungen</h1>
         <AccountForm />
       </div>
 
-      <div className=" border p-8 rounded-lg bg-primary-foreground">
-        <h2 className="text-3xl font-medium mb-8">Letzte Bestellungen</h2>
+      <div className={nabeaCardClass}>
+        <h2 className={`${nabeaSectionTitleClass} mb-4`}>Letzte Bestellungen</h2>
 
-        <div className="prose dark:prose-invert mb-8">
-          <p>
-            Hier siehst du deine zuletzt aufgegebenen Bestellungen. Jede Bestellung ist mit einer
-            Zahlung verknüpft. Weitere Bestellungen werden hier angezeigt.
-          </p>
-        </div>
+        <p className={`${nabeaBodyClass} mb-8`}>
+          Hier siehst du deine zuletzt aufgegebenen Bestellungen. Jede Bestellung ist mit einer
+          Zahlung verknüpft.
+        </p>
 
         {(!orders || !Array.isArray(orders) || orders?.length === 0) && (
-          <p className="mb-8">Du hast noch keine Bestellungen.</p>
+          <p className={`${nabeaBodyClass} mb-8`}>Du hast noch keine Bestellungen.</p>
         )}
 
         {orders && orders.length > 0 && (
-          <ul className="flex flex-col gap-6 mb-8">
-            {orders?.map((order, index) => (
+          <ul className="mb-8 flex flex-col gap-4">
+            {orders?.map((order) => (
               <li key={order.id}>
                 <OrderItem order={order} />
               </li>
@@ -77,7 +79,7 @@ export default async function AccountPage() {
           </ul>
         )}
 
-        <Button asChild variant="default">
+        <Button asChild variant="outline" className={nabeaOutlineBtnClass}>
           <Link href="/orders">Alle Bestellungen ansehen</Link>
         </Button>
       </div>

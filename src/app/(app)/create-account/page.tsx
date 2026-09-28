@@ -9,6 +9,7 @@ import { getPayload } from 'payload'
 
 import { CreateAccountForm } from '@/components/forms/CreateAccountForm'
 import { redirect } from 'next/navigation'
+import { nabeaCardClass, nabeaPageTitleClass } from '@/blocks/Form/fieldStyles'
 
 export default async function CreateAccount() {
   const headers = await getHeaders()
@@ -20,10 +21,12 @@ export default async function CreateAccount() {
   }
 
   return (
-    <div className="container py-16">
-      <h1 className="text-xl mb-4">Konto erstellen</h1>
-      <RenderParams />
-      <CreateAccountForm />
+    <div className="container py-12 sm:py-16">
+      <div className={`mx-auto max-w-xl ${nabeaCardClass}`}>
+        <h1 className={`${nabeaPageTitleClass} mb-6`}>Konto erstellen</h1>
+        <RenderParams />
+        <CreateAccountForm />
+      </div>
     </div>
   )
 }

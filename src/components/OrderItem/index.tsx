@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Order } from '@/payload-types'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import Link from 'next/link'
+import { nabeaOutlineBtnClass } from '@/blocks/Form/fieldStyles'
 
 type Props = {
   order: Order
@@ -13,12 +14,14 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
   const itemsLabel = order.items?.length === 1 ? 'Artikel' : 'Artikel'
 
   return (
-    <div className="bg-card border rounded-lg px-4 py-2 md:px-6 md:py-4 flex flex-col sm:flex-row gap-12 sm:items-center sm:justify-between">
-      <div className="flex flex-col gap-4">
-        <h3 className="text-sm uppercase font-mono tracking-[0.1em] text-primary/50 truncate max-w-[8rem] sm:max-w-none">{`#${order.id}`}</h3>
+    <div className="flex flex-col gap-6 border border-warm-border bg-linen px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="flex flex-col gap-3">
+        <p className="font-sans text-[10px] tracking-[0.16em] text-warm-gray uppercase">
+          Bestellung #{order.id}
+        </p>
 
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-6">
-          <p className="text-xl">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:gap-6">
+          <p className="font-serif text-xl font-light text-charcoal">
             <time dateTime={order.createdAt}>
               {formatDateTime({ date: order.createdAt, format: 'MMMM dd, yyyy' })}
             </time>
@@ -27,7 +30,7 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
           {order.status && <OrderStatus status={order.status} />}
         </div>
 
-        <p className="flex gap-2 text-xs text-primary/80">
+        <p className="flex gap-2 font-sans text-xs text-warm-gray">
           <span>
             {order.items?.length} {itemsLabel}
           </span>
@@ -40,7 +43,7 @@ export const OrderItem: React.FC<Props> = ({ order }) => {
         </p>
       </div>
 
-      <Button variant="outline" asChild className="self-start sm:self-auto">
+      <Button asChild variant="outline" className={`${nabeaOutlineBtnClass} self-start sm:self-auto`}>
         <Link href={`/orders/${order.id}`}>Bestellung ansehen</Link>
       </Button>
     </div>

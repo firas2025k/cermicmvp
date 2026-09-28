@@ -226,31 +226,33 @@ export async function confirmStripeOrder({
     ...(req ? { req } : {}),
   })
 
-  // Decrement inventory from transaction line items (same as plugin confirm handler)
+  // Decrement inventory from transaction line items.
+  // IMPORTANT: use Local API `update` (not raw `db.updateOne` / $inc). Variants and
+  // products use drafts/versions — raw DB updates leave `_variants_v` / `_products_v`
+  // stale, so admin still shows the old stock while the main row was decremented.
   if (Array.isArray(transaction.items) && transaction.items.length > 0) {
     for (const item of transaction.items) {
       try {
+        const quantity = Math.max(0, Number(item.quantity) || 0)
+        if (quantity === 0) continue
+
         if (item.variant) {
           const id = typeof item.variant === 'object' ? item.variant.id : item.variant
-          await payload.db.updateOne({
-            id,
+          await decrementInventory({
+            payload,
+            req,
             collection: 'variants',
-            data: {
-              inventory: {
-                $inc: item.quantity * -1,
-              },
-            },
+            id,
+            quantity,
           })
         } else if (item.product) {
           const id = typeof item.product === 'object' ? item.product.id : item.product
-          await payload.db.updateOne({
-            id,
+          await decrementInventory({
+            payload,
+            req,
             collection: 'products',
-            data: {
-              inventory: {
-                $inc: item.quantity * -1,
-              },
-            },
+            id,
+            quantity,
           })
         }
       } catch (err) {
@@ -263,4 +265,42 @@ export async function confirmStripeOrder({
   }
 
   return { orderID: order.id, alreadyConfirmed: false }
+}
+
+async function decrementInventory({
+  payload,
+  req,
+  collection,
+  id,
+  quantity,
+}: {
+  payload: Payload
+  req?: PayloadRequest
+  collection: 'variants' | 'products'
+  id: string | number
+  quantity: number
+}): Promise<void> {
+  const doc = await payload.findByID({
+    collection,
+    id,
+    depth: 0,
+    draft: true,
+    overrideAccess: true,
+    ...(req ? { req } : {}),
+  })
+
+  const current = Number(doc?.inventory ?? 0)
+  const next = Math.max(0, current - quantity)
+
+  if (next === current) return
+
+  await payload.update({
+    collection,
+    id,
+    data: { inventory: next },
+    // Publish so the version snapshot admin/storefront read stays in sync.
+    draft: false,
+    overrideAccess: true,
+    ...(req ? { req } : {}),
+  })
 }

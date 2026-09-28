@@ -2,7 +2,6 @@
 
 import { FormError } from '@/components/forms/FormError'
 import { FormItem } from '@/components/forms/FormItem'
-import { Message } from '@/components/Message'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,6 +11,14 @@ import { useRouter } from 'next/navigation'
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import {
+  nabeaBodyClass,
+  nabeaInputClass,
+  nabeaLabelClass,
+  nabeaLinkClass,
+  nabeaPrimaryBtnClass,
+} from '@/blocks/Form/fieldStyles'
+import { cn } from '@/utilities/cn'
 
 type FormData = {
   email: string
@@ -41,7 +48,6 @@ export const AccountForm: React.FC = () => {
     async (data: FormData) => {
       if (user) {
         const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/${user.id}`, {
-          // Make sure to include cookies with fetch
           body: JSON.stringify(data),
           credentials: 'include',
           headers: {
@@ -70,19 +76,12 @@ export const AccountForm: React.FC = () => {
   )
 
   useEffect(() => {
-    // Only redirect if:
-    // 1. User is explicitly null (not undefined, which means still loading)
-    // 2. Auth status is determined (not undefined)
-    // 3. We're not already on the login page (to avoid loops)
-    // The server-side check in account/page.tsx already handles authentication
-    // This client-side check is just a safety net
     if (
       user === null &&
       status !== undefined &&
       typeof window !== 'undefined' &&
       !window.location.pathname.includes('/login')
     ) {
-      // Use replace instead of push to avoid adding to history stack
       router.replace(
         `/login?error=${encodeURIComponent(
           'Du musst angemeldet sein, um diese Seite zu sehen.',
@@ -91,7 +90,6 @@ export const AccountForm: React.FC = () => {
       return
     }
 
-    // Once user is loaded, reset form to have default values
     if (user) {
       reset({
         name: user.name,
@@ -106,28 +104,26 @@ export const AccountForm: React.FC = () => {
     <form className="max-w-xl" onSubmit={handleSubmit(onSubmit)}>
       {!changePassword ? (
         <Fragment>
-          <div className="prose dark:prose-invert mb-8">
-            <p className="">
-              {'Ändere unten deine Kontodaten, oder '}
-              <Button
-                className="px-0 text-inherit underline hover:cursor-pointer"
-                onClick={() => setChangePassword(!changePassword)}
-                type="button"
-                variant="link"
-              >
-                klicke hier
-              </Button>
-              {', um dein Passwort zu ändern.'}
-            </p>
-          </div>
+          <p className={`${nabeaBodyClass} mb-8`}>
+            {'Ändere unten deine Kontodaten, oder '}
+            <button
+              type="button"
+              className={cn(nabeaLinkClass, 'cursor-pointer bg-transparent p-0 font-sans text-sm')}
+              onClick={() => setChangePassword(!changePassword)}
+            >
+              klicke hier
+            </button>
+            {', um dein Passwort zu ändern.'}
+          </p>
 
-          <div className="flex flex-col gap-8 mb-8">
+          <div className="mb-8 flex flex-col gap-6">
             <FormItem>
-              <Label htmlFor="email" className="mb-2">
+              <Label htmlFor="email" className={cn(nabeaLabelClass, 'mb-2')}>
                 E-Mail-Adresse
               </Label>
               <Input
                 id="email"
+                className={nabeaInputClass}
                 {...register('email', { required: 'Bitte gib eine E-Mail-Adresse ein.' })}
                 type="email"
               />
@@ -135,11 +131,12 @@ export const AccountForm: React.FC = () => {
             </FormItem>
 
             <FormItem>
-              <Label htmlFor="name" className="mb-2">
+              <Label htmlFor="name" className={cn(nabeaLabelClass, 'mb-2')}>
                 Name
               </Label>
               <Input
                 id="name"
+                className={nabeaInputClass}
                 {...register('name', { required: 'Bitte gib einen Namen ein.' })}
                 type="text"
               />
@@ -149,28 +146,26 @@ export const AccountForm: React.FC = () => {
         </Fragment>
       ) : (
         <Fragment>
-          <div className="prose dark:prose-invert mb-8">
-            <p>
-              {'Ändere unten dein Passwort, oder '}
-              <Button
-                className="px-0 text-inherit underline hover:cursor-pointer"
-                onClick={() => setChangePassword(!changePassword)}
-                type="button"
-                variant="link"
-              >
-                abbrechen
-              </Button>
-              .
-            </p>
-          </div>
+          <p className={`${nabeaBodyClass} mb-8`}>
+            {'Ändere unten dein Passwort, oder '}
+            <button
+              type="button"
+              className={cn(nabeaLinkClass, 'cursor-pointer bg-transparent p-0 font-sans text-sm')}
+              onClick={() => setChangePassword(!changePassword)}
+            >
+              abbrechen
+            </button>
+            .
+          </p>
 
-          <div className="flex flex-col gap-8 mb-8">
+          <div className="mb-8 flex flex-col gap-6">
             <FormItem>
-              <Label htmlFor="password" className="mb-2">
+              <Label htmlFor="password" className={cn(nabeaLabelClass, 'mb-2')}>
                 Neues Passwort
               </Label>
               <Input
                 id="password"
+                className={nabeaInputClass}
                 {...register('password', { required: 'Bitte gib ein neues Passwort ein.' })}
                 type="password"
               />
@@ -178,14 +173,16 @@ export const AccountForm: React.FC = () => {
             </FormItem>
 
             <FormItem>
-              <Label htmlFor="passwordConfirm" className="mb-2">
+              <Label htmlFor="passwordConfirm" className={cn(nabeaLabelClass, 'mb-2')}>
                 Passwort bestätigen
               </Label>
               <Input
                 id="passwordConfirm"
+                className={nabeaInputClass}
                 {...register('passwordConfirm', {
                   required: 'Bitte bestätige dein neues Passwort.',
-                  validate: (value) => value === password.current || 'Die Passwörter stimmen nicht überein',
+                  validate: (value) =>
+                    value === password.current || 'Die Passwörter stimmen nicht überein',
                 })}
                 type="password"
               />
@@ -194,7 +191,12 @@ export const AccountForm: React.FC = () => {
           </div>
         </Fragment>
       )}
-      <Button disabled={isLoading || isSubmitting || !isDirty} type="submit" variant="default">
+      <Button
+        disabled={isLoading || isSubmitting || !isDirty}
+        type="submit"
+        variant="default"
+        className={nabeaPrimaryBtnClass}
+      >
         {isLoading || isSubmitting
           ? 'Wird verarbeitet…'
           : changePassword

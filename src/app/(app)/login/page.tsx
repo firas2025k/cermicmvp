@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 
 import { RenderParams } from '@/components/RenderParams'
-import Link from 'next/link'
 import React from 'react'
 
 import { headers as getHeaders } from 'next/headers'
@@ -9,6 +8,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { LoginForm } from '@/components/forms/LoginForm'
 import { redirect } from 'next/navigation'
+import { nabeaBodyClass, nabeaCardClass, nabeaPageTitleClass } from '@/blocks/Form/fieldStyles'
 
 type SearchParams = { redirect?: string; error?: string; warning?: string }
 
@@ -30,14 +30,13 @@ export default async function Login({ searchParams }: Props) {
   }
 
   return (
-    <div className="container">
-      <div className="max-w-xl mx-auto my-12">
+    <div className="container py-12 sm:py-16">
+      <div className={`mx-auto max-w-xl ${nabeaCardClass}`}>
         <RenderParams />
 
-        <h1 className="mb-4 text-[1.8rem]">Anmelden</h1>
-        <p className="mb-8">
-          {`Melde dich an, um dein Konto zu verwalten und deine Bestellhistorie einzusehen. `}
-          
+        <h1 className={`${nabeaPageTitleClass} mb-3`}>Anmelden</h1>
+        <p className={`${nabeaBodyClass} mb-8`}>
+          Melde dich an, um dein Konto zu verwalten und deine Bestellhistorie einzusehen.
         </p>
         <LoginForm />
       </div>
