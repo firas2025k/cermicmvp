@@ -367,6 +367,8 @@ export const CheckoutPage: React.FC = () => {
               disabled={!email || Boolean(emailEditable)}
               callback={(address) => setBillingAddress(address)}
               skipSubmission={true}
+              buttonVariant="solid"
+              buttonText="Rechnungsadresse hinzufügen"
             />
           )}
 
@@ -416,6 +418,8 @@ export const CheckoutPage: React.FC = () => {
                 callback={(address) => setShippingAddress(address)}
                 disabled={!email || Boolean(emailEditable)}
                 skipSubmission={true}
+                buttonVariant="solid"
+                buttonText="Lieferadresse hinzufügen"
               />
             )}
           </SectionCard>

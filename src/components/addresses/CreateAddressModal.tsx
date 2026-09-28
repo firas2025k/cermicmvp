@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '@/components/ui/button'
+
 import React, { useState } from 'react'
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
 import { AddressForm } from '@/components/forms/AddressForm'
 import { Address } from '@/payload-types'
 import { DefaultDocumentIDType } from 'payload'
+import { cn } from '@/utilities/cn'
 
 type Props = {
   addressID?: DefaultDocumentIDType
@@ -21,7 +22,19 @@ type Props = {
   callback?: (address: Partial<Address>) => void
   skipSubmission?: boolean
   disabled?: boolean
+  /**
+   * Visual style of the trigger button.
+   * - outline: warm border (default) — secondary actions
+   * - solid: bordeaux — primary checkout CTA
+   */
+  buttonVariant?: 'outline' | 'solid'
+  className?: string
 }
+
+const outlineBtn =
+  'inline-flex w-full sm:w-auto items-center justify-center border border-[#E2DBD0] bg-white px-5 py-3 font-sans text-[0.75rem] tracking-[0.14em] uppercase text-[#2C2A27] transition-colors hover:border-[#4A5E3A] hover:text-[#4A5E3A] disabled:cursor-not-allowed disabled:opacity-40'
+const solidBtn =
+  'inline-flex w-full sm:w-auto items-center justify-center bg-[#6B1F3A] px-5 py-3 font-sans text-[0.75rem] tracking-[0.14em] uppercase text-[#F8F4EE] transition-colors hover:bg-[#4E1628] disabled:cursor-not-allowed disabled:opacity-40'
 
 export const CreateAddressModal: React.FC<Props> = ({
   addressID,
@@ -31,6 +44,8 @@ export const CreateAddressModal: React.FC<Props> = ({
   callback,
   skipSubmission,
   disabled,
+  buttonVariant = 'outline',
+  className,
 }) => {
   const [open, setOpen] = useState(false)
   const handleOpenChange = (state: boolean) => {
@@ -52,12 +67,24 @@ export const CreateAddressModal: React.FC<Props> = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild disabled={disabled}>
-        <Button variant={'outline'}>{buttonText}</Button>
+        <button
+          type="button"
+          disabled={disabled}
+          className={cn(buttonVariant === 'solid' ? solidBtn : outlineBtn, className)}
+        >
+          {buttonText}
+        </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-none border-[#E2DBD0] bg-[#F8F4EE] p-6 sm:max-w-lg sm:p-8">
         <DialogHeader>
-          <DialogTitle>{modalTitle}</DialogTitle>
-          <DialogDescription>Diese Adresse wird mit deinem Konto verknüpft.</DialogDescription>
+          <DialogTitle className="font-serif text-2xl font-light text-[#2C2A27]">
+            {modalTitle}
+          </DialogTitle>
+          <DialogDescription className="font-sans text-sm text-[#8C8680]">
+            {skipSubmission
+              ? 'Bitte gib deine Adresse für diese Bestellung ein.'
+              : 'Diese Adresse wird mit deinem Konto verknüpft.'}
+          </DialogDescription>
         </DialogHeader>
 
         <AddressForm

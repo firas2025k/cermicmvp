@@ -2,7 +2,6 @@
 
 import { AddressItem } from '@/components/addresses/AddressItem'
 import { CreateAddressModal } from '@/components/addresses/CreateAddressModal'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -22,6 +21,11 @@ type Props = {
   setSubmit?: React.Dispatch<React.SetStateAction<() => void | Promise<void>>>
 }
 
+const outlineBtn =
+  'inline-flex w-full sm:w-auto items-center justify-center border border-[#E2DBD0] bg-white px-5 py-3 font-sans text-[0.75rem] tracking-[0.14em] uppercase text-[#2C2A27] transition-colors hover:border-[#4A5E3A] hover:text-[#4A5E3A]'
+const solidBtn =
+  'inline-flex items-center justify-center bg-[#6B1F3A] px-4 py-2.5 font-sans text-[0.7rem] tracking-[0.14em] uppercase text-[#F8F4EE] transition-colors hover:bg-[#4E1628]'
+
 export const CheckoutAddresses: React.FC<Props> = ({
   setAddress,
   heading = 'Adressen',
@@ -31,19 +35,20 @@ export const CheckoutAddresses: React.FC<Props> = ({
 
   if (!addresses || addresses.length === 0) {
     return (
-      <div>
-        <p>Keine Adressen gefunden. Bitte füge eine Adresse hinzu.</p>
-
-        <CreateAddressModal />
+      <div className="space-y-4">
+        <p className="font-sans text-sm text-[#8C8680]">
+          Keine Adressen gefunden. Bitte füge eine Adresse hinzu.
+        </p>
+        <CreateAddressModal buttonVariant="solid" />
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-xl font-medium mb-2">{heading}</h3>
-        <p className="text-muted-foreground">{description}</p>
+        <h3 className="mb-1 font-serif text-lg font-light text-[#2C2A27]">{heading}</h3>
+        <p className="font-sans text-sm text-[#8C8680]">{description}</p>
       </div>
       <AddressesModal setAddress={setAddress} />
     </div>
@@ -62,27 +67,42 @@ const AddressesModal: React.FC<Props> = ({ setAddress }) => {
   const { addresses } = useAddresses()
 
   if (!addresses || addresses.length === 0) {
-    return <p>Keine Adressen gefunden. Bitte füge eine Adresse hinzu.</p>
+    return (
+      <p className="font-sans text-sm text-[#8C8680]">
+        Keine Adressen gefunden. Bitte füge eine Adresse hinzu.
+      </p>
+    )
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={'outline'}>{'Adresse auswählen'}</Button>
+        <button type="button" className={outlineBtn}>
+          Adresse auswählen
+        </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-none border-[#E2DBD0] bg-[#F8F4EE] p-6 sm:max-w-lg sm:p-8">
         <DialogHeader>
-          <DialogTitle>{'Adresse auswählen'}</DialogTitle>
+          <DialogTitle className="font-serif text-2xl font-light text-[#2C2A27]">
+            Adresse auswählen
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-12">
-          <ul className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8">
+          <ul className="flex flex-col gap-6">
             {addresses.map((address) => (
-              <li key={address.id} className="border-b pb-8 last:border-none">
+              <li
+                key={address.id}
+                className="border-b border-[#E2DBD0] pb-6 last:border-none last:pb-0"
+              >
                 <AddressItem
                   address={address}
-                  beforeActions={
-                    <Button
+                  hideActions
+                  beforeActions={null}
+                  actions={
+                    <button
+                      type="button"
+                      className={solidBtn}
                       onClick={(e) => {
                         e.preventDefault()
                         setAddress(address)
@@ -90,7 +110,7 @@ const AddressesModal: React.FC<Props> = ({ setAddress }) => {
                       }}
                     >
                       Auswählen
-                    </Button>
+                    </button>
                   }
                 />
               </li>

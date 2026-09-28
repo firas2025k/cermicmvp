@@ -169,10 +169,7 @@ export function ExpandableMenu({ menu, categories = [] }: Props) {
               Informationen
             </p>
             <div className="mt-1 space-y-1 font-sans text-sm">
-              <Link href="/imprint" onClick={closeMenu} className={menuLinkClass}>
-                Impressum
-              </Link>
-              <Link href="/contact" onClick={closeMenu} className={menuLinkClass}>
+              <Link href="/anfrage" onClick={closeMenu} className={menuLinkClass}>
                 Kontakt
               </Link>
             </div>

@@ -1,8 +1,7 @@
 'use client'
+
 import React, { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useAddresses } from '@payloadcms/plugin-ecommerce/client/react'
 import { defaultCountries as supportedCountries } from '@payloadcms/plugin-ecommerce/client/react'
 import { Address, Config } from '@/payload-types'
@@ -15,10 +14,17 @@ import {
 } from '@/components/ui/select'
 
 import { titles } from './constants'
-import { Button } from '@/components/ui/button'
 import { deepMergeSimple } from 'payload/shared'
 import { FormError } from '@/components/forms/FormError'
 import { FormItem } from '@/components/forms/FormItem'
+import { cn } from '@/utilities/cn'
+
+const LABEL =
+  'block font-sans text-[0.7rem] tracking-[0.12em] uppercase mb-1.5 text-[#8C8680]'
+const INPUT =
+  'w-full font-sans text-sm bg-white px-4 py-3 outline-none transition-colors rounded-none border border-[#E2DBD0] text-[#2C2A27] placeholder:text-[#C5BFB8] focus:border-[#4A5E3A] focus-visible:ring-0 focus-visible:border-[#4A5E3A] shadow-none h-auto'
+const SELECT_TRIGGER =
+  'w-full font-sans text-sm bg-white px-4 py-3 h-auto min-h-0 rounded-none border border-[#E2DBD0] text-[#2C2A27] shadow-none focus:ring-0 focus:border-[#4A5E3A] data-[placeholder]:text-[#C5BFB8]'
 
 type AddressFormValues = {
   title?: string | null
@@ -82,11 +88,12 @@ export const AddressForm: React.FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-4 mb-8">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 md:flex-row">
           <FormItem className="shrink">
-            <Label htmlFor="title">Anrede</Label>
-
+            <label htmlFor="title" className={LABEL}>
+              Anrede
+            </label>
             <Select
               {...register('title')}
               onValueChange={(value) => {
@@ -94,12 +101,12 @@ export const AddressForm: React.FC<Props> = ({
               }}
               defaultValue={initialData?.title || ''}
             >
-              <SelectTrigger id="title">
+              <SelectTrigger id="title" className={cn(SELECT_TRIGGER, 'w-auto min-w-[6.5rem]')}>
                 <SelectValue placeholder="Anrede" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-none border-[#E2DBD0]">
                 {titles.map((title) => (
-                  <SelectItem key={title} value={title}>
+                  <SelectItem key={title} value={title} className="rounded-none font-sans text-sm">
                     {title}
                   </SelectItem>
                 ))}
@@ -108,21 +115,27 @@ export const AddressForm: React.FC<Props> = ({
             {errors.title && <FormError message={errors.title.message} />}
           </FormItem>
 
-          <FormItem>
-            <Label htmlFor="firstName">Vorname*</Label>
-            <Input
+          <FormItem className="grow">
+            <label htmlFor="firstName" className={LABEL}>
+              Vorname*
+            </label>
+            <input
               id="firstName"
               autoComplete="given-name"
+              className={INPUT}
               {...register('firstName', { required: 'Vorname ist erforderlich.' })}
             />
             {errors.firstName && <FormError message={errors.firstName.message} />}
           </FormItem>
 
-          <FormItem>
-            <Label htmlFor="lastName">Nachname*</Label>
-            <Input
+          <FormItem className="grow">
+            <label htmlFor="lastName" className={LABEL}>
+              Nachname*
+            </label>
+            <input
               autoComplete="family-name"
               id="lastName"
+              className={INPUT}
               {...register('lastName', { required: 'Nachname ist erforderlich.' })}
             />
             {errors.lastName && <FormError message={errors.lastName.message} />}
@@ -130,61 +143,100 @@ export const AddressForm: React.FC<Props> = ({
         </div>
 
         <FormItem>
-          <Label htmlFor="phone">Telefon</Label>
-          <Input type="tel" id="phone" autoComplete="mobile tel" {...register('phone')} />
+          <label htmlFor="phone" className={LABEL}>
+            Telefon
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            autoComplete="mobile tel"
+            className={INPUT}
+            {...register('phone')}
+          />
           {errors.phone && <FormError message={errors.phone.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="company">Firma</Label>
-          <Input id="company" autoComplete="organization" {...register('company')} />
+          <label htmlFor="company" className={LABEL}>
+            Firma
+          </label>
+          <input
+            id="company"
+            autoComplete="organization"
+            className={INPUT}
+            {...register('company')}
+          />
           {errors.company && <FormError message={errors.company.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="addressLine1">Adresszeile 1*</Label>
-          <Input
+          <label htmlFor="addressLine1" className={LABEL}>
+            Adresszeile 1*
+          </label>
+          <input
             id="addressLine1"
             autoComplete="address-line1"
+            className={INPUT}
             {...register('addressLine1', { required: 'Adresszeile 1 ist erforderlich.' })}
           />
           {errors.addressLine1 && <FormError message={errors.addressLine1.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="addressLine2">Adresszeile 2</Label>
-          <Input id="addressLine2" autoComplete="address-line2" {...register('addressLine2')} />
+          <label htmlFor="addressLine2" className={LABEL}>
+            Adresszeile 2
+          </label>
+          <input
+            id="addressLine2"
+            autoComplete="address-line2"
+            className={INPUT}
+            {...register('addressLine2')}
+          />
           {errors.addressLine2 && <FormError message={errors.addressLine2.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="city">Stadt*</Label>
-          <Input
+          <label htmlFor="city" className={LABEL}>
+            Stadt*
+          </label>
+          <input
             id="city"
             autoComplete="address-level2"
+            className={INPUT}
             {...register('city', { required: 'Stadt ist erforderlich.' })}
           />
           {errors.city && <FormError message={errors.city.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="state">Bundesland</Label>
-          <Input id="state" autoComplete="address-level1" {...register('state')} />
+          <label htmlFor="state" className={LABEL}>
+            Bundesland
+          </label>
+          <input
+            id="state"
+            autoComplete="address-level1"
+            className={INPUT}
+            {...register('state')}
+          />
           {errors.state && <FormError message={errors.state.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="postalCode">PLZ*</Label>
-          <Input
+          <label htmlFor="postalCode" className={LABEL}>
+            PLZ*
+          </label>
+          <input
             id="postalCode"
+            className={INPUT}
             {...register('postalCode', { required: 'Postleitzahl ist erforderlich.' })}
           />
           {errors.postalCode && <FormError message={errors.postalCode.message} />}
         </FormItem>
 
         <FormItem>
-          <Label htmlFor="country">Land*</Label>
-
+          <label htmlFor="country" className={LABEL}>
+            Land*
+          </label>
           <Select
             {...register('country', {
               required: 'Land ist erforderlich.',
@@ -193,12 +245,12 @@ export const AddressForm: React.FC<Props> = ({
               setValue('country', value, { shouldValidate: true })
             }}
             required
-            defaultValue={initialData?.country || ''}
+            defaultValue={initialData?.country || 'AT'}
           >
-            <SelectTrigger id="country" className="w-full">
+            <SelectTrigger id="country" className={SELECT_TRIGGER}>
               <SelectValue placeholder="Land" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none border-[#E2DBD0]">
               {supportedCountries.map((country) => {
                 const value = typeof country === 'string' ? country : country.value
                 const label =
@@ -209,7 +261,7 @@ export const AddressForm: React.FC<Props> = ({
                       : value
 
                 return (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem key={value} value={value} className="rounded-none font-sans text-sm">
                     {label}
                   </SelectItem>
                 )
@@ -220,7 +272,12 @@ export const AddressForm: React.FC<Props> = ({
         </FormItem>
       </div>
 
-      <Button type="submit">Speichern</Button>
+      <button
+        type="submit"
+        className="w-full py-3.5 font-sans text-[0.8rem] tracking-[0.14em] uppercase transition-colors bg-[#6B1F3A] text-[#F8F4EE] hover:bg-[#4E1628]"
+      >
+        Speichern
+      </button>
     </form>
   )
 }

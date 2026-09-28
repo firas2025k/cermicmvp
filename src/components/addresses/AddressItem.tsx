@@ -36,42 +36,43 @@ export const AddressItem: React.FC<Props> = ({
   }
 
   return (
-    <div className="flex items-center">
-      <div className="grow">
+    <div className="flex items-start gap-4">
+      <div className="grow font-sans text-sm leading-relaxed text-[#2C2A27]">
         <p className="font-medium">
           {address.title && <span>{address.title} </span>}
           {address.firstName} {address.lastName}
         </p>
-        <p>{address.company && <span>{address.company} </span>}</p>
-        <p>{address.phone && <span>{address.phone}</span>}</p>
+        {address.company ? <p className="text-[#8C8680]">{address.company}</p> : null}
+        {address.phone ? <p className="text-[#8C8680]">{address.phone}</p> : null}
         <p>
           {address.addressLine1}
           {address.addressLine2 && <>, {address.addressLine2}</>}
         </p>
         <p>
-          {address.city}, {address.state} {address.postalCode}
+          {address.postalCode} {address.city}
+          {address.state ? `, ${address.state}` : ''}
         </p>
-        <p>{address.country}</p>
+        <p className="text-[#8C8680]">{address.country}</p>
       </div>
 
-      {!hideActions && address.id && (
-        <div className="shrink flex flex-col gap-2">
+      {(!hideActions || actions) && (
+        <div className="flex shrink-0 flex-col gap-2">
           {actions ? (
             actions
-          ) : (
+          ) : !hideActions ? (
             <>
               {beforeActions}
-              {address.id && (
+              {address.id ? (
                 <CreateAddressModal
                   addressID={address.id}
                   initialData={address}
-                  buttonText={'Edit'}
-                  modalTitle={'Adresse bearbeiten'}
+                  buttonText="Bearbeiten"
+                  modalTitle="Adresse bearbeiten"
                 />
-              )}
+              ) : null}
               {afterActions}
             </>
-          )}
+          ) : null}
         </div>
       )}
     </div>
