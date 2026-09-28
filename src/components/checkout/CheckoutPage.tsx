@@ -751,9 +751,6 @@ export const CheckoutPage: React.FC = () => {
               <p className="font-sans text-sm font-medium" style={{ color: CHARCOAL }}>
                 Voraussichtliche Lieferung: 3–5 Werktage
               </p>
-              <p className="font-sans text-xs mt-0.5" style={{ color: WARM_GRAY }}>
-                Bestellungen vor 12:00 Uhr werden noch am selben Tag versendet
-              </p>
             </div>
           </div>
         </div>
