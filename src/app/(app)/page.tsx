@@ -3,14 +3,30 @@ import { HeroCarousel } from '@/components/HeroCarousel'
 import { Media } from '@/components/Media'
 import { ProductCarousel } from '@/components/ProductCarousel'
 import type { Product } from '@/payload-types'
+import { absoluteUrl } from '@/utilities/absoluteUrl'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
+import type { Metadata } from 'next'
 import { Star } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 
-// Reuse the dynamic metadata generation so the home page can still
-// pick up title / SEO settings from the "home" document in Payload.
-export { generateMetadata } from './[slug]/page'
+const HOME_TITLE = 'Handgefertigte Olivenholzprodukte & Keramik aus Wien'
+const HOME_DESCRIPTION =
+  'Nabea fertigt handgemachte Olivenholzprodukte und Keramik – nachhaltig, langlebig und mit Liebe zum Detail. Entdecke den Shop oder stelle eine Anfrage.'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: absoluteUrl('/'),
+  },
+  description: HOME_DESCRIPTION,
+  openGraph: mergeOpenGraph({
+    description: HOME_DESCRIPTION,
+    title: HOME_TITLE,
+    url: '/',
+  }),
+  title: HOME_TITLE,
+}
 
 // Use ISR with short revalidation time to balance freshness and performance
 // This ensures the page is regenerated at most every 10 seconds

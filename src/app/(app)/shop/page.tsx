@@ -10,7 +10,8 @@ import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
-const shopDescription = 'Entdecke unsere handgefertigten Olivenholzprodukte und Keramik.'
+const shopDescription =
+  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – entdecke nachhaltige Designstücke aus Wien, Österreich.'
 
 export const metadata: Metadata = {
   alternates: {
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     title: 'Shop',
     url: '/shop',
   }),
-  title: 'Shop',
+  title: 'Shop – Olivenholz & Keramik',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }

@@ -19,9 +19,9 @@ function AccordionRow({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-olive"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-olive"
       >
-        <span className="font-sans text-xs font-bold tracking-[0.1em] uppercase text-charcoal">
+        <span className="font-sans text-sm font-medium leading-snug text-charcoal normal-case tracking-normal">
           {item.title}
         </span>
         <svg

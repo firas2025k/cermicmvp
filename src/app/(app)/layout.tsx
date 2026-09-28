@@ -17,7 +17,7 @@ import './globals.css'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Nabea'
 const DEFAULT_DESCRIPTION =
-  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – aus Österreich.'
+  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – nachhaltig gefertigt in Österreich, Versand aus Wien.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
@@ -33,15 +33,19 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   openGraph: mergeOpenGraph({
     description: DEFAULT_DESCRIPTION,
+    locale: 'de_AT',
     title: SITE_NAME,
     url: '/',
   }),
+  other: {
+    'content-language': 'de-AT',
+  },
   robots: {
     follow: true,
     index: true,
   },
   title: {
-    default: SITE_NAME,
+    default: `${SITE_NAME} | Handgefertigte Olivenholzprodukte & Keramik`,
     template: `%s | ${SITE_NAME}`,
   },
 }

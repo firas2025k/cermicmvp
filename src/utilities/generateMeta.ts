@@ -7,7 +7,7 @@ import { mergeOpenGraph } from './mergeOpenGraph'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Nabea'
 const DEFAULT_DESCRIPTION =
-  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – aus Österreich.'
+  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – nachhaltig gefertigt in Österreich, Versand aus Wien.'
 
 function docPath(doc: Page | Product): string {
   const slug = typeof doc?.slug === 'string' ? doc.slug : ''
@@ -47,6 +47,7 @@ export const generateMeta = async (args: { doc: Page | Product | null }): Promis
   const title = doc?.meta?.title || doc?.title || SITE_NAME
   const description = doc?.meta?.description || DEFAULT_DESCRIPTION
   const ogImage = mediaUrl(typeof doc?.meta?.image === 'object' ? doc.meta.image : null)
+  const canIndex = !('_status' in doc) || doc._status === 'published' || doc._status == null
 
   return {
     alternates: canonical
@@ -67,6 +68,10 @@ export const generateMeta = async (args: { doc: Page | Product | null }): Promis
       title,
       url: path,
     }),
+    robots: {
+      follow: canIndex,
+      index: canIndex,
+    },
     title,
   }
 }

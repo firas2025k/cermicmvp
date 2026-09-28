@@ -3,9 +3,10 @@ import type { Metadata } from 'next'
 const defaultOpenGraph: Metadata['openGraph'] = {
   type: 'website',
   description:
-    'Handgefertigte Olivenholzprodukte und Keramik von Nabea – aus Österreich.',
+    'Handgefertigte Olivenholzprodukte und Keramik von Nabea – nachhaltig gefertigt in Österreich, Versand aus Wien.',
+  locale: 'de_AT',
   siteName: 'Nabea',
-  title: 'Nabea',
+  title: 'Nabea | Handgefertigte Olivenholzprodukte & Keramik',
 }
 
 export const mergeOpenGraph = (og?: Metadata['openGraph']): Metadata['openGraph'] => {
