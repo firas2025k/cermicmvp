@@ -38,7 +38,9 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   const gallery = product.gallery?.filter((item) => typeof item.image === 'object') || []
   const metaImage = typeof product.meta?.image === 'object' ? product.meta?.image : undefined
-  const canIndex = product._status === 'published'
+  // Query already filters to published when not in draft mode; treat missing _status as indexable
+  // so a narrow `select` cannot accidentally emit noindex.
+  const canIndex = product._status !== 'draft'
   const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
   const path = `/products/${slug}`
   const canonical = absoluteUrl(path)
@@ -366,6 +368,7 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
       trustBullets: true,
       faqItems: true,
       showGeneralFaq: true,
+      _status: true,
     },
     where: {
       and: [
