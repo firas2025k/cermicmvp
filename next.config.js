@@ -15,9 +15,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // Re-enabled after R2 migration. If /_next/image returns 402 (Vercel IO quota),
-    // set unoptimized: true again as a temporary fallback.
-    unoptimized: false,
+    // Vercel Image Optimization currently returns 402 (quota). Serve R2 URLs directly.
+    // Flip to false later if IO quota is available again.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
