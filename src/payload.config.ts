@@ -1,6 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { resendAdapter } from '@payloadcms/email-resend'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import {
   BoldFeature,
@@ -109,15 +109,30 @@ export default buildConfig({
   globals: [Header, Footer, Homepage, ProductFaqSection],
   plugins: [
     ...plugins,
-    // Always include Vercel Blob Storage plugin so the import map includes the client component
-    // The plugin will only be active when BLOB_READ_WRITE_TOKEN is provided
-    // In development without token, local storage will be used (configured in Media collection)
-    vercelBlobStorage({
+    // Cloudflare R2 via S3 API (Vercel/Node). Do NOT use @payloadcms/storage-r2 (Workers-only).
+    // https://payloadcms.com/docs/upload/storage-adapters#using-with-cloudflare-r2-via-s3-api
+    s3Storage({
+      enabled: Boolean(process.env.R2_BUCKET && process.env.R2_ACCESS_KEY_ID),
+      bucket: process.env.R2_BUCKET || '',
       collections: {
-        [Media.slug]: true,
+        [Media.slug]: {
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename, prefix }) => {
+            const base = (process.env.R2_PUBLIC_BASE_URL || '').replace(/\/$/, '')
+            const key = prefix ? `${prefix}/${filename}` : filename
+            return `${base}/${key}`
+          },
+        },
       },
-      // Provide token if available, otherwise use empty string (plugin will handle gracefully)
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+        },
+        region: 'auto',
+        endpoint: process.env.R2_ENDPOINT || '',
+        forcePathStyle: true,
+      },
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || '',

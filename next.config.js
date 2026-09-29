@@ -15,12 +15,19 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // Vercel Image Optimization is returning 402 (quota/payment) in production,
-    // which breaks shop/product images served via /_next/image. Serve originals
-    // from Payload media (/api/media/file/...) until optimization is enabled again.
-    unoptimized: true,
+    // Re-enabled after R2 migration. If /_next/image returns 402 (Vercel IO quota),
+    // set unoptimized: true again as a temporary fallback.
+    unoptimized: false,
     remotePatterns: [
-      // Allow images from Vercel Blob Storage
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.nabea.at',
+      },
+      // Keep until Blob is fully retired
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',

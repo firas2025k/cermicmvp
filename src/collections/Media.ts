@@ -11,6 +11,8 @@ import { fileURLToPath } from 'url'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const useLocalMedia = !process.env.R2_BUCKET || !process.env.R2_ACCESS_KEY_ID
+
 export const Media: CollectionConfig = {
   admin: {
     group: 'Content',
@@ -35,9 +37,8 @@ export const Media: CollectionConfig = {
       }),
     },
   ],
-  // Use local storage in development (when BLOB_READ_WRITE_TOKEN is not set)
-  // Use Vercel Blob Storage in production (when BLOB_READ_WRITE_TOKEN is set)
-  ...(!process.env.BLOB_READ_WRITE_TOKEN && {
+  // Local disk when R2 is not configured (typical local dev)
+  ...(useLocalMedia && {
     upload: {
       staticDir: path.resolve(dirname, '../../public/media'),
     },

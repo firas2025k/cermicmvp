@@ -17,11 +17,13 @@
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "stripe-webhooks": "stripe listen --forward-to localhost:3000/api/payments/stripe/webhooks",
+    "migrate:blob-to-r2": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx src/scripts/migrate-blob-to-r2.ts",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1141.0",
     "@next/third-parties": "15.5.12",
     "@nouance/payload-dashboard-analytics": "^0.3.0",
     "@payloadcms/admin-bar": "3.79.0",
@@ -35,6 +37,7 @@
     "@payloadcms/plugin-import-export": "^3.90.2",
     "@payloadcms/plugin-seo": "3.79.0",
     "@payloadcms/richtext-lexical": "3.79.0",
+    "@payloadcms/storage-s3": "3.79.0",
     "@payloadcms/storage-vercel-blob": "3.79.0",
     "@payloadcms/translations": "3.79.0",
     "@payloadcms/ui": "3.79.0",
@@ -46,6 +49,7 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@stripe/react-stripe-js": "^3",
     "@stripe/stripe-js": "^4.0.0",
+    "@vercel/blob": "0.22.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cross-env": "^7.0.3",
@@ -101,6 +105,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.0.12",
+    "tsx": "^4.23.15",
     "typescript": "5.7.2",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.3"
