@@ -9,6 +9,7 @@ import React from 'react'
 import type { Props as MediaProps } from '../types'
 
 import { cssVariables } from '@/cssVariables'
+import { absoluteUrl } from '@/utilities/absoluteUrl'
 
 const { breakpoints } = cssVariables
 
@@ -37,7 +38,6 @@ export const Image: React.FC<MediaProps> = (props) => {
   if (!src && resource && typeof resource === 'object') {
     const {
       alt: altFromResource,
-      filename: fullFilename,
       height: fullHeight,
       url,
       width: fullWidth,
@@ -47,9 +47,8 @@ export const Image: React.FC<MediaProps> = (props) => {
     height = heightFromProps ?? fullHeight
     alt = altFromResource
 
-    const filename = fullFilename
-
-    src = `${process.env.NEXT_PUBLIC_SERVER_URL}${url}`
+    // Absolute R2/CDN URLs must stay as-is; only relative Payload paths get the site origin.
+    src = absoluteUrl(url) || ''
   }
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
