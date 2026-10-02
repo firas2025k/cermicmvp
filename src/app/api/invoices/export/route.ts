@@ -110,7 +110,7 @@ export async function GET(request: Request) {
           message:
             invoices.docs.length === 0
               ? 'No invoices found in this date range.'
-              : `Found ${invoices.docs.length} invoice(s) but no downloadable PDFs.`,
+              : `Found ${invoices.docs.length} invoice(s) but no downloadable PDFs. Use “Regenerate missing PDFs” on the Invoices list, then export again.`,
           failures,
         },
         { status: 404 },
@@ -122,12 +122,24 @@ export async function GET(request: Request) {
     const toLabel = searchParams.get('to')
     const filename = `nabea-rechnungen-${fromLabel}_${toLabel}.zip`
 
+    // ASCII-safe summary for the admin panel (comma-separated invoice numbers).
+    const failureSummary = failures
+      .map((entry) => entry.split(':')[0]?.trim() || entry)
+      .filter(Boolean)
+      .slice(0, 20)
+      .join(', ')
+
     return new NextResponse(Buffer.from(zipBytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${filename}"`,
         'Cache-Control': 'no-store',
+        'X-Invoice-Export-Packed': String(added),
+        'X-Invoice-Export-Total': String(invoices.docs.length),
+        ...(failureSummary
+          ? { 'X-Invoice-Export-Failures': encodeURIComponent(failureSummary) }
+          : {}),
       },
     })
   } catch (err) {

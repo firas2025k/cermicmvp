@@ -52,8 +52,9 @@ Also required for email: `RESEND_API_KEY`, `RESEND_FROM_ADDRESS`, optional `ORDE
 
 ## Download / export
 
-- **Single PDF:** Payload Admin → Shop → Invoices → open row → download via the `pdf` media field.
-- **Date-range ZIP:** On the Invoices list, use **Export Rechnungen (ZIP)** (from / to + Download ZIP). Same endpoint: `GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD` (admin session required).
+- **Single PDF:** Payload Admin → Shop → Invoices → **PDF** column (Download link), or open a row → `pdf` media field.
+- **Date-range ZIP:** On the Invoices list, use **Export Rechnungen (ZIP)** (from / to + Download ZIP). Same endpoint: `GET /api/invoices/export?from=YYYY-MM-DD&to=YYYY-MM-DD` (admin session required). Partial packs report how many files were included via response headers.
+- **Regenerate missing PDFs:** On the Invoices list, **Regenerate missing PDFs** → `POST /api/invoices/regenerate` with `{ missingOnly: true }` (admin session). Rebuilds from the invoice snapshot (same Rechnungsnummer / issued date / amounts / lines) and enriches buyer address / payment / coupon from the linked order. Uploads a new Media file to R2 and updates `invoices.pdf`. No Vercel Blob recovery — Neon data is enough.
 
 ## Seller block on PDF (client-confirmed)
 

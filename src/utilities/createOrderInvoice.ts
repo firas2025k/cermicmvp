@@ -210,7 +210,7 @@ export function mapStripePaymentMethodLabel(type: string | null | undefined): st
   }
 }
 
-async function resolvePaymentMethodLabel(
+export async function resolvePaymentMethodLabel(
   payload: Payload,
   order: Order,
 ): Promise<string> {
@@ -290,7 +290,7 @@ async function allocateInvoiceNumber(payload: Payload, year: number): Promise<st
   return formatInvoiceNumber(year, sequence)
 }
 
-async function createMediaPdf(
+export async function createMediaPdf(
   payload: Payload,
   args: { filename: string; buffer: Buffer; alt: string; req?: PayloadRequest },
 ): Promise<Media> {

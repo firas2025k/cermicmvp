@@ -9,7 +9,7 @@ export const Invoices: CollectionConfig = {
     useAsTitle: 'number',
     defaultColumns: ['number', 'order', 'customerEmail', 'issuedAt', 'amountGross', 'pdf'],
     description:
-      'Austrian Rechnungen generated after checkout. Use Export below for a date-range ZIP, or open a row to download a single PDF.',
+      'Austrian Rechnungen generated after checkout. Use Export for a ZIP, the PDF column to download one file, or Regenerate missing PDFs if storage URLs 404.',
     components: {
       beforeListTable: ['@/components/admin/InvoiceExportPanel#InvoiceExportPanel'],
     },
@@ -157,6 +157,9 @@ export const Invoices: CollectionConfig = {
       label: 'PDF',
       admin: {
         description: 'Downloadable Rechnung PDF.',
+        components: {
+          Cell: '@/components/admin/InvoicePdfCell#InvoicePdfCell',
+        },
       },
     },
   ],

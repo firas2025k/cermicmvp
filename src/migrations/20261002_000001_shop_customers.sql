@@ -66,6 +66,23 @@ END $$;
 CREATE INDEX IF NOT EXISTS "orders_shop_customer_idx"
   ON "orders" USING btree ("shop_customer_id");
 
+-- Payload document locks (required for admin — missing this column 500s /admin)
+ALTER TABLE "payload_locked_documents_rels"
+  ADD COLUMN IF NOT EXISTS "customers_id" integer;
+
+DO $$ BEGIN
+  ALTER TABLE "payload_locked_documents_rels"
+    ADD CONSTRAINT "payload_locked_documents_rels_customers_fk"
+    FOREIGN KEY ("customers_id")
+    REFERENCES "public"."customers"("id")
+    ON DELETE CASCADE ON UPDATE NO ACTION;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_customers_id_idx"
+  ON "payload_locked_documents_rels" USING btree ("customers_id");
+
 -- Backfill customers from distinct order emails (prefer latest order shipping).
 INSERT INTO "customers" (
   "email",

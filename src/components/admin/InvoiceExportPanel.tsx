@@ -12,18 +12,21 @@ function defaultDateRange(): { from: string; to: string } {
 }
 
 /**
- * Invoices list toolbar: export PDFs as a ZIP for a date range.
- * Fetches with credentials so errors stay in the admin UI (no blank 500 page).
+ * Invoices list toolbar: export PDFs as a ZIP for a date range,
+ * and regenerate missing PDFs after storage migrations.
  */
 export function InvoiceExportPanel() {
   const defaults = useMemo(() => defaultDateRange(), [])
   const [from, setFrom] = useState(defaults.from)
   const [to, setTo] = useState(defaults.to)
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [regenPending, setRegenPending] = useState(false)
 
   const onExport = async () => {
     setError(null)
+    setInfo(null)
     if (!from || !to) {
       setError('Please choose both from and to dates.')
       return
@@ -41,13 +44,30 @@ export function InvoiceExportPanel() {
       if (!res.ok) {
         let message = `Export failed (${res.status}).`
         try {
-          const data = (await res.json()) as { message?: string }
+          const data = (await res.json()) as { message?: string; failures?: string[] }
           if (data.message) message = data.message
+          if (data.failures?.length) {
+            message = `${message} ${data.failures.slice(0, 5).join('; ')}`
+          }
         } catch {
           // non-JSON error body
         }
         setError(message)
         return
+      }
+
+      const packedHeader = res.headers.get('X-Invoice-Export-Packed')
+      const totalHeader = res.headers.get('X-Invoice-Export-Total')
+      const failuresHeader = res.headers.get('X-Invoice-Export-Failures')
+      if (packedHeader && totalHeader) {
+        const packed = Number.parseInt(packedHeader, 10)
+        const total = Number.parseInt(totalHeader, 10)
+        if (Number.isFinite(packed) && Number.isFinite(total) && packed < total) {
+          const detail = failuresHeader ? decodeURIComponent(failuresHeader) : ''
+          setInfo(
+            `Packed ${packed} of ${total} invoice PDF(s).${detail ? ` Missing: ${detail}` : ''} Run “Regenerate missing PDFs” first if files 404.`,
+          )
+        }
       }
 
       const blob = await res.blob()
@@ -58,11 +78,52 @@ export function InvoiceExportPanel() {
       document.body.appendChild(link)
       link.click()
       link.remove()
-      URL.revokeObjectURL(objectUrl)
+      // Delay revoke so the browser can finish starting the download (repeat exports).
+      window.setTimeout(() => {
+        URL.revokeObjectURL(objectUrl)
+      }, 1500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed.')
     } finally {
       setPending(false)
+    }
+  }
+
+  const onRegenerateMissing = async () => {
+    setError(null)
+    setInfo(null)
+    setRegenPending(true)
+    try {
+      const res = await fetch('/api/invoices/regenerate', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ missingOnly: true }),
+      })
+
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        failures?: string[]
+        regenerated?: unknown[]
+      }
+
+      if (!res.ok) {
+        let message = data.message || `Regenerate failed (${res.status}).`
+        if (data.failures?.length) {
+          message = `${message} ${data.failures.slice(0, 5).join('; ')}`
+        }
+        setError(message)
+        return
+      }
+
+      setInfo(data.message || 'Regenerate finished.')
+      if (data.failures?.length) {
+        setError(`Some failed: ${data.failures.slice(0, 8).join('; ')}`)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Regenerate failed.')
+    } finally {
+      setRegenPending(false)
     }
   }
 
@@ -89,7 +150,8 @@ export function InvoiceExportPanel() {
         Export Rechnungen (ZIP)
       </p>
       <p style={{ margin: '0 0 14px', fontSize: 13, lineHeight: 1.5, color: '#8c8680' }}>
-        Download all invoice PDFs issued in a date range. Single PDFs: open a row → PDF field.
+        Download all invoice PDFs issued in a date range. List PDF column downloads a single file.
+        If files are missing after a storage move, regenerate them first (keeps Rechnungsnummer).
       </p>
       <div
         style={{
@@ -136,7 +198,7 @@ export function InvoiceExportPanel() {
           onClick={() => {
             void onExport()
           }}
-          disabled={pending}
+          disabled={pending || regenPending}
           style={{
             padding: '10px 16px',
             borderRadius: 8,
@@ -153,7 +215,32 @@ export function InvoiceExportPanel() {
         >
           {pending ? 'Exporting…' : 'Download ZIP'}
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            void onRegenerateMissing()
+          }}
+          disabled={pending || regenPending}
+          style={{
+            padding: '10px 16px',
+            borderRadius: 8,
+            border: '1px solid #2c2a27',
+            background: '#f8f4ee',
+            color: '#2c2a27',
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            cursor: regenPending ? 'wait' : 'pointer',
+            opacity: regenPending ? 0.7 : 1,
+          }}
+        >
+          {regenPending ? 'Regenerating…' : 'Regenerate missing PDFs'}
+        </button>
       </div>
+      {info ? (
+        <p style={{ margin: '10px 0 0', fontSize: 13, color: '#4a6b4a' }}>{info}</p>
+      ) : null}
       {error ? (
         <p style={{ margin: '10px 0 0', fontSize: 13, color: '#a85a38' }}>{error}</p>
       ) : null}
