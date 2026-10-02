@@ -1,7 +1,16 @@
 'use client'
 
 import React from 'react'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts'
 import './RevenueChart.scss'
 
 type RevenueData = {
@@ -15,6 +24,11 @@ type RevenueChartProps = {
   title?: string
 }
 
+const OLIVE = '#4A5E3A'
+const TERRA = '#C4714A'
+const WARM_GRAY = '#8C8680'
+const BORDER = '#E2DBD0'
+
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Revenue' }) => {
   const formatCurrency = (value: number) =>
     `${value.toLocaleString('de-AT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}\u00A0€`
@@ -26,34 +40,31 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Reven
       </div>
       <div className="revenue-chart__container">
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 10, right: 24, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                <stop offset="5%" stopColor={OLIVE} stopOpacity={0.28} />
+                <stop offset="95%" stopColor={OLIVE} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                <stop offset="5%" stopColor={TERRA} stopOpacity={0.22} />
+                <stop offset="95%" stopColor={TERRA} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis
-              dataKey="month"
-              stroke="#6b7280"
-              style={{ fontSize: '12px' }}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={BORDER} />
+            <XAxis dataKey="month" stroke={WARM_GRAY} style={{ fontSize: '12px' }} />
             <YAxis
-              stroke="#6b7280"
+              stroke={WARM_GRAY}
               style={{ fontSize: '12px' }}
               tickFormatter={formatCurrency}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                backgroundColor: '#FCFAF5',
+                border: `1px solid ${BORDER}`,
+                borderRadius: '10px',
+                boxShadow: '0 8px 24px rgba(44, 42, 39, 0.08)',
+                color: '#2C2A27',
               }}
               formatter={(value: number) => formatCurrency(value)}
             />
@@ -61,7 +72,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Reven
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#3b82f6"
+              stroke={OLIVE}
               fillOpacity={1}
               fill="url(#colorRevenue)"
               name="Revenue"
@@ -69,7 +80,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Reven
             <Area
               type="monotone"
               dataKey="orders"
-              stroke="#10b981"
+              stroke={TERRA}
               fillOpacity={1}
               fill="url(#colorOrders)"
               name="Orders"
@@ -80,4 +91,3 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Reven
     </div>
   )
 }
-

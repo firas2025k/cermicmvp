@@ -1,29 +1,36 @@
+$nabea-linen: #fcfaf5;
+$nabea-cream: #f8f4ee;
+$nabea-olive: #4a5e3a;
+$nabea-terra: #c4714a;
+$nabea-charcoal: #2c2a27;
+$nabea-warm-gray: #8c8680;
+$nabea-border: #e2dbd0;
+
 .metric-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
+  background: $nabea-linen;
+  border: 1px solid $nabea-border;
+  border-radius: 14px;
+  padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  gap: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    border-color: rgba(74, 94, 58, 0.35);
+    box-shadow: 0 8px 24px rgba(44, 42, 39, 0.06);
   }
 
   &__header {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
+    gap: 14px;
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,44 +43,47 @@
   }
 
   &__title {
-    margin: 0 0 8px;
-    font-size: 12px;
+    margin: 0 0 6px;
+    font-size: 11px;
     font-weight: 600;
-    color: #6b7280;
+    color: $nabea-warm-gray;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.14em;
   }
 
   &__value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #111827;
-    line-height: 1.2;
+    font-size: 26px;
+    font-weight: 500;
+    color: $nabea-charcoal;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 
   &__trend {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
-    margin-top: 4px;
+    padding-top: 2px;
+    border-top: 1px solid rgba(226, 219, 208, 0.8);
   }
 
   &__trend-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
 
     &--up {
-      color: #059669;
+      color: $nabea-olive;
     }
 
     &--down {
-      color: #dc2626;
+      color: $nabea-terra;
     }
 
     &--neutral {
-      color: #9ca3af;
+      color: $nabea-warm-gray;
     }
   }
 
@@ -82,9 +92,8 @@
   }
 
   &__trend-label {
-    color: #6b7280;
+    color: $nabea-warm-gray;
     font-weight: 400;
     font-size: 12px;
   }
 }
-

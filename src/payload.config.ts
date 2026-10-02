@@ -120,7 +120,13 @@ export default buildConfig({
       collections: {
         [Media.slug]: {
           disablePayloadAccessControl: true,
-          generateFileURL: ({ filename, prefix }) => {
+          generateFileURL: ({
+            filename,
+            prefix,
+          }: {
+            filename: string
+            prefix?: string
+          }) => {
             const base = (process.env.R2_PUBLIC_BASE_URL || '').replace(/\/$/, '')
             const key = prefix ? `${prefix}/${filename}` : filename
             return `${base}/${key}`

@@ -1,8 +1,7 @@
 'use client'
 
-import { Banner } from '@payloadcms/ui'
 import React, { useEffect, useState } from 'react'
-import { ShoppingBag, Euro, Package, TrendingUp } from 'lucide-react'
+import { ShoppingBag, Euro, Package, Boxes } from 'lucide-react'
 
 import { MetricCard } from './MetricCard'
 import { RevenueChart } from './RevenueChart'
@@ -12,6 +11,13 @@ import type { AnalyticsData } from './getAnalytics'
 import './index.scss'
 
 const baseClass = 'before-dashboard'
+
+const BRAND = {
+  olive: '#4A5E3A',
+  terra: '#C4714A',
+  charcoal: '#2C2A27',
+  oliveLight: '#6B7F5A',
+} as const
 
 export const BeforeDashboard: React.FC = () => {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
@@ -37,12 +43,16 @@ export const BeforeDashboard: React.FC = () => {
 
   return (
     <section className={baseClass}>
-      <Banner className={`${baseClass}__banner`} type="success">
-        <h4>Welcome to your store dashboard</h4>
-      </Banner>
+      <header className={`${baseClass}__hero`}>
+        <p className={`${baseClass}__eyebrow`}>NABEA</p>
+        <h1 className={`${baseClass}__title`}>Store overview</h1>
+        <p className={`${baseClass}__subtitle`}>
+          Live orders, revenue, and products from your shop — not sample data.
+        </p>
+      </header>
 
       {loading ? (
-        <div className={`${baseClass}__loading`}>Loading analytics...</div>
+        <div className={`${baseClass}__loading`}>Loading analytics…</div>
       ) : (
         <>
           <div className={`${baseClass}__metrics`}>
@@ -53,7 +63,7 @@ export const BeforeDashboard: React.FC = () => {
               change={analytics?.changes.sales ?? null}
               changeLabel="vs last month"
               icon={ShoppingBag}
-              iconColor="#10b981"
+              iconColor={BRAND.olive}
             />
             <MetricCard
               title="Total Revenue"
@@ -62,7 +72,7 @@ export const BeforeDashboard: React.FC = () => {
               change={analytics?.changes.revenue ?? null}
               changeLabel="vs last month"
               icon={Euro}
-              iconColor="#ef4444"
+              iconColor={BRAND.terra}
             />
             <MetricCard
               title="Total Orders"
@@ -71,7 +81,7 @@ export const BeforeDashboard: React.FC = () => {
               change={analytics?.changes.orders ?? null}
               changeLabel="vs last month"
               icon={Package}
-              iconColor="#6b7280"
+              iconColor={BRAND.charcoal}
             />
             <MetricCard
               title="Total Products"
@@ -79,28 +89,25 @@ export const BeforeDashboard: React.FC = () => {
               format="count"
               change={analytics?.changes.products ?? null}
               changeLabel="vs last month"
-              icon={TrendingUp}
-              iconColor="#3b82f6"
+              icon={Boxes}
+              iconColor={BRAND.oliveLight}
             />
           </div>
 
           <div className={`${baseClass}__content`}>
             <div className={`${baseClass}__chart-section`}>
-              <RevenueChart
-                data={analytics?.revenueData || []}
-                title="Revenue Overview"
-              />
+              <RevenueChart data={analytics?.revenueData || []} title="Revenue overview" />
             </div>
 
             <div className={`${baseClass}__tables-grid`}>
               <TopProductsTable
                 products={analytics?.topProducts || []}
-                title="Top Selling Products"
+                title="Top selling products"
                 limit={5}
               />
               <OrdersTable
                 orders={analytics?.recentOrders || []}
-                title="Recent Orders"
+                title="Recent orders"
                 limit={5}
               />
             </div>
@@ -108,35 +115,35 @@ export const BeforeDashboard: React.FC = () => {
 
           <div className={`${baseClass}__quick-actions`}>
             <div className={`${baseClass}__card`}>
-              <h3 className={`${baseClass}__cardTitle`}>Edit store logo</h3>
+              <h3 className={`${baseClass}__cardTitle`}>Store logo</h3>
               <p className={`${baseClass}__cardBody`}>
                 Update the logo and text shown in your storefront header.
               </p>
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/admin/globals/header" className={`${baseClass}__link`}>
-                Go to logo settings
+                Logo settings
               </a>
             </div>
 
             <div className={`${baseClass}__card`}>
-              <h3 className={`${baseClass}__cardTitle`}>Manage products</h3>
+              <h3 className={`${baseClass}__cardTitle`}>Products</h3>
               <p className={`${baseClass}__cardBody`}>
                 Create, update, and organize the products in your storefront.
               </p>
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/admin/collections/products" className={`${baseClass}__link`}>
-                Go to products
+                Manage products
               </a>
             </div>
 
             <div className={`${baseClass}__card`}>
-              <h3 className={`${baseClass}__cardTitle`}>View your store</h3>
+              <h3 className={`${baseClass}__cardTitle`}>Storefront</h3>
               <p className={`${baseClass}__cardBody`}>
-                Open the public storefront to see what customers see.
+                Open the public site to see what customers see.
               </p>
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/" className={`${baseClass}__link`} target="_blank" rel="noreferrer">
-                Open storefront
+                Open nabea.at
               </a>
             </div>
           </div>

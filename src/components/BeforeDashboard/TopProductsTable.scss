@@ -1,36 +1,45 @@
+$nabea-linen: #fcfaf5;
+$nabea-cream: #f8f4ee;
+$nabea-olive: #4a5e3a;
+$nabea-terra: #c4714a;
+$nabea-charcoal: #2c2a27;
+$nabea-warm-gray: #8c8680;
+$nabea-border: #e2dbd0;
+
 .top-products-table {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
+  background: $nabea-linen;
+  border: 1px solid $nabea-border;
+  border-radius: 14px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
   }
 
   &__title {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    color: #111827;
+    color: $nabea-charcoal;
   }
 
   &__link {
-    font-size: 14px;
-    color: #3b82f6;
+    font-size: 12px;
+    color: $nabea-olive;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     transition: color 0.2s;
 
     &:hover {
-      color: #2563eb;
-      text-decoration: underline;
+      color: $nabea-terra;
     }
   }
 
@@ -48,15 +57,15 @@
     width: 40px;
     height: 40px;
     object-fit: cover;
-    border-radius: 6px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: $nabea-cream;
+    border: 1px solid $nabea-border;
   }
 
   &__product-name {
     font-weight: 500;
     font-size: 14px;
-    color: #111827;
+    color: $nabea-charcoal;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -65,34 +74,15 @@
 
   &__price {
     font-weight: 600;
-    color: #059669;
+    color: $nabea-olive;
     font-size: 14px;
-  }
-
-  &__status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: capitalize;
-
-    &--published {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-
-    &--draft {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
   }
 
   &__empty {
     text-align: center;
     padding: 40px !important;
-    color: #6b7280;
+    color: $nabea-warm-gray;
     font-size: 14px;
+    font-weight: 400;
   }
 }
-
