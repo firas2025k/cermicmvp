@@ -7,7 +7,7 @@ import { mergeOpenGraph } from './mergeOpenGraph'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Nabea'
 const DEFAULT_DESCRIPTION =
-  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – nachhaltig gefertigt in Österreich, Versand aus Wien.'
+  'Handgefertigte Olivenholzprodukte von Nabea – nachhaltig gefertigt in Österreich, Versand aus Wien.'
 
 function docPath(doc: Page | Product): string {
   const slug = typeof doc?.slug === 'string' ? doc.slug : ''

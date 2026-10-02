@@ -9,9 +9,9 @@ export function buildLlmsTxtMarkdown(baseUrl: string): string {
 
   return `# Nabea
 
-> Handgefertigte Olivenholzprodukte und Keramik aus Wien, Österreich (NABEA e.U.). Sprache der Website: Deutsch (de-AT).
+> Handgefertigte Olivenholzprodukte aus Wien, Österreich (NABEA e.U.). Sprache der Website: Deutsch (de-AT).
 
-Nabea verkauft nachhaltige, handgemachte Haushalts- und Designprodukte aus Olivenholz und Keramik. Versand aus Wien. Kontakt: ${CONTACT_EMAIL}.
+Nabea verkauft nachhaltige, handgemachte Haushalts- und Designprodukte aus Olivenholz. Versand aus Wien. Kontakt: ${CONTACT_EMAIL}.
 
 ## Shop und Marke
 

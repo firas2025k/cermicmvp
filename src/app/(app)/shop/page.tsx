@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: 'Shop',
     url: '/shop',
   }),
-  title: 'Shop – Olivenholz & Keramik',
+  title: 'Shop – Olivenholz',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }

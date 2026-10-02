@@ -11,7 +11,7 @@ import { Star } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 
-const HOME_TITLE = 'Handgefertigte Olivenholzprodukte & Keramik aus Wien'
+const HOME_TITLE = 'Handgefertigte Olivenholzprodukte aus Wien'
 const HOME_DESCRIPTION =
   'Handgefertigte Olivenholzprodukte – ein Stück mediterrane Natur für dein Zuhause.'
 
