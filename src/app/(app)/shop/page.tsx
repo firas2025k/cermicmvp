@@ -11,7 +11,7 @@ import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
 const shopDescription =
-  'Handgefertigte Olivenholzprodukte und Keramik von Nabea – entdecke nachhaltige Designstücke aus Wien, Österreich.'
+  'Entdecke handgefertigte Produkte aus Olivenholz – von Schneidebrettern und Schüsseln bis zu Küchenhelfern und Wohnaccessoires.'
 
 export const metadata: Metadata = {
   alternates: {

@@ -13,7 +13,7 @@ import { getPayload } from 'payload'
 
 const HOME_TITLE = 'Handgefertigte Olivenholzprodukte & Keramik aus Wien'
 const HOME_DESCRIPTION =
-  'Nabea fertigt handgemachte Olivenholzprodukte und Keramik – nachhaltig, langlebig und mit Liebe zum Detail. Entdecke den Shop oder stelle eine Anfrage.'
+  'Handgefertigte Olivenholzprodukte – ein Stück mediterrane Natur für dein Zuhause.'
 
 export const metadata: Metadata = {
   alternates: {
