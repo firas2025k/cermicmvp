@@ -16,7 +16,8 @@ type RevenueChartProps = {
 }
 
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'Revenue' }) => {
-  const formatCurrency = (value: number) => `€${value.toLocaleString()}`
+  const formatCurrency = (value: number) =>
+    `${value.toLocaleString('de-AT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}\u00A0€`
 
   return (
     <div className="revenue-chart">

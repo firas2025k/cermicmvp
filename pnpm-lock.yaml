@@ -14,9 +14,6 @@ importers:
       '@next/third-parties':
         specifier: 15.5.12
         version: 15.5.12(next@15.5.12(@babel/core@7.29.0(supports-color@7.2.0))(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.77.4))(react@19.2.1)
-      '@nouance/payload-dashboard-analytics':
-        specifier: ^0.3.0
-        version: 0.3.0(payload@3.79.0(graphql@16.13.1)(typescript@5.7.2))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(supports-color@7.2.0)
       '@payloadcms/admin-bar':
         specifier: 3.79.0
         version: 3.79.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)

@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 type PdfMedia = {
+  id?: number
   url?: string | null
   filename?: string | null
 }
@@ -17,20 +18,73 @@ type Props = {
   rowData?: RowData
 }
 
-function resolvePdf(cellData: Props['cellData'], rowData?: RowData): PdfMedia | null {
-  if (cellData && typeof cellData === 'object' && cellData.url) {
-    return cellData
+function resolvePdfId(cellData: Props['cellData'], rowData?: RowData): number | null {
+  if (typeof cellData === 'number' && Number.isFinite(cellData)) return cellData
+  if (cellData && typeof cellData === 'object' && typeof cellData.id === 'number') {
+    return cellData.id
   }
   const pdf = rowData?.pdf
-  if (pdf && typeof pdf === 'object' && pdf.url) {
-    return pdf
-  }
+  if (typeof pdf === 'number' && Number.isFinite(pdf)) return pdf
+  if (pdf && typeof pdf === 'object' && typeof pdf.id === 'number') return pdf.id
   return null
 }
 
-/** Admin Invoices list: clickable PDF download (not a static icon). */
+function resolvePdfFromProps(cellData: Props['cellData'], rowData?: RowData): PdfMedia | null {
+  if (cellData && typeof cellData === 'object' && cellData.url) return cellData
+  const pdf = rowData?.pdf
+  if (pdf && typeof pdf === 'object' && pdf.url) return pdf
+  return null
+}
+
+/** Admin Invoices list: clickable PDF download (fetches URL when list only has media id). */
 export const InvoicePdfCell: React.FC<Props> = ({ cellData, rowData }) => {
-  const pdf = resolvePdf(cellData, rowData)
+  const initial = resolvePdfFromProps(cellData, rowData)
+  const pdfId = resolvePdfId(cellData, rowData)
+  const [pdf, setPdf] = useState<PdfMedia | null>(initial)
+  const [loading, setLoading] = useState(!initial?.url && pdfId != null)
+
+  useEffect(() => {
+    const fromProps = resolvePdfFromProps(cellData, rowData)
+    if (fromProps?.url) {
+      setPdf(fromProps)
+      setLoading(false)
+      return
+    }
+
+    const id = resolvePdfId(cellData, rowData)
+    if (id == null) {
+      setPdf(null)
+      setLoading(false)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+
+    void fetch(`/api/media/${id}`, { credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`media ${res.status}`)
+        return (await res.json()) as PdfMedia
+      })
+      .then((doc) => {
+        if (cancelled) return
+        setPdf(doc?.url ? doc : null)
+      })
+      .catch(() => {
+        if (!cancelled) setPdf(null)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [cellData, rowData])
+
+  if (loading) {
+    return <span style={{ color: '#8c8680', fontSize: 12 }}>…</span>
+  }
 
   if (!pdf?.url) {
     return (

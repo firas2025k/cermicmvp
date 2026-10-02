@@ -8,7 +8,7 @@ What was built for Austrian order invoices (Rechnung) and the upgraded Bestellbe
 2. Orders `afterChange` (create) runs [`src/utilities/orderEmails.ts`](../src/utilities/orderEmails.ts).
 3. [`createOrderInvoice`](../src/utilities/createOrderInvoice.ts) allocates `NABEA-{YYYY}-{####}`, builds a PDF with [`generateInvoicePdf`](../src/utilities/generateInvoicePdf.ts), uploads it to Media, and saves an `invoices` document.
 4. Customer email is sent with client copy, HTML line-item table (product images), and the PDF attached.
-5. Shop alert email is sent (optionally includes Rechnungsnummer).
+5. Shop alert email is sent to `ORDER_NOTIFICATION_TO` (Amir) with Rechnungsnummer and the same Rechnung PDF attached when invoice creation succeeds.
 
 If PDF/invoice creation fails, the order still succeeds and the confirmation email is sent **without** an attachment.
 

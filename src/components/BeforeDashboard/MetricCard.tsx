@@ -1,43 +1,33 @@
 import React from 'react'
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { formatEUR } from '@/utilities/formatEUR'
 import './MetricCard.scss'
 
 type MetricCardProps = {
   title: string
-  value: string | number
-  change?: number
+  value: number
+  /** `currency` = value in cents; `count` = plain integer. */
+  format?: 'currency' | 'count'
+  change?: number | null
   changeLabel?: string
   icon: LucideIcon
   iconColor?: string
-  trend?: 'up' | 'down' | 'neutral'
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,
+  format = 'count',
   change,
   changeLabel,
   icon: Icon,
   iconColor = '#3b82f6',
-  trend = 'neutral',
 }) => {
-  const formatValue = (val: string | number) => {
-    if (typeof val === 'number') {
-      // If it's a currency value (likely > 100), format as currency
-      if (val >= 100) {
-        if (val >= 1000000) {
-          return `€${(val / 1000000).toFixed(2)}M`
-        }
-        if (val >= 1000) {
-          return `€${(val / 1000).toFixed(1)}K`
-        }
-        return `€${val.toFixed(2)}`
-      }
-      // Otherwise, it's likely a count (orders, products, etc.)
-      return val.toLocaleString()
-    }
-    return val
-  }
+  const displayValue =
+    format === 'currency' ? formatEUR(value) : Math.round(value).toLocaleString('de-AT')
+
+  const trend: 'up' | 'down' | 'neutral' =
+    change == null || change === 0 ? 'neutral' : change > 0 ? 'up' : 'down'
 
   const getTrendIcon = () => {
     switch (trend) {
@@ -69,20 +59,24 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         </div>
         <div className="metric-card__info">
           <h3 className="metric-card__title">{title}</h3>
-          <div className="metric-card__value">{formatValue(value)}</div>
+          <div className="metric-card__value">{displayValue}</div>
         </div>
       </div>
-      {change !== undefined && (
+      {change != null ? (
         <div className="metric-card__trend" style={{ color: getTrendColor() }}>
           {getTrendIcon()}
           <span className="metric-card__trend-value">
             {change > 0 ? '+' : ''}
-            {change.toFixed(2)}%
+            {change.toFixed(1)}%
           </span>
-          {changeLabel && <span className="metric-card__trend-label">{changeLabel}</span>}
+          {changeLabel ? <span className="metric-card__trend-label">{changeLabel}</span> : null}
+        </div>
+      ) : (
+        <div className="metric-card__trend" style={{ color: 'var(--theme-elevation-400)' }}>
+          <Minus className="metric-card__trend-icon metric-card__trend-icon--neutral" />
+          <span className="metric-card__trend-label">{changeLabel || 'vs last month'}</span>
         </div>
       )}
     </div>
   )
 }
-

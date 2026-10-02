@@ -19,6 +19,8 @@ import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { DiscountStatusField as DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff } from '@/components/admin/DiscountStatus'
+import { InvoiceEuroCell as InvoiceEuroCell_cad5268b02b3e91dfcbedb0043d02de8 } from '@/components/admin/InvoiceEuroCell'
+import { InvoiceEuroField as InvoiceEuroField_ad7ce264fe03d4cb39fe7edfa1281dac } from '@/components/admin/InvoiceEuroField'
 import { InvoicePdfCell as InvoicePdfCell_368509a0623292d774d41847671fbcfe } from '@/components/admin/InvoicePdfCell'
 import { InvoiceExportPanel as InvoiceExportPanel_830c8a663e1d073921d5085dbfe093da } from '@/components/admin/InvoiceExportPanel'
 import { VariantDeleteCell as VariantDeleteCell_de6dbb444563e18971822baa752ac617 } from '@/components/admin/VariantDeleteCell'
@@ -32,6 +34,7 @@ import { HeroSlideRowLabel as HeroSlideRowLabel_fc80b8c2dc3ad48d23b1601d610bdcee
 import { FeatureIconPicker as FeatureIconPicker_3b012f96180385db56fa4bad7fe64b02 } from '@/components/admin/FeatureIconPicker'
 import { BeforeDashboard as BeforeDashboard_1a7510af427896d367a49dbf838d2de6 } from '@/components/BeforeDashboard'
 import { BeforeLogin as BeforeLogin_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
+import { AdminHomeNavLink as AdminHomeNavLink_e90862885e8ff0d39032929e10db308a } from '@/components/admin/AdminHomeNavLink'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -57,6 +60,8 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@/components/admin/DiscountStatus#DiscountStatusField": DiscountStatusField_63079b3f1e4e6f74b14822dff6d5e5ff,
+  "@/components/admin/InvoiceEuroCell#InvoiceEuroCell": InvoiceEuroCell_cad5268b02b3e91dfcbedb0043d02de8,
+  "@/components/admin/InvoiceEuroField#InvoiceEuroField": InvoiceEuroField_ad7ce264fe03d4cb39fe7edfa1281dac,
   "@/components/admin/InvoicePdfCell#InvoicePdfCell": InvoicePdfCell_368509a0623292d774d41847671fbcfe,
   "@/components/admin/InvoiceExportPanel#InvoiceExportPanel": InvoiceExportPanel_830c8a663e1d073921d5085dbfe093da,
   "@/components/admin/VariantDeleteCell#VariantDeleteCell": VariantDeleteCell_de6dbb444563e18971822baa752ac617,
@@ -70,6 +75,7 @@ export const importMap = {
   "@/components/admin/FeatureIconPicker#FeatureIconPicker": FeatureIconPicker_3b012f96180385db56fa4bad7fe64b02,
   "@/components/BeforeDashboard#BeforeDashboard": BeforeDashboard_1a7510af427896d367a49dbf838d2de6,
   "@/components/BeforeLogin#BeforeLogin": BeforeLogin_8a7ab0eb7ab5c511aba12e68480bfe5e,
+  "@/components/admin/AdminHomeNavLink#AdminHomeNavLink": AdminHomeNavLink_e90862885e8ff0d39032929e10db308a,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

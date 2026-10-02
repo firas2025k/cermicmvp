@@ -6,13 +6,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import type { TopProductStat } from '@/components/BeforeDashboard/getAnalytics'
+import { formatEUR } from '@/utilities/formatEUR'
 import type { Product } from '@/payload-types'
 import Link from 'next/link'
 import React from 'react'
 import './TopProductsTable.scss'
 
 type TopProductsTableProps = {
-  products: Product[]
+  products: TopProductStat[]
   title?: string
   limit?: number
 }
@@ -37,23 +39,6 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
     return null
   }
 
-  const getCategory = (product: Product) => {
-    if (product.categories && Array.isArray(product.categories) && product.categories.length > 0) {
-      const category = product.categories[0]
-      if (typeof category === 'object' && category?.title) {
-        return category.title
-      }
-    }
-    return 'Uncategorized'
-  }
-
-  const getPrice = (product: Product) => {
-    if (product.priceInEUR) {
-      return product.priceInEUR
-    }
-    return 0
-  }
-
   return (
     <div className="top-products-table">
       <div className="top-products-table__header">
@@ -67,47 +52,39 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Sold</TableHead>
+              <TableHead>Revenue</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="top-products-table__empty">
-                  No products yet
+                <TableCell colSpan={3} className="top-products-table__empty">
+                  No sales yet
                 </TableCell>
               </TableRow>
             ) : (
-              displayProducts.map((product) => {
+              displayProducts.map(({ product, unitsSold, revenueCents }) => {
                 const productImage = getProductImage(product)
                 return (
                   <TableRow key={product.id}>
                     <TableCell>
                       <div className="top-products-table__product">
-                        {productImage && (
+                        {productImage ? (
                           <img
                             src={productImage}
                             alt={product.title || 'Product'}
                             className="top-products-table__product-image"
                           />
-                        )}
+                        ) : null}
                         <span className="top-products-table__product-name">
                           {product.title || 'Untitled Product'}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{getCategory(product)}</TableCell>
+                    <TableCell>{unitsSold}</TableCell>
                     <TableCell className="top-products-table__price">
-                      {(getPrice(product) / 100).toLocaleString('de', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{'\u00A0€'}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`top-products-table__status top-products-table__status--${product._status || 'draft'}`}
-                      >
-                        {product._status || 'draft'}
-                      </span>
+                      {formatEUR(revenueCents)}
                     </TableCell>
                   </TableRow>
                 )
@@ -119,4 +96,3 @@ export const TopProductsTable: React.FC<TopProductsTableProps> = ({
     </div>
   )
 }
-

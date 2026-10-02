@@ -75,39 +75,55 @@ export const Invoices: CollectionConfig = {
     {
       name: 'amountGross',
       type: 'number',
-      label: 'Brutto (cents)',
+      label: 'Brutto',
       required: true,
       admin: {
         readOnly: true,
-        description: 'Gross total in cents (inkl. MwSt.).',
+        description: 'Gross total inkl. MwSt.',
+        components: {
+          Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+          Field: '@/components/admin/InvoiceEuroField#InvoiceEuroField',
+        },
       },
     },
     {
       name: 'amountNet',
       type: 'number',
-      label: 'Netto (cents)',
+      label: 'Netto',
       required: true,
       admin: {
         readOnly: true,
+        components: {
+          Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+          Field: '@/components/admin/InvoiceEuroField#InvoiceEuroField',
+        },
       },
     },
     {
       name: 'amountTax',
       type: 'number',
-      label: 'MwSt (cents)',
+      label: 'MwSt',
       required: true,
       admin: {
         readOnly: true,
+        components: {
+          Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+          Field: '@/components/admin/InvoiceEuroField#InvoiceEuroField',
+        },
       },
     },
     {
       name: 'shippingCents',
       type: 'number',
-      label: 'Shipping (cents)',
+      label: 'Shipping',
       defaultValue: 0,
       admin: {
         readOnly: true,
-        description: 'Currently 0 (Kostenlos) until paid shipping is stored on orders.',
+        description: '0 = Kostenlos.',
+        components: {
+          Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+          Field: '@/components/admin/InvoiceEuroField#InvoiceEuroField',
+        },
       },
     },
     {
@@ -136,12 +152,25 @@ export const Invoices: CollectionConfig = {
         {
           name: 'unitPriceCents',
           type: 'number',
+          label: 'Unit price',
           required: true,
+          admin: {
+            description: 'Cents in DB; shown as EUR in the list when used as a column.',
+            components: {
+              Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+            },
+          },
         },
         {
           name: 'lineTotalCents',
           type: 'number',
+          label: 'Line total',
           required: true,
+          admin: {
+            components: {
+              Cell: '@/components/admin/InvoiceEuroCell#InvoiceEuroCell',
+            },
+          },
         },
         {
           name: 'imageUrl',

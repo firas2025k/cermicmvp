@@ -818,6 +818,8 @@ export async function sendOrderEmails(
       subject: shop.subject,
       html: shop.html,
       text: shop.text,
+      // Same Rechnung PDF the customer gets — shop alert for Amir.
+      attachments: pdfAttachment ? [pdfAttachment] : undefined,
     })
   } catch (err) {
     payload.logger.error({ err, orderId: order.id }, '[order-emails] Failed shop alert')

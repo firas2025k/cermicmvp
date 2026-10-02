@@ -4,7 +4,6 @@ import { Banner } from '@payloadcms/ui'
 import React, { useEffect, useState } from 'react'
 import { ShoppingBag, Euro, Package, TrendingUp } from 'lucide-react'
 
-import { SeedButton } from './SeedButton'
 import { MetricCard } from './MetricCard'
 import { RevenueChart } from './RevenueChart'
 import { OrdersTable } from './OrdersTable'
@@ -21,9 +20,9 @@ export const BeforeDashboard: React.FC = () => {
   useEffect(() => {
     async function fetchAnalytics() {
       try {
-        const response = await fetch('/api/analytics')
+        const response = await fetch('/api/analytics', { credentials: 'include' })
         if (response.ok) {
-          const data = await response.json()
+          const data = (await response.json()) as AnalyticsData
           setAnalytics(data)
         }
       } catch (error) {
@@ -33,14 +32,8 @@ export const BeforeDashboard: React.FC = () => {
       }
     }
 
-    fetchAnalytics()
+    void fetchAnalytics()
   }, [])
-
-  // Calculate percentage changes (mock data for now)
-  const revenueChange = 1.56
-  const ordersChange = 0.0
-  const productsChange = 2.5
-  const salesChange = 1.56
 
   return (
     <section className={baseClass}>
@@ -52,49 +45,46 @@ export const BeforeDashboard: React.FC = () => {
         <div className={`${baseClass}__loading`}>Loading analytics...</div>
       ) : (
         <>
-          {/* Metrics Cards */}
           <div className={`${baseClass}__metrics`}>
             <MetricCard
               title="Total Sales"
               value={analytics?.totalSales || 0}
-              change={salesChange}
-              changeLabel="since last month"
+              format="count"
+              change={analytics?.changes.sales ?? null}
+              changeLabel="vs last month"
               icon={ShoppingBag}
               iconColor="#10b981"
-              trend="up"
             />
             <MetricCard
               title="Total Revenue"
               value={analytics?.totalRevenue || 0}
-              change={revenueChange}
-              changeLabel="since last month"
+              format="currency"
+              change={analytics?.changes.revenue ?? null}
+              changeLabel="vs last month"
               icon={Euro}
               iconColor="#ef4444"
-              trend="down"
             />
             <MetricCard
               title="Total Orders"
               value={analytics?.totalOrders || 0}
-              change={ordersChange}
-              changeLabel="since last month"
+              format="count"
+              change={analytics?.changes.orders ?? null}
+              changeLabel="vs last month"
               icon={Package}
               iconColor="#6b7280"
-              trend="neutral"
             />
             <MetricCard
               title="Total Products"
               value={analytics?.totalProducts || 0}
-              change={productsChange}
-              changeLabel="since last month"
+              format="count"
+              change={analytics?.changes.products ?? null}
+              changeLabel="vs last month"
               icon={TrendingUp}
               iconColor="#3b82f6"
-              trend="up"
             />
           </div>
 
-          {/* Charts and Tables Grid */}
           <div className={`${baseClass}__content`}>
-            {/* Revenue Chart */}
             <div className={`${baseClass}__chart-section`}>
               <RevenueChart
                 data={analytics?.revenueData || []}
@@ -102,7 +92,6 @@ export const BeforeDashboard: React.FC = () => {
               />
             </div>
 
-            {/* Tables Grid */}
             <div className={`${baseClass}__tables-grid`}>
               <TopProductsTable
                 products={analytics?.topProducts || []}
@@ -117,18 +106,7 @@ export const BeforeDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
           <div className={`${baseClass}__quick-actions`}>
-            <div className={`${baseClass}__card`}>
-              <h3 className={`${baseClass}__cardTitle`}>Add demo data</h3>
-              <p className={`${baseClass}__cardBody`}>
-                Quickly seed your database with example products and pages.
-              </p>
-              <div className={`${baseClass}__actions`}>
-                <SeedButton />
-              </div>
-            </div>
-
             <div className={`${baseClass}__card`}>
               <h3 className={`${baseClass}__cardTitle`}>Edit store logo</h3>
               <p className={`${baseClass}__cardBody`}>
