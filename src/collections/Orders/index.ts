@@ -5,7 +5,7 @@ import {
   sendOrderStatusChangeEmail,
 } from '@/utilities/orderEmails'
 import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
-import type { CollectionAfterChangeHook } from 'payload'
+import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, Field } from 'payload'
 
 /**
  * After a successful Stripe confirmOrder, the ecommerce plugin creates an order.
@@ -70,7 +70,7 @@ const sendOrderStatusChangeEmails: CollectionAfterChangeHook<Order> = async ({
   if (nextStatus === prevStatus) return doc
 
   try {
-    await sendOrderStatusChangeEmail(req.payload, doc, nextStatus)
+    await sendOrderStatusChangeEmail(req.payload, doc, nextStatus, { req })
   } catch (err) {
     req.payload.logger.error(
       { err, orderId: doc.id, status: nextStatus },
@@ -79,6 +79,46 @@ const sendOrderStatusChangeEmails: CollectionAfterChangeHook<Order> = async ({
   }
 
   return doc
+}
+
+/**
+ * Fill empty customerEmail from the linked User before save (create or update).
+ */
+const backfillCustomerEmail: CollectionBeforeChangeHook<Order> = async ({
+  data,
+  req,
+}) => {
+  if (typeof data.customerEmail === 'string' && data.customerEmail.trim()) {
+    data.customerEmail = data.customerEmail.trim().toLowerCase()
+    return data
+  }
+
+  const customerId =
+    data.customer && typeof data.customer === 'object'
+      ? (data.customer as { id?: number | string }).id
+      : data.customer
+
+  if (customerId == null) return data
+
+  try {
+    const user = await req.payload.findByID({
+      collection: 'users',
+      id: customerId,
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+    if (typeof user?.email === 'string' && user.email.trim()) {
+      data.customerEmail = user.email.trim().toLowerCase()
+    }
+  } catch (err) {
+    req.payload.logger.warn(
+      { err, customerId },
+      '[orders] Could not backfill customerEmail from user',
+    )
+  }
+
+  return data
 }
 
 /**
@@ -132,13 +172,34 @@ const incrementCouponUsage: CollectionAfterChangeHook<Order> = async ({
   return doc
 }
 
+const customerNameListField: Field = {
+  name: 'customerName',
+  type: 'ui',
+  label: 'Customer',
+  admin: {
+    components: {
+      Cell: '@/components/admin/OrderCustomerNameCell#OrderCustomerNameCell',
+    },
+    disableListFilter: true,
+  },
+}
+
 export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
   const existingAfter = defaultCollection.hooks?.afterChange
+  const existingBefore = defaultCollection.hooks?.beforeChange
   const afterChangeChain: CollectionAfterChangeHook[] = [
     ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
     incrementCouponUsage as CollectionAfterChangeHook,
     sendOrderConfirmationEmails as CollectionAfterChangeHook,
     sendOrderStatusChangeEmails as CollectionAfterChangeHook,
+  ]
+  const beforeChangeChain: CollectionBeforeChangeHook[] = [
+    ...(Array.isArray(existingBefore)
+      ? existingBefore
+      : existingBefore
+        ? [existingBefore]
+        : []),
+    backfillCustomerEmail as CollectionBeforeChangeHook,
   ]
 
   const existingFields = defaultCollection.fields ?? []
@@ -149,8 +210,10 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
       ...defaultCollection.admin,
       description:
         'Customer orders. Rechnungen (invoice PDFs) are stored under Shop → Invoices after checkout.',
+      defaultColumns: ['id', 'customerName', 'customerEmail', 'status', 'amount', 'createdAt'],
     },
     fields: [
+      customerNameListField,
       ...existingFields,
       {
         name: 'shippingAmount',
@@ -214,6 +277,7 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
     ],
     hooks: {
       ...defaultCollection.hooks,
+      beforeChange: beforeChangeChain,
       afterChange: afterChangeChain,
     },
   }

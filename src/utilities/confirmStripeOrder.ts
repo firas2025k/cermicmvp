@@ -126,6 +126,30 @@ export async function confirmStripeOrder({
     paymentIntent.receipt_email ||
     ''
 
+  let resolvedCustomerEmail = customerEmail.trim().toLowerCase()
+
+  // Logged-in checkout historically stored only `customer` and left `customerEmail` empty.
+  // Always persist email when we can so status-change mails and admin stay reliable.
+  if (!resolvedCustomerEmail && userId != null) {
+    try {
+      const user = await payload.findByID({
+        collection: 'users',
+        id: userId,
+        depth: 0,
+        overrideAccess: true,
+        ...(req ? { req } : {}),
+      })
+      if (typeof user?.email === 'string' && user.email.trim()) {
+        resolvedCustomerEmail = user.email.trim().toLowerCase()
+      }
+    } catch (err) {
+      payload.logger.warn(
+        { err, userId },
+        '[confirm-stripe] Could not load user email for order customerEmail backfill',
+      )
+    }
+  }
+
   const shippingAmount = resolveShippingAmountFromPaymentIntent(paymentIntent)
 
   // Prefer cart coupon snapshot; fall back to PaymentIntent metadata.
@@ -184,10 +208,15 @@ export async function confirmStripeOrder({
 
   if (userId != null) {
     orderData.customer = userId
-  } else if (customerEmail) {
-    orderData.customerEmail = customerEmail.toLowerCase()
-  } else {
+  }
+  if (resolvedCustomerEmail) {
+    orderData.customerEmail = resolvedCustomerEmail
+  } else if (userId == null) {
     throw new Error('Eine E-Mail-Adresse ist für die Bestellung erforderlich.')
+  } else {
+    throw new Error(
+      'Kunden-E-Mail fehlt. Bitte erneut anmelden oder als Gast mit E-Mail bestellen.',
+    )
   }
 
   const order = await payload.create({

@@ -503,8 +503,12 @@ export async function sendOrderStatusChangeEmail(
   payload: Payload,
   order: Order,
   status: NotifiableOrderStatus,
+  options?: { req?: PayloadRequest },
 ): Promise<void> {
-  const customerEmail = resolveCustomerEmail(order)
+  const customerEmail = await resolveCustomerEmailForSend(payload, order, {
+    req: options?.req,
+    backfill: true,
+  })
 
   if (!customerEmail) {
     payload.logger.warn(
@@ -607,6 +611,71 @@ export function resolveCustomerEmail(order: Order): string | null {
     if (email) return email.toLowerCase()
   }
   return null
+}
+
+/**
+ * Resolve customer email for sending. Looks up the linked User when `customerEmail`
+ * is empty and `customer` is only an ID (common for logged-in checkouts).
+ * Optionally backfills `orders.customerEmail` so admin shows the address.
+ */
+export async function resolveCustomerEmailForSend(
+  payload: Payload,
+  order: Order,
+  options?: { req?: PayloadRequest; backfill?: boolean },
+): Promise<string | null> {
+  const existing = resolveCustomerEmail(order)
+  if (existing) return existing
+
+  const customerId =
+    order.customer && typeof order.customer === 'object'
+      ? order.customer.id
+      : order.customer
+
+  if (customerId == null) return null
+
+  try {
+    const user = await payload.findByID({
+      collection: 'users',
+      id: customerId,
+      depth: 0,
+      overrideAccess: true,
+      ...(options?.req ? { req: options.req } : {}),
+    })
+
+    const email =
+      typeof user?.email === 'string' && user.email.trim()
+        ? user.email.trim().toLowerCase()
+        : null
+
+    if (email && options?.backfill !== false) {
+      try {
+        await payload.update({
+          collection: 'orders',
+          id: order.id,
+          data: { customerEmail: email },
+          overrideAccess: true,
+          context: {
+            skipOrderStatusEmail: true,
+            skipCouponUsageIncrement: true,
+          },
+          ...(options?.req ? { req: options.req } : {}),
+        })
+      } catch (err) {
+        payload.logger.warn(
+          { err, orderId: order.id },
+          '[order-emails] Failed to backfill customerEmail on order',
+        )
+      }
+    }
+
+    return email
+  } catch (err) {
+    payload.logger.warn(
+      { err, orderId: order.id, customerId },
+      '[order-emails] Failed to resolve customer email from user',
+    )
+    return null
+  }
 }
 
 export function resolveOrderLineItems(order: Order): OrderLineItem[] {
