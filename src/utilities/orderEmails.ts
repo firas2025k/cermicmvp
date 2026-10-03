@@ -405,6 +405,138 @@ export function buildShopOrderAlertEmail(ctx: OrderEmailContext): {
   return { subject, html, text }
 }
 
+/** Customer-facing status values that trigger a transactional email on change. */
+export type NotifiableOrderStatus = 'processing' | 'completed' | 'cancelled' | 'refunded'
+
+export function isNotifiableOrderStatus(status: unknown): status is NotifiableOrderStatus {
+  return (
+    status === 'processing' ||
+    status === 'completed' ||
+    status === 'cancelled' ||
+    status === 'refunded'
+  )
+}
+
+export function buildCustomerOrderStatusEmail(
+  ctx: OrderEmailContext,
+  status: NotifiableOrderStatus,
+): {
+  subject: string
+  html: string
+  text: string
+} {
+  const greeting = greetingLine(ctx)
+  const date = formatOrderDate(ctx.createdAt)
+
+  const copy: Record<
+    NotifiableOrderStatus,
+    { subject: string; intro: string; closing: string }
+  > = {
+    processing: {
+      subject: `Ihre Bestellung ist in Bearbeitung – ${ctx.orderId}`,
+      intro:
+        'Ihre Bestellung bei NABEA ist in Bearbeitung. Wir bereiten sie derzeit für den Versand vor.',
+      closing:
+        'Sobald Ihre Bestellung versendet wurde, erhalten Sie eine weitere E-Mail mit den Informationen zu Ihrer Sendung.',
+    },
+    completed: {
+      subject: `Ihre Bestellung wurde versendet – ${ctx.orderId}`,
+      intro:
+        'gute Nachrichten: Ihre Bestellung bei NABEA wurde versendet und ist auf dem Weg zu Ihnen.',
+      closing: 'Wir wünschen Ihnen viel Freude mit Ihrer Bestellung.',
+    },
+    cancelled: {
+      subject: `Ihre Bestellung wurde storniert – ${ctx.orderId}`,
+      intro: 'Ihre Bestellung bei NABEA wurde storniert.',
+      closing:
+        'Falls Sie Fragen haben oder erneut bestellen möchten, antworten Sie gerne auf diese E-Mail.',
+    },
+    refunded: {
+      subject: `Ihre Bestellung wurde erstattet – ${ctx.orderId}`,
+      intro:
+        'Ihre Bestellung bei NABEA wurde erstattet. Die Rückerstattung erscheint je nach Bank in den nächsten Werktagen auf Ihrem Konto.',
+      closing: 'Bei Fragen zu Ihrer Erstattung antworten Sie gerne auf diese E-Mail.',
+    },
+  }
+
+  const { subject, intro, closing } = copy[status]
+
+  const text = [
+    greeting,
+    '',
+    intro,
+    '',
+    `Bestellnummer: ${ctx.orderId}`,
+    `Bestelldatum: ${date}`,
+    '',
+    closing,
+    '',
+    customerSignatureText(),
+  ].join('\n')
+
+  const html = wrapEmail(
+    subject,
+    `
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">${escapeHtml(greeting)}</p>
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+        ${escapeHtml(intro)}
+      </p>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;font-family:system-ui,sans-serif;">
+        <strong>Bestellnummer:</strong> ${ctx.orderId}<br />
+        <strong>Bestelldatum:</strong> ${escapeHtml(date)}
+      </p>
+      <p style="margin:0 0 8px;font-size:16px;line-height:1.6;">
+        ${escapeHtml(closing)}
+      </p>
+      ${customerSignatureHtml()}
+    `,
+  )
+
+  return { subject, html, text }
+}
+
+/**
+ * Notify the customer when an order status changes to processing / completed / cancelled / refunded.
+ * Does not re-send confirmation or attach the invoice PDF.
+ */
+export async function sendOrderStatusChangeEmail(
+  payload: Payload,
+  order: Order,
+  status: NotifiableOrderStatus,
+): Promise<void> {
+  const customerEmail = resolveCustomerEmail(order)
+
+  if (!customerEmail) {
+    payload.logger.warn(
+      { orderId: order.id, status },
+      '[order-emails] No customer email — skipped status-change email',
+    )
+    return
+  }
+
+  const shippingCents =
+    typeof order.shippingAmount === 'number' && Number.isFinite(order.shippingAmount)
+      ? Math.max(0, Math.round(order.shippingAmount))
+      : 0
+
+  const ctx = buildOrderEmailContext(order, customerEmail, { shippingCents })
+  const email = buildCustomerOrderStatusEmail(ctx, status)
+
+  try {
+    await sendPayloadEmail(payload, {
+      to: customerEmail,
+      subject: email.subject,
+      html: email.html,
+      text: email.text,
+    })
+  } catch (err) {
+    payload.logger.error(
+      { err, orderId: order.id, status },
+      '[order-emails] Failed customer status-change email',
+    )
+  }
+}
+
 type EmailAttachment = {
   filename: string
   content: Buffer

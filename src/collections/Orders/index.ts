@@ -1,5 +1,9 @@
 import type { Order } from '@/payload-types'
-import { sendOrderEmails } from '@/utilities/orderEmails'
+import {
+  isNotifiableOrderStatus,
+  sendOrderEmails,
+  sendOrderStatusChangeEmail,
+} from '@/utilities/orderEmails'
 import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 import type { CollectionAfterChangeHook } from 'payload'
 
@@ -39,6 +43,38 @@ const sendOrderConfirmationEmails: CollectionAfterChangeHook<Order> = async ({
     req.payload.logger.error(
       { err, orderId: doc.id },
       '[order-emails] Unexpected error while sending order emails',
+    )
+  }
+
+  return doc
+}
+
+/**
+ * When admin changes order status to processing / completed / cancelled / refunded, email the customer.
+ * Skips create (handled above) and no-ops when status did not change.
+ */
+const sendOrderStatusChangeEmails: CollectionAfterChangeHook<Order> = async ({
+  doc,
+  operation,
+  previousDoc,
+  req,
+  context,
+}) => {
+  if (operation !== 'update') return doc
+  if (context?.skipOrderStatusEmail) return doc
+
+  const nextStatus = doc.status
+  const prevStatus = previousDoc?.status
+
+  if (!isNotifiableOrderStatus(nextStatus)) return doc
+  if (nextStatus === prevStatus) return doc
+
+  try {
+    await sendOrderStatusChangeEmail(req.payload, doc, nextStatus)
+  } catch (err) {
+    req.payload.logger.error(
+      { err, orderId: doc.id, status: nextStatus },
+      '[order-emails] Unexpected error while sending status-change email',
     )
   }
 
@@ -102,6 +138,7 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
     ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
     incrementCouponUsage as CollectionAfterChangeHook,
     sendOrderConfirmationEmails as CollectionAfterChangeHook,
+    sendOrderStatusChangeEmails as CollectionAfterChangeHook,
   ]
 
   const existingFields = defaultCollection.fields ?? []
