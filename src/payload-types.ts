@@ -80,6 +80,7 @@ export interface Config {
     'stock-notifications': StockNotification;
     discounts: Discount;
     coupons: Coupon;
+    customers: Customer;
     invoices: Invoice;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -105,6 +106,9 @@ export interface Config {
     categories: {
       productOrder: 'category-product-orders';
     };
+    customers: {
+      orders: 'orders';
+    };
     variantTypes: {
       options: 'variantOptions';
     };
@@ -121,6 +125,7 @@ export interface Config {
     'stock-notifications': StockNotificationsSelect<false> | StockNotificationsSelect<true>;
     discounts: DiscountsSelect<false> | DiscountsSelect<true>;
     coupons: CouponsSelect<false> | CouponsSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
     invoices: InvoicesSelect<false> | InvoicesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -247,6 +252,10 @@ export interface User {
  */
 export interface Order {
   id: number;
+  /**
+   * Profile under Shop → Customers (from email + shipping).
+   */
+  shopCustomer?: (number | null) | Customer;
   items?:
     | {
         product?: (number | null) | Product;
@@ -283,6 +292,51 @@ export interface Order {
   couponDiscountCents?: number | null;
   couponType?: string | null;
   couponValue?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Buyers from checkout (guest or account). Names and addresses come from order shipping details. Not a login system — Users stay separate.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  email: string;
+  /**
+   * From shipping first + last name on the latest order.
+   */
+  displayName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  /**
+   * Copied from the most recent order for this email.
+   */
+  shippingAddress?: {
+    addressLine1?: string | null;
+    addressLine2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
+  /**
+   * Set when this email belongs to a signed-up user.
+   */
+  user?: (number | null) | User;
+  hasAccount?: boolean | null;
+  /**
+   * Visible only in admin — not sent to the customer.
+   */
+  notes?: string | null;
+  orders?: {
+    docs?: (number | Order)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1550,6 +1604,10 @@ export interface PayloadLockedDocument {
         value: number | Coupon;
       } | null)
     | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
         relationTo: 'invoices';
         value: number | Invoice;
       } | null)
@@ -1949,6 +2007,34 @@ export interface CouponsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  displayName?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  company?: T;
+  shippingAddress?:
+    | T
+    | {
+        addressLine1?: T;
+        addressLine2?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  user?: T;
+  hasAccount?: T;
+  notes?: T;
+  orders?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "invoices_select".
  */
 export interface InvoicesSelect<T extends boolean = true> {
@@ -2279,6 +2365,7 @@ export interface CartsSelect<T extends boolean = true> {
  * via the `definition` "orders_select".
  */
 export interface OrdersSelect<T extends boolean = true> {
+  shopCustomer?: T;
   items?:
     | T
     | {
@@ -2489,6 +2576,9 @@ export interface Footer {
     tagline?: string | null;
   };
   contactInfo?: {
+    /**
+     * Optional. Leave empty to hide the address line in the footer.
+     */
     address?: string | null;
     email?: string | null;
     phone?: string | null;

@@ -4,6 +4,7 @@ import {
   sendOrderEmails,
   sendOrderStatusChangeEmail,
 } from '@/utilities/orderEmails'
+import { upsertShopCustomerFromOrder } from '@/utilities/upsertShopCustomer'
 import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, Field } from 'payload'
 
@@ -82,12 +83,65 @@ const sendOrderStatusChangeEmails: CollectionAfterChangeHook<Order> = async ({
 }
 
 /**
+ * Upsert Shop → Customers from order email + shipping, and link the order.
+ */
+const syncShopCustomerFromOrder: CollectionAfterChangeHook<Order> = async ({
+  doc,
+  operation,
+  previousDoc,
+  req,
+  context,
+}) => {
+  if (context?.skipShopCustomerSync) return doc
+
+  const shouldSync =
+    operation === 'create' ||
+    doc.customerEmail !== previousDoc?.customerEmail ||
+    doc.customer !== previousDoc?.customer ||
+    JSON.stringify(doc.shippingAddress ?? null) !==
+      JSON.stringify(previousDoc?.shippingAddress ?? null) ||
+    !doc.shopCustomer
+
+  if (!shouldSync) return doc
+
+  try {
+    const customerId = await upsertShopCustomerFromOrder(req.payload, doc, { req })
+    if (customerId == null) return doc
+
+    const currentId =
+      typeof doc.shopCustomer === 'object' && doc.shopCustomer
+        ? doc.shopCustomer.id
+        : doc.shopCustomer
+
+    if (currentId === customerId) return doc
+
+    await req.payload.update({
+      collection: 'orders',
+      id: doc.id,
+      data: { shopCustomer: customerId },
+      overrideAccess: true,
+      req,
+      context: {
+        ...context,
+        skipShopCustomerSync: true,
+        skipOrderStatusEmail: true,
+        skipCouponUsageIncrement: true,
+      },
+    })
+  } catch (err) {
+    req.payload.logger.error(
+      { err, orderId: doc.id },
+      '[customers] Failed to sync shop customer on order',
+    )
+  }
+
+  return doc
+}
+
+/**
  * Fill empty customerEmail from the linked User before save (create or update).
  */
-const backfillCustomerEmail: CollectionBeforeChangeHook<Order> = async ({
-  data,
-  req,
-}) => {
+const backfillCustomerEmail: CollectionBeforeChangeHook<Order> = async ({ data, req }) => {
   if (typeof data.customerEmail === 'string' && data.customerEmail.trim()) {
     data.customerEmail = data.customerEmail.trim().toLowerCase()
     return data
@@ -190,6 +244,7 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
   const afterChangeChain: CollectionAfterChangeHook[] = [
     ...(Array.isArray(existingAfter) ? existingAfter : existingAfter ? [existingAfter] : []),
     incrementCouponUsage as CollectionAfterChangeHook,
+    syncShopCustomerFromOrder as CollectionAfterChangeHook,
     sendOrderConfirmationEmails as CollectionAfterChangeHook,
     sendOrderStatusChangeEmails as CollectionAfterChangeHook,
   ]
@@ -210,10 +265,29 @@ export const OrdersCollection: CollectionOverride = ({ defaultCollection }) => {
       ...defaultCollection.admin,
       description:
         'Customer orders. Rechnungen (invoice PDFs) are stored under Shop → Invoices after checkout.',
-      defaultColumns: ['id', 'customerName', 'customerEmail', 'status', 'amount', 'createdAt'],
+      defaultColumns: [
+        'id',
+        'customerName',
+        'shopCustomer',
+        'customerEmail',
+        'status',
+        'amount',
+        'createdAt',
+      ],
     },
     fields: [
       customerNameListField,
+      {
+        name: 'shopCustomer',
+        type: 'relationship',
+        relationTo: 'customers',
+        label: 'Shop customer',
+        index: true,
+        admin: {
+          position: 'sidebar',
+          description: 'Profile under Shop → Customers (from email + shipping).',
+        },
+      },
       ...existingFields,
       {
         name: 'shippingAmount',
