@@ -10,8 +10,9 @@ import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import { Suspense } from 'react'
 
+const shopTitle = 'Shop – Handgefertigte Olivenholzprodukte | NABEA'
 const shopDescription =
-  'Entdecke handgefertigte Produkte aus Olivenholz – von Schneidebrettern und Schüsseln bis zu Küchenhelfern und Wohnaccessoires.'
+  'Entdecke handgefertigte Produkte aus Olivenholz – von Schneidebrettern und Schüsseln bis hin zu Küchenhelfern und Wohnaccessoires.'
 
 export const metadata: Metadata = {
   alternates: {
@@ -20,10 +21,13 @@ export const metadata: Metadata = {
   description: shopDescription,
   openGraph: mergeOpenGraph({
     description: shopDescription,
-    title: 'Shop',
+    title: shopTitle,
     url: '/shop',
   }),
-  title: 'Shop – Olivenholz',
+  // absolute: avoid root layout template appending another "| Nabea"
+  title: {
+    absolute: shopTitle,
+  },
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
